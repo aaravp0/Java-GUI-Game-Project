@@ -46,6 +46,7 @@ class Manager extends JPanel
         //add(new Level2(), "level 2");
         //add(new Level3(), "level 3");
         add(new LevelScreen(), "level select");
+        add(new GameOver1(),"Game over1");
 
         setVisible(true);
     }
@@ -422,13 +423,14 @@ class Manager extends JPanel
     {
         private Image run1, back, barneyBlood, number, gas, med, gun, apple, cookie, stunIcon, bloodHead;
         private Timer playerTimer;
-        private int im, xPos, yPos, health, xBar, yBar,screenX, screenY, screenX2, screenY2,barneyInt,speed, sprintInt,stamina,numMed, gunTime, barneySpeed, numCookies, numApples, stunTime, cookieTime, numGas, index, noMoveTime, noMoveTime2, charPosX, charPosY, barCooldown;
-        private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started, selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated, songStarted, noMove, canMove, barAttackCool;
+        private int im, xPos, yPos, health, xBar, yBar,screenX, screenY, screenX2, screenY2,barneyInt,speed, sprintInt,stamina,numMed, gunTime, barneySpeed, numCookies, numApples, stunTime, cookieTime, numGas, index, noMoveTime, noMoveTime2, barCooldown, gas1X, gas1Y;
+        private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started, selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated, songStarted, noMove, barAttackCool, damage;
         private PlayerMover playerTime;
         private JButton inv1, inv2, inv3, inv4, inv5;
         private String gunTimeValue, beginSentence, showingSentence,showingSentence2,showingSentence3,showingSentence4;
         private Font minecraft;
         private Rectangle[] currentBorder;
+        private Clip clip2;
 
         // declares all of the variables and timers
         public Level1()
@@ -462,7 +464,11 @@ class Manager extends JPanel
                 new Rectangle(976, 1132, 1084, 1580),
                 new Rectangle(1128, 1132, 1237, 1580),
                 new Rectangle(1278, 1132, 1384, 1580),
-                new Rectangle(1425, 1132, 1504, 1580)
+                new Rectangle(1425, 1132, 1504, 1580),
+                new Rectangle(0, 0, 1628, 123),
+                new Rectangle(1505, 0, 1628, 1614),
+                new Rectangle(0, 1501, 1628, 1614),
+                new Rectangle(0, 0, 126, 1616)
             };
 
             cookiesActivated = false;
@@ -495,7 +501,9 @@ class Manager extends JPanel
             screenY = 610;
             screenX2 = 120;
             screenY2 = 760;
-
+            gas1X = 1000;
+            gas1Y = -100;
+            damage = true;
             stamina = 250;
             numMed = 0;
             playerTime = new PlayerMover();
@@ -601,7 +609,6 @@ class Manager extends JPanel
         //paints the sprites in the level
         public void paintComponent(Graphics g)
         {
-            
             if(!songStarted)
             {
                 try
@@ -609,7 +616,7 @@ class Manager extends JPanel
                     String soundName2 = "sounds/BarneyLevelTheme.wav";
                     AudioInputStream audioInputStream2 = AudioSystem
                             .getAudioInputStream(new File(soundName2).getAbsoluteFile());
-                    Clip clip2 = AudioSystem.getClip();
+                    clip2 = AudioSystem.getClip();
                     clip2.open(audioInputStream2);
                     clip2.start();
                 } catch (Exception i)
@@ -631,6 +638,9 @@ class Manager extends JPanel
                 g.drawImage(bloodHead,200,200,400,400,null);
             }
 
+            if(gas1X > -1 && gas1Y > -1)
+                g.drawImage(gas,gas1X,gas1Y,60,60,null);
+
             g.drawImage(run1, 400, 400, 75, 75, null);
             //letters at beginning
             if(!barneySpawn)
@@ -642,14 +652,13 @@ class Manager extends JPanel
                 g.drawString(showingSentence3,100,270);
                 g.drawString(showingSentence4,100,300);
             }
+
             //barney
             if (barneySpawn)
                 g.drawImage(barneyBlood, xBar, yBar, 100, 150, null);
             if(stun)
                 g.drawImage(stunIcon,xBar-25, yBar-50,125,100,null);
             g.drawImage(number, 350, 50, 100, 100, null);
-
-            
             
             //stamina and health back part
             Color healthBack = new Color(197,167,119);
@@ -751,6 +760,12 @@ class Manager extends JPanel
             // everytime timer occurs
             public void actionPerformed(ActionEvent e)
             {
+                if(health <= 0)
+                {
+                    playerTimer.stop();
+                    clip2.stop();
+                    layout.show(Manager.this,"Game over1");
+                }
                 int newScreenX = screenX;
                 int newScreenY = screenY;
                 int newScreenX2 = screenX2;
@@ -760,53 +775,25 @@ class Manager extends JPanel
                 {
                     newScreenX -= speed;
                     newScreenX2 -= speed;
-                    if(newScreenX != 0)
-                        xBar += speed;
                 }
                 else if (moveRight)
                 {
                     newScreenX += speed;
                     newScreenX2 += speed;
-                    if(newScreenX2 != 860)
-                        xBar -= speed;
                 }
                 if (moveUp)
                 {
                     newScreenY -= speed;
                     newScreenY2 -= speed;
-                    if(newScreenY != 0)
-                        yBar += speed;
                 }
                 else if (moveDown)
                 {
                     newScreenY += speed;
                     newScreenY2 += speed;
-                    if(newScreenY2 < 887)
-                        yBar -= speed;
-                }
-                if(newScreenX < 10)
-                {
-                    newScreenX = 10;
-                    newScreenX2 = 110;
-                }
-                if(newScreenX2 > 795)
-                {
-                    newScreenX2 = 795;
-                    newScreenX = 695;
-                }
-                if(newScreenY < -20)
-                {
-                    newScreenY = -20;
-                    newScreenY2 = 130;
-                }
-                if(newScreenY2 > 815)
-                {
-                    newScreenY2 = 815;
-                    newScreenY = 665;
                 }
                 
-                charPosX = (newScreenX + newScreenX2);
-                charPosY = (newScreenY + newScreenY2);
+                int charPosX = (newScreenX + newScreenX2);
+                int charPosY = (newScreenY + newScreenY2);
 
                 if(!shiftSprint)
                 {
@@ -831,6 +818,7 @@ class Manager extends JPanel
                         charPosX-=2; 
                 }
 
+                
                 boolean canMove = true;
                 for (int i = 0; i < currentBorder.length; i++) 
                 {
@@ -838,6 +826,38 @@ class Manager extends JPanel
                     {
                         canMove = false;
                         break;
+                    }
+                }
+                if (moveLeft)
+                {
+                    if(canMove)
+                    {
+                        xBar += speed;
+                        gas1X += speed*8;
+                    }
+                }
+                else if (moveRight)
+                {
+                    if(canMove)
+                    {
+                        xBar -= speed;
+                        gas1X -= speed*8;
+                    }
+                }
+                if (moveUp)
+                {
+                    if(canMove)
+                    {
+                        yBar += speed;
+                        gas1Y += speed*5;
+                    }
+                }
+                else if (moveDown)
+                {
+                    if(canMove)
+                    {
+                        yBar -= speed;
+                        gas1Y -= speed*5;
                     }
                 }
                 if(!noMove)
@@ -987,8 +1007,9 @@ class Manager extends JPanel
                     if(xBar <= xPos && xPos+75 <= xBar2 && yBar <= yPos && yPos+75 <= yBar2)
                     {
                         health-=100;
+                        barAttackCool = true;
                     }
-                    barAttackCool = true;
+                    
                 }
                 else
                 {
@@ -1049,6 +1070,8 @@ class Manager extends JPanel
                         yBar -= barneySpeed;
                     }
                 }
+                if(!damage)
+                    health = 250;
                 repaint();
                 grabFocus();
             }
@@ -1057,6 +1080,10 @@ class Manager extends JPanel
         // movement input
         public void keyPressed(KeyEvent e)
         {
+            if(e.getKeyChar() == 'g')
+            {
+                damage = !damage;
+            }
             if(e.getKeyChar() == 'e')
             {
                 playerTimer.stop();
@@ -1152,7 +1179,9 @@ class Manager extends JPanel
                 if(numApples > 0)
                 {
                     numApples--;
-                    stamina+= 100;
+                    stamina += 50;
+                    if(stamina >= 125)
+                        sprintInt = 125;
                 }
             }
             else if(selected5)
@@ -1178,6 +1207,36 @@ class Manager extends JPanel
 
         public void mouseExited(MouseEvent e)
         {}
+    }
+    class GameOver1 extends JPanel
+    {
+        Image barneyBloodEnd;
+        public GameOver1()
+        {
+            setLayout(new BorderLayout());
+            JButton menu = new JButton("Menu");
+            menu.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    layout.show(Manager.this,"start");
+                }
+            });
+            JPanel blank = new JPanel();
+            blank.setOpaque(false);
+            blank.add(menu);
+            add(blank, BorderLayout.CENTER);
+            setBackground(Color.BLACK);
+            barneyBloodEnd = new ImageIcon("images/BarneyEnd1.png").getImage();
+        }
+        public void paintComponent(Graphics g)
+        {
+            super.paintComponent(g);
+            g.drawImage(barneyBloodEnd,0,0,800,800,null);
+            g.setFont(new Font("Minecraft",Font.BOLD,50));
+            g.setColor(Color.WHITE);
+            g.drawString("Game Over!",100,100);
+        }
     }
     /*class EndCutscene1 extends JPanel
     {

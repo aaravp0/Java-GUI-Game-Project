@@ -28,12 +28,12 @@ public class NightOfBarney extends JFrame
     }
 }
 /*
+ * Barney game over image: Alexander Chu, using AI
  * https://www.pngkit.com/view/u2w7t4q8r5r5w7q8_braid-sprite-sheet-pixel-art-
  * gifs-animation-game/
  * https://nyknck.itch.io/citypackpixelart
  * https://www.reddit.com/r/PixelArt/comments/erx2xf/cc_grass_sprite/
- * https://www.reddit.com/r/PixelArt/comments/e00jf7/
- * one_top_down_house_from_4_directions/
+ * https://www.reddit.com/r/PixelArt/comments/e00jf7/one_top_down_house_from_4_directions/
  * https://twitter.com/Grandero_Pixels/status/1169072413570752512
  * https://free-game-assets.itch.io/free-green-zone-tileset-pixel-art
  * https://www.pixilart.com/draw/gas-can-0d8faf0067e0f64

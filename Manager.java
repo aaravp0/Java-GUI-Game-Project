@@ -423,8 +423,10 @@ class Manager extends JPanel
     {
         private Image run1, back, barneyBlood, number, gas, med, gun, apple, cookie, stunIcon, bloodHead;
         private Timer playerTimer;
-        private int im, xPos, yPos, health, xBar, yBar,screenX, screenY, screenX2, screenY2,barneyInt,speed, sprintInt,stamina,numMed, gunTime, barneySpeed, numCookies, numApples, stunTime, cookieTime, numGas, index, noMoveTime, noMoveTime2, barCooldown, gas1X, gas1Y;
+        private int im, xPos, yPos, health, xBar, yBar,screenX, screenY, screenX2, screenY2,barneyInt,speed, sprintInt,stamina,numMed, gunTime, barneySpeed, numCookies, numApples, stunTime, cookieTime, index, noMoveTime, noMoveTime2, barCooldown;
         private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started, selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated, songStarted, noMove, barAttackCool, damage;
+        private int gas1X, gas2X, gas3X, gas1Y, gas2Y, gas3Y;
+        private boolean gas1Picked, gas2Picked, gas3Picked;
         private PlayerMover playerTime;
         private JButton inv1, inv2, inv3, inv4, inv5;
         private String gunTimeValue, beginSentence, showingSentence,showingSentence2,showingSentence3,showingSentence4;
@@ -440,7 +442,6 @@ class Manager extends JPanel
             noMoveTime = 3000;
             noMoveTime2 = 300;
             noMove = false;
-            numGas = 0;
             minecraft = new Font("Minecraft", Font.BOLD, 16);
             currentBorder = new Rectangle[]
             {
@@ -503,6 +504,10 @@ class Manager extends JPanel
             screenY2 = 760;
             gas1X = 1000;
             gas1Y = -100;
+            gas2X = 1100;
+            gas2Y = -100;
+            gas3X = 1200;
+            gas3Y = -100;
             damage = true;
             stamina = 250;
             numMed = 0;
@@ -639,7 +644,22 @@ class Manager extends JPanel
             }
 
             if(gas1X > -1 && gas1Y > -1)
+            {
                 g.drawImage(gas,gas1X,gas1Y,60,60,null);
+                g.drawRect(gas1X, gas1Y, 60, 60); // TODO: crop gas image properly
+            }
+
+            if(gas2X > -1 && gas2Y > -1)
+            {
+                g.drawImage(gas,gas2X,gas2Y,60,60,null);
+                g.drawRect(gas2X, gas2Y, 60, 60); // TODO: crop gas image properly
+            }
+
+            if(gas3X > -1 && gas3Y > -1)
+            {
+                g.drawImage(gas,gas3X,gas3Y,60,60,null);
+                g.drawRect(gas3X, gas3Y, 60, 60); // TODO: crop gas image properly
+            }
 
             g.drawImage(run1, 400, 400, 75, 75, null);
             //letters at beginning
@@ -752,8 +772,21 @@ class Manager extends JPanel
             g.drawString("" + gunTimeValue,75,755);
             g.drawString("" + numCookies,725,755);
             g.drawString("" + numApples,565,755);
-            g.drawString(numGas + "/3",245,755);
+            g.drawString(getNumGas() + "/3",245,755);
         }
+
+        public int getNumGas()
+        {
+            int count = 0;
+            if (gas1Picked) 
+                count++;
+            if (gas2Picked) 
+                count++;
+            if (gas3Picked) 
+                count++;
+            return count;
+        }
+
         // class for a timer that moves the characters and map
         class PlayerMover implements ActionListener
         {
@@ -834,6 +867,8 @@ class Manager extends JPanel
                     {
                         xBar += speed;
                         gas1X += speed*8;
+                        gas2X += speed*8;
+                        gas3X += speed*8;
                     }
                 }
                 else if (moveRight)
@@ -842,6 +877,8 @@ class Manager extends JPanel
                     {
                         xBar -= speed;
                         gas1X -= speed*8;
+                        gas2X -= speed*8;
+                        gas3X -= speed*8;
                     }
                 }
                 if (moveUp)
@@ -850,6 +887,8 @@ class Manager extends JPanel
                     {
                         yBar += speed;
                         gas1Y += speed*5;
+                        gas2Y += speed*5;
+                        gas3Y += speed*5;
                     }
                 }
                 else if (moveDown)
@@ -858,6 +897,8 @@ class Manager extends JPanel
                     {
                         yBar -= speed;
                         gas1Y -= speed*5;
+                        gas2Y -= speed*5;
+                        gas3Y -= speed*5;
                     }
                 }
                 if(!noMove)
@@ -1190,6 +1231,27 @@ class Manager extends JPanel
                 {
                     numCookies--;
                     cookiesActivated = true;
+                }
+            }
+            else
+            {
+                final int GAS_SIZE = 60;
+                int x = e.getX();
+                int y = e.getY();
+
+                if (gas1X <= x && x <= gas1X + GAS_SIZE && gas1Y <= y && y <= gas1Y + GAS_SIZE)
+                {
+                    gas1Picked = true;
+                }
+
+                if (gas2X <= x && x <= gas2X + GAS_SIZE && gas2Y <= y && y <= gas2Y + GAS_SIZE)
+                {
+                    gas2Picked = true;
+                }
+
+                if (gas3X <= x && x <= gas3X + GAS_SIZE && gas3Y <= y && y <= gas3Y + GAS_SIZE)
+                {
+                    gas3Picked = true;
                 }
             }
             repaint();

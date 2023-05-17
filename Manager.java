@@ -518,9 +518,9 @@ class Manager extends JPanel
             gas3X = 5425;
             gas3Y = 600;*/
             gas1 = itemCoordinateMaker();
-            System.out.println(gas1[0] + " " + gas1[1]);
             gas1[0] -= (screenX+screenX2);
             gas1[0] -= (screenY+screenY);
+            System.out.println(gas1[0] + " " + gas1[1]);
             gas2 = itemCoordinateMaker();
             gas3 = itemCoordinateMaker();
 
@@ -550,7 +550,6 @@ class Manager extends JPanel
             inv1 = new JButton("");
             inv1.setBounds(30, 690, 60, 60);
             inv1.setBorderPainted(false);
-            
             inv1.addActionListener(new java.awt.event.ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -689,19 +688,19 @@ class Manager extends JPanel
                 g.drawImage(bloodHead, 200, 200, 400, 400, null);
             }
 
-            if (gas1X > -1 && gas1Y > -1 && !gas1Picked)
+            if (gas1[0] > -1 && gas1[1] > -1 && !gas1Picked)
             {
                 //g.drawImage(gas, gas1X, gas1Y, 50, 50, null);
                 g.drawImage(gas, gas1[0], gas1[1], 50, 50, null);
             }
 
-            if (gas2X > -1 && gas2Y > -1 && !gas2Picked)
+            if (gas2[0] > -1 && gas2[1] > -1 && !gas2Picked)
             {
                 //g.drawImage(gas, gas2X, gas2Y, 50, 50, null);
                 g.drawImage(gas, gas2[0], gas2[1], 50, 50, null);
             }
 
-            if (gas3X > -1 && gas3Y > -1 && !gas3Picked)
+            if (gas3[0] > -1 && gas3[0] > -1 && !gas3Picked)
             {
                 //g.drawImage(gas, gas3X, gas3Y, 50, 50, null);
                 g.drawImage(gas, gas3[0], gas3[1], 60, 60, null);
@@ -933,44 +932,40 @@ class Manager extends JPanel
                 {
                     if (canMove)
                     {
-                        if(!stun)
-                            xBar += speed;
+                        xBar += speed;
                         gas1[0] += speed * 8;
-                        gas2X += speed * 8;
-                        gas3X += speed * 8;
+                        gas2[0] += speed * 8;
+                        gas3[0] += speed * 8;
                     }
                 }
                 else if (moveRight)
                 {
                     if (canMove)
                     {
-                        if(!stun)
-                            xBar -= speed;
-                        gas1X -= speed * 8;
-                        gas2X -= speed * 8;
-                        gas3X -= speed * 8;
+                        xBar -= speed;
+                        gas1[0] -= speed * 8;
+                        gas2[0] -= speed * 8;
+                        gas3[0] -= speed * 8;
                     }
                 }
                 if (moveUp)
                 {
                     if (canMove)
                     {
-                        if(!stun)
-                            yBar += speed;
-                        gas1Y += speed * 5;
-                        gas2Y += speed * 5;
-                        gas3Y += speed * 5;
+                        yBar += speed;
+                        gas1[1] += speed * 5;
+                        gas2[1] += speed * 5;
+                        gas3[1] += speed * 5;
                     }
                 }
                 else if (moveDown)
                 {
                     if (canMove)
                     {
-                        if(!stun)
-                            yBar -= speed;
-                        gas1Y -= speed * 5;
-                        gas2Y -= speed * 5;
-                        gas3Y -= speed * 5;
+                        yBar -= speed;
+                        gas1[1] -= speed * 5;
+                        gas2[1] -= speed * 5;
+                        gas3[1] -= speed * 5;
                     }
                 }
                 if (!noMove)
@@ -1079,7 +1074,7 @@ class Manager extends JPanel
                     speed = 3;
                 else
                     speed = 2;
-                if (moving)
+                if (moving && canMove)
                 {
                     im++;
                     String ims = "images/";
@@ -1314,17 +1309,17 @@ class Manager extends JPanel
                 int x = e.getX();
                 int y = e.getY();
 
-                if (gas1X <= x && x <= gas1X + GAS_SIZE && gas1Y <= y && y <= gas1Y + GAS_SIZE)
+                if (gas1[0] <= x && x <= gas1[0] + GAS_SIZE && gas1[1] <= y && y <= gas1[1] + GAS_SIZE)
                 {
                     gas1Picked = true;
                 }
 
-                if (gas2X <= x && x <= gas2X + GAS_SIZE && gas2Y <= y && y <= gas2Y + GAS_SIZE)
+                if (gas2[0] <= x && x <= gas2[0] + GAS_SIZE && gas2[1] <= y && y <= gas2[1] + GAS_SIZE)
                 {
                     gas2Picked = true;
                 }
 
-                if (gas3X <= x && x <= gas3X + GAS_SIZE && gas3Y <= y && y <= gas3Y + GAS_SIZE)
+                if (gas3[0] <= x && x <= gas3[0] + GAS_SIZE && gas3[1] <= y && y <= gas3[1] + GAS_SIZE)
                 {
                     gas3Picked = true;
                 }

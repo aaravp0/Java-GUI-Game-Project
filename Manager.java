@@ -9,19 +9,15 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
-import java.io.IOException;
 import java.awt.Font;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import java.util.Arrays;
 
 class Manager extends JPanel
 {
@@ -29,10 +25,39 @@ class Manager extends JPanel
     private Timer bloodTimer;
     private boolean first, second, third;
 
+    private Clip screamClip;
+
+    private final String SCREAM_FILE = "sounds/mixkit-angry-monster-scream-1963.wav";
+
     // calls runIt()
     public Manager()
     {
+        screamClip = openClip(SCREAM_FILE);
         runIt();
+    }
+
+    private Clip openClip(String fileName)
+    {
+        Clip clip = null;
+        try
+        {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(fileName).getAbsoluteFile());
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+        } catch (Exception e)
+        {
+            System.out.printf("Unable to open audio file %s\n", fileName);
+            e.printStackTrace(); 
+            System.exit(1);
+        }
+
+        return clip;
+    }
+
+    private void playScream()
+    {
+        screamClip.setFramePosition(0);
+        screamClip.start();
     }
 
     // creates panels and adds them to cardlayout
@@ -42,7 +67,7 @@ class Manager extends JPanel
         setLayout(layout);
         JPanel lvl2 = new Level2();
 
-        add(new StartScreen(), "start");
+        add(new StartScreen(this), "start");
         add(new JPanel(), "end");
         add(new Blood(), "blood");
         add(new Level1(), "level 1");
@@ -54,198 +79,21 @@ class Manager extends JPanel
         setVisible(true);
     }
 
-    // the JPanel for the start screen
-    class StartScreen extends JPanel
+    public void showLevelOne()
     {
-        private Clip themeSong;
-        private final String THEME_SONG = "sounds/barneyTheme.wav";
-        private JButton toStartButton, toSelectButton;
-        Image night, the, nig, ht, of, bar, ney, button, start, hoverStart, hoveringStart, levelSelected,
-                levelUnselected, bloody, sad;
-        boolean startHover, levelHover;
-
-        // adds mouse listeners and components to the start screen
-        public StartScreen()
-        {
-            themeSong = null;
-            try
-            {
-                AudioInputStream audioInputStream = AudioSystem
-                        .getAudioInputStream(new File(THEME_SONG).getAbsoluteFile());
-                themeSong = AudioSystem.getClip();
-                themeSong.open(audioInputStream);
-                themeSong.start();
-                themeSong.loop(Clip.LOOP_CONTINUOUSLY);
-            } catch (IOException e)
-            {
-                System.err.printf("Unable to find sound clip %s\n", THEME_SONG);
-                e.printStackTrace();
-                System.exit(1);
-            } catch (UnsupportedAudioFileException e)
-            {
-                System.err.printf("Unable to open sound clip %s\n", THEME_SONG);
-                e.printStackTrace();
-                System.exit(1);
-            } catch (LineUnavailableException e)
-            {
-                System.err.printf("Unable to open sound clip %s\n", THEME_SONG);
-                e.printStackTrace();
-                System.exit(1);
-            }
-
-            startHover = false;
-            levelHover = false;
-            // when the start button is pressed
-            toStartButton = new JButton("");
-            toStartButton.addActionListener(new ActionListener()
-            {
-                // everytime button is clicked
-                public void actionPerformed(ActionEvent e)
-                {
-                    first = true;
-                    layout.show(Manager.this, "blood");
-                    bloodTimer.start();
-                    themeSong.stop();
-                    try
-                    {
-                        String soundName1 = "sounds/mixkit-angry-monster-scream-1963.wav";
-                        AudioInputStream audioInputStream1 = AudioSystem
-                                .getAudioInputStream(new File(soundName1).getAbsoluteFile());
-                        Clip clip1 = AudioSystem.getClip();
-                        clip1.open(audioInputStream1);
-                        clip1.start();
-                    } catch (Exception i)
-                    {
-                    }
-                }
-            });
-            toSelectButton = new JButton("");
-            // when the level button is pressed
-            toSelectButton.addActionListener(new java.awt.event.ActionListener()
-            {
-                // everytime button is clicked
-                public void actionPerformed(ActionEvent e)
-                {
-                    layout.show(Manager.this, "level select");
-                    try
-                    {
-                        String soundName1 = "sounds/mixkit-angry-monster-scream-1963.wav";
-                        AudioInputStream audioInputStream1 = AudioSystem
-                                .getAudioInputStream(new File(soundName1).getAbsoluteFile());
-                        Clip clip1 = AudioSystem.getClip();
-                        clip1.open(audioInputStream1);
-                        clip1.start();
-                    } catch (Exception i)
-                    {
-                    }
-                }
-            });
-            // for the effect of hovering over the button
-            toStartButton.addMouseListener(new java.awt.event.MouseAdapter()
-            {
-                // when mouse is over the button
-                public void mouseEntered(java.awt.event.MouseEvent e)
-                {
-                    startHover = true;
-                    repaint();
-                }
-
-                // when mouse is away from the button
-                public void mouseExited(java.awt.event.MouseEvent e)
-                {
-                    startHover = false;
-                    repaint();
-                }
-            });
-            // for the effect of hovering over the button
-            toSelectButton.addMouseListener(new java.awt.event.MouseAdapter()
-            {
-                // when mouse is over the button
-                public void mouseEntered(java.awt.event.MouseEvent e)
-                {
-                    levelHover = true;
-                    repaint();
-                }
-
-                // when mouse is away from the button
-                public void mouseExited(java.awt.event.MouseEvent e)
-                {
-                    levelHover = false;
-                    repaint();
-                }
-            });
-            JPanel blank = new JPanel(new GridLayout(2, 1));
-            JPanel blank3 = new JPanel(new GridLayout(4, 1));
-            JPanel bl1 = new JPanel();
-            JPanel bl2 = new JPanel();
-            JPanel bl3 = new JPanel();
-            JPanel bl4 = new JPanel();
-            blank.setOpaque(false);
-            setLayout(new BorderLayout());
-            toStartButton.setPreferredSize(new Dimension(400, 80));
-            toSelectButton.setPreferredSize(new Dimension(400, 84));
-            toStartButton.setBorderPainted(false);
-            toSelectButton.setBorderPainted(false);
-            JPanel blank2 = new JPanel();
-            blank.add(blank2);
-            blank.add(blank3);
-            bl1.add(toStartButton);
-            bl2.add(toSelectButton);
-            blank3.add(bl1);
-            blank3.add(bl2);
-            blank3.add(bl3);
-            blank3.add(bl4);
-            bl1.setOpaque(false);
-            bl2.setOpaque(false);
-            bl3.setOpaque(false);
-            bl4.setOpaque(false);
-            blank2.setOpaque(false);
-            blank3.setOpaque(false);
-            add(blank, BorderLayout.CENTER);
-            setBackground(Color.PINK);
-        }
-
-        // paints the screen
-        public void paintComponent(Graphics g)
-        {
-            super.paintComponent(g);
-            night = new ImageIcon("images/Night.png").getImage();
-            g.drawImage(night, 0, 0, 800, 800, null);
-            the = new ImageIcon("images/THE.png").getImage();
-            nig = new ImageIcon("images/NIG.png").getImage();
-            ht = new ImageIcon("images/HT.png").getImage();
-            of = new ImageIcon("images/OF.png").getImage();
-            sad = new ImageIcon("images/BarneySad.png").getImage();
-            bloody = new ImageIcon("images/BarneyBlood.png").getImage();
-            bar = new ImageIcon("images/BAR.png").getImage();
-            ney = new ImageIcon("images/NEY.png").getImage();
-            g.drawImage(the, 20, 20, 250, 200, null);
-            g.drawImage(nig, 280, 0, 250, 200, null);
-            g.drawImage(ht, 510, 20, 150, 190, null);
-            g.drawImage(of, 640, 0, 170, 220, null);
-            g.drawImage(bar, 150, 190, 250, 150, null);
-            g.drawImage(ney, 400, 240, 250, 150, null);
-            g.drawImage(sad, 5, 420, 200, 300, null);
-            g.drawImage(bloody, 595, 420, 200, 300, null);
-            button = new ImageIcon("images/Button.png").getImage();
-            g.drawImage(button, 200, 390, 400, 80, null);
-            g.drawImage(button, 200, 490, 400, 80, null);
-            start = new ImageIcon("images/Start.png").getImage();
-            hoveringStart = new ImageIcon("images/HoveringStart.png").getImage();
-            if (startHover)
-                hoverStart = start;
-            else
-                hoverStart = hoveringStart;
-            g.drawImage(hoverStart, 325, 405, 150, 55, null);
-            levelSelected = new ImageIcon("images/LEVEL.png").getImage();
-            levelUnselected = new ImageIcon("images/level2.png").getImage();
-            if (levelHover)
-                g.drawImage(levelSelected, 335, 505, 140, 45, null);
-            else
-                g.drawImage(levelUnselected, 335, 505, 140, 45, null);
-        }
+        first = true;
+        layout.show(Manager.this, "blood");
+        playScream();
+        bloodTimer.start();
     }
 
+    public void showLevelSelect()
+    {
+        layout.show(Manager.this, "level select");
+        playScream();
+    }
+
+    // the JPanel for the start screen
     // JPanel for the Blood dripping down
     class Blood extends JPanel
     {

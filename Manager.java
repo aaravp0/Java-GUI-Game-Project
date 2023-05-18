@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.Font;
 
-import javax.lang.model.util.ElementScanner14;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -41,12 +40,13 @@ class Manager extends JPanel
     {
         layout = new CardLayout();
         setLayout(layout);
+        JPanel lvl2 = new Level2();
 
         add(new StartScreen(), "start");
         add(new JPanel(), "end");
         add(new Blood(), "blood");
         add(new Level1(), "level 1");
-        // add(new Level2(), "level 2");
+        add(lvl2, "level 2");
         // add(new Level3(), "level 3");
         add(new LevelScreen(), "level select");
         add(new GameOver1(), "Game over1");
@@ -310,7 +310,7 @@ class Manager extends JPanel
         // declares the components of the level screen
         public LevelScreen()
         {
-            night = new ImageIcon("Night.png").getImage();
+            night = new ImageIcon("images/Night.png").getImage();
             p1 = new JPanel();
             p2 = new JPanel();
             p3 = new JPanel();
@@ -353,7 +353,7 @@ class Manager extends JPanel
                     bloodTimer.start();
                     try
                     {
-                        String soundName1 = "mixkit-angry-monster-scream-1963.wav";
+                        String soundName1 = "sounds/mixkit-angry-monster-scream-1963.wav";
                         AudioInputStream audioInputStream1 = AudioSystem
                                 .getAudioInputStream(new File(soundName1).getAbsoluteFile());
                         Clip clip1 = AudioSystem.getClip();
@@ -375,7 +375,7 @@ class Manager extends JPanel
                     bloodTimer.start();
                     try
                     {
-                        String soundName1 = "mixkit-angry-monster-scream-1963.wav";
+                        String soundName1 = "sounds/mixkit-angry-monster-scream-1963.wav";
                         AudioInputStream audioInputStream1 = AudioSystem
                                 .getAudioInputStream(new File(soundName1).getAbsoluteFile());
                         Clip clip1 = AudioSystem.getClip();
@@ -397,7 +397,7 @@ class Manager extends JPanel
                     bloodTimer.start();
                     try
                     {
-                        String soundName1 = "mixkit-angry-monster-scream-1963.wav";
+                        String soundName1 = "sounds/mixkit-angry-monster-scream-1963.wav";
                         AudioInputStream audioInputStream1 = AudioSystem
                                 .getAudioInputStream(new File(soundName1).getAbsoluteFile());
                         Clip clip1 = AudioSystem.getClip();
@@ -433,7 +433,6 @@ class Manager extends JPanel
         private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
                 selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
                 songStarted, noMove, barAttackCool, damage;
-        private int gas1X, gas2X, gas3X, gas1Y, gas2Y, gas3Y;
         private boolean gas1Picked, gas2Picked, gas3Picked;
         private PlayerMover playerTime;
         private JButton inv1, inv2, inv3, inv4, inv5;
@@ -1080,15 +1079,16 @@ class Manager extends JPanel
                     String ims = "images/";
                     if (!movingLeft)
                     {
-                        if (im == 29)
+                        
+                        if (im >= 8)
                             im = 1;
-                        ims += "Run" + im + ".png";
+                        ims += "Right" + im + ".png";
                     }
                     else
                     {
-                        if (im >= 26)
+                        if (im == 8)
                             im = 1;
-                        ims += "Left" + im + ".png";
+                        ims += "Run" + im + ".png";
                     }
                     run1 = new ImageIcon(ims).getImage();
                 }

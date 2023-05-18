@@ -45,4 +45,6 @@ public class NightOfBarney extends JFrame
  * https://www.pinterest.com/pin/788692953476885743/
  * https://www.artstation.com/artwork/KaP0nG
  * https://www.youtube.com/watch?v=CqOPkeYyDt4
+ * https://www.kindpng.com/imgv/hTTxJbo_preview-pixel-art-character-sprite-sheet-hd-png/
+ * https://sanctumpixel.itch.io/forest-top-down-pixel-art-tileset
  */

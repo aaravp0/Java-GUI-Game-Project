@@ -1,10 +1,12 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
 import java.awt.Font;
+import java.awt.Point;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -25,7 +27,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     private int[] med1, med2, med3, med4, med5, gas1, gas2, gas3;
     private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
             selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
-            songStarted, noMove, barAttackCool, damage;
+            songStarted, playerDamageOnMove, barAttackCool, damage;
     private boolean gas1Picked, gas2Picked, gas3Picked;
     private PlayerMover playerTime;
     private JButton inv1, inv2, inv3, inv4, inv5;
@@ -35,6 +37,21 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     private Rectangle[] currentBorder;
     private Clip clip2;
 
+    private Point playerPosition, barneyPosition;
+
+    // size of the window that is mapped to the screen
+    private final static int SCREEN_WIDTH = 200;
+    private final static int SCREEN_HEIGHT = 300;
+    private final static int START_X = 140;
+    private final static int START_Y = 1370;
+
+    private final static int BACKGROUND_WIDTH = 1628;
+    private final static int BACKGROUND_HEIGHT = 1620;
+
+    private final static Dimension PLAYER_DIMS = new Dimension(75, 75);
+    private final static Dimension BARNEY_DIMS = new Dimension(100, 150);
+    private final static Dimension GAS_DIMS = new Dimension(50, 50);
+
     // declares all of the variables and timers
     public Level1(Manager manager)
     {
@@ -43,7 +60,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         songStarted = false;
         noMoveTime = 3000;
         noMoveTime2 = 300;
-        noMove = false;
+        playerDamageOnMove = false;
         minecraft = new Font("Minecraft", Font.BOLD, 16);
         currentBorder = new Rectangle[]
         {
@@ -250,9 +267,75 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         add(blank2, BorderLayout.SOUTH);
     }
 
+    private Point getScreenTopLeft()
+    {
+        Point result = new Point();
+        Point currentPosition = new Point(START_X, START_Y);
+
+        if (currentPosition.x - SCREEN_WIDTH / 2 < 0)
+        {
+            result.x = SCREEN_WIDTH / 2;
+        }
+        else if (currentPosition.x + SCREEN_WIDTH / 2 > BACKGROUND_WIDTH)
+        {
+            result.x = BACKGROUND_WIDTH - SCREEN_WIDTH;
+        }
+        else
+        {
+            result.x = currentPosition.x - SCREEN_WIDTH / 2;
+        }
+
+        if (currentPosition.y - SCREEN_HEIGHT / 2 < 0)
+        {
+            result.y = SCREEN_HEIGHT / 2;
+        }
+        else if (currentPosition.y + SCREEN_HEIGHT / 2 > BACKGROUND_HEIGHT)
+        {
+            result.y = BACKGROUND_HEIGHT - SCREEN_HEIGHT;
+        }
+        else
+        {
+            result.y = currentPosition.y - SCREEN_HEIGHT / 2;
+        }
+
+        return result;
+    }
+
+    // finds the position of a point on the screen
+    private Point convertPosition(Point screenTopLeft, Point position)
+    {
+        int offsetX = (position.x - screenTopLeft.x) * NightOfBarney.FRAME_WIDTH / SCREEN_WIDTH;
+        int offsetY = (position.y - screenTopLeft.y) * NightOfBarney.FRAME_HEIGHT / SCREEN_HEIGHT;
+        return new Point(offsetX, offsetY);
+    }
+
+    // returns the position where the object was drawn
+    private Point drawOnScreen(Graphics g, Point topLeft, Image image, Point position, Dimension dimension)
+    {
+        Point screenPosition = convertPosition(topLeft, position);
+        g.drawImage(image, screenPosition.x, screenPosition.y, dimension.width, dimension.height, null);
+        return screenPosition;
+    }
+
+    private Point drawWithOffset(Graphics g, Point original, Image image, Point offset, Dimension dimension)
+    {
+        Point screenPosition = new Point(original.x + offset.x, original.y + offset.y);
+        g.drawImage(image, screenPosition.x, screenPosition.y, dimension.width, dimension.height, null);
+        return screenPosition;
+    }
+
     // paints the sprites in the level
     public void paintComponent(Graphics g)
     {
+        super.paintComponent(g);
+
+        Point topLeft = getScreenTopLeft();
+
+        // draw background
+        g.drawImage(back, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, 
+            topLeft.x, topLeft.y, topLeft.x + SCREEN_WIDTH, topLeft.y + SCREEN_HEIGHT, null, null);
+
+        /*
         if (!songStarted)
         {
             try
@@ -270,53 +353,45 @@ class Level1 extends JPanel implements KeyListener, MouseListener
             }
             songStarted = true;
         }
+        */
+
         if (!started)
             playerTimer.start();
-        super.paintComponent(g);
-        g.drawImage(back, 0, 0, 800, 800, 2 * screenX, 2 * screenY, 2 * screenX2, 2 * screenY2, null, null);
 
-        if (noMove)
+        if (playerDamageOnMove)
         {
-            g.setColor(Color.RED);
-            g.fillRect(0, 0, 800, 800);
+            // g.setColor(Color.RED);
+            // g.fillRect(0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT);
             g.drawImage(bloodHead, 200, 200, 400, 400, null);
         }
 
-        if (gas1[0] > -1 && gas1[1] > -1 && !gas1Picked)
+        if (!gas1Picked)
         {
-            //g.drawImage(gas, gas1X, gas1Y, 50, 50, null);
-            g.drawImage(gas, gas1[0], gas1[1], 50, 50, null);
+            drawOnScreen(g, topLeft, gas, new Point(gas1[0], gas1[1]), GAS_DIMS);
         }
 
-        if (gas2[0] > -1 && gas2[1] > -1 && !gas2Picked)
+        if (!gas2Picked)
         {
-            //g.drawImage(gas, gas2X, gas2Y, 50, 50, null);
-            g.drawImage(gas, gas2[0], gas2[1], 50, 50, null);
+            drawOnScreen(g, topLeft, gas, new Point(gas2[0], gas2[1]), GAS_DIMS);
         }
 
-        if (gas3[0] > -1 && gas3[0] > -1 && !gas3Picked)
+        if (!gas3Picked)
         {
-            //g.drawImage(gas, gas3X, gas3Y, 50, 50, null);
-            g.drawImage(gas, gas3[0], gas3[1], 60, 60, null);
+            drawOnScreen(g, topLeft, gas, new Point(gas3[0], gas3[1]), GAS_DIMS);
         }
 
-        g.drawImage(run1, 400, 400, 75, 75, null);
-        // letters at beginning
-        if (!barneySpawn)
-        {
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Minecraft", Font.BOLD, 30));
-            g.drawString(showingSentence, 100, 210);
-            g.drawString(showingSentence2, 100, 240);
-            g.drawString(showingSentence3, 100, 270);
-            g.drawString(showingSentence4, 100, 300);
-        }
+        // draw player
+        drawOnScreen(g, topLeft, run1, new Point(START_X, START_Y), PLAYER_DIMS);
 
         // barney
-        if (barneySpawn && xBar > -1 && yBar > -1)
-            g.drawImage(barneyBlood, xBar, yBar, 100, 150, null);
-        if (stun)
-            g.drawImage(stunIcon, xBar - 25, yBar - 50, 125, 100, null);
+        if (barneySpawn)
+        {
+            Point barneyOnscreen = drawOnScreen(g, topLeft, barneyBlood, barneyPosition, BARNEY_DIMS);
+
+            if (stun)
+                drawWithOffset(g, barneyOnscreen, stunIcon, new Point(-25, -50), new Dimension(125, 100));
+        }
+
         g.drawImage(number, 350, 50, 100, 100, null);
 
         // stamina and health back part
@@ -413,6 +488,17 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         g.drawString("" + numCookies, 725, 755);
         g.drawString("" + numApples, 565, 755);
         g.drawString(getNumGas() + "/3", 245, 755);
+
+        // letters at beginning
+        if (!barneySpawn)
+        {
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Minecraft", Font.BOLD, 30));
+            g.drawString(showingSentence, 100, 210);
+            g.drawString(showingSentence2, 100, 240);
+            g.drawString(showingSentence3, 100, 270);
+            g.drawString(showingSentence4, 100, 300);
+        }
     }
 
     public int getNumGas()
@@ -431,8 +517,8 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     {
         int[]arr1 =  new int[]
         {
-            (int)(Math.random()*1620+1),
-            (int)(Math.random()*1620+1)
+            (int)(Math.random()*1620),
+            (int)(Math.random()*1620)
         };
         boolean works = true;
         for (int i = 0; i < currentBorder.length; i++)
@@ -563,28 +649,28 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                     gas3[1] -= speed * 5;
                 }
             }
-            if (!noMove)
+            if (!playerDamageOnMove)
             {
                 noMoveTime -= 4;
                 if (noMoveTime == 0)
                 {
-                    noMove = true;
+                    playerDamageOnMove = true;
                     noMoveTime = 3000;
                 }
             }
-            if (noMove)
+            if (playerDamageOnMove)
             {
                 noMoveTime2 -= 4;
                 if (noMoveTime2 == 0)
                 {
-                    noMove = false;
+                    playerDamageOnMove = false;
                     noMoveTime2 = 300;
                     noMoveTime = 3000;
                 }
                 if (moving && noMoveTime2 <= 200)
                 {
                     health -= 100;
-                    noMove = false;
+                    playerDamageOnMove = false;
                     noMoveTime2 = 300;
                     noMoveTime = 3000;
                 }

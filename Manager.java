@@ -18,12 +18,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.xml.transform.TransformerConfigurationException;
 
 class Manager extends JPanel
 {
     private CardLayout layout;
+    private Blood bloodPanel;
     private Timer bloodTimer;
-    private boolean first, second, third;
+    private String nextLevelName;
 
     private Clip screamClip;
 
@@ -58,13 +60,15 @@ class Manager extends JPanel
         layout = new CardLayout();
         setLayout(layout);
 
+        bloodPanel = new Blood();
+
         add(new StartScreen(this), START_SCREEN_NAME);
         add(new JPanel(), END_SCREEN_NAME);
-        add(new Blood(), BLOOD_PANEL_NAME);
+        add(bloodPanel, BLOOD_PANEL_NAME);
         add(new Level1(this), LEVEL_1_NAME);
         add(new Level2(), LEVEL_2_NAME);
         // add(new Level3(), LEVEL_3_NAME);
-        add(new LevelScreen(), LEVEL_SELECT_NAME);
+        add(new LevelSelect(), LEVEL_SELECT_NAME);
         add(new GameOver1(), GAME_OVER_NAME);
 
         setVisible(true);
@@ -72,10 +76,20 @@ class Manager extends JPanel
 
     public void showLevelOne()
     {
-        first = true;
-        layout.show(Manager.this, BLOOD_PANEL_NAME);
-        playScream();
-        bloodTimer.start();
+        nextLevelName = LEVEL_1_NAME;
+        playBloodTransition();
+    }
+
+    public void showLevelTwo()
+    {
+        nextLevelName = LEVEL_2_NAME;
+        playBloodTransition();
+    }
+
+    public void showLevelThree()
+    {
+        nextLevelName = LEVEL_2_NAME;
+        playBloodTransition();
     }
 
     public void showLevelSelect()
@@ -89,27 +103,23 @@ class Manager extends JPanel
         layout.show(Manager.this, GAME_OVER_NAME);
     }
 
+    public void playBloodTransition()
+    {
+        layout.show(Manager.this, BLOOD_PANEL_NAME);
+        playScream();
+        bloodTimer.start();
+    }
+
     public void moveToSetLevel()
     {
-        if (first)
-        {
-            layout.show(Manager.this, LEVEL_1_NAME);
-        }
-        else if (second)
-        {
-            layout.show(Manager.this, LEVEL_2_NAME);
-        }
-        else if (third)
-        {
-            layout.show(Manager.this, LEVEL_3_NAME);
-        }
+        layout.show(Manager.this, nextLevelName);
     }
 
     // JPanel for the Blood dripping down
     class Blood extends JPanel
     {
-        Image night, bloodDrip;
-        int bloodHeight;
+        private Image night, bloodDrip;
+        private int bloodHeight;
 
         private static final String NIGHT_IMAGE = "images/Night.png";
         private static final String BLOOD_IMAGE = "images/Blood.png";
@@ -156,113 +166,70 @@ class Manager extends JPanel
     }
 
     // has the level screen
-    class LevelScreen extends JPanel
+    class LevelSelect extends JPanel
     {
-        JButton one, two, three;
-        JPanel p1, p2, p3, p4, p5, p6, p7;
-        Image night, med, gas;
+        private JButton levelOneButton, levelTwoButton, levelThreeButton;
+        private JPanel[] rows;
+        private Image night, med, gas;
+
+        private static final int NUM_ROWS = 7;
+        private static final int BUTTON_WIDTH = 400;
+        private static final int BUTTON_HEIGHT = 80;
+
+        private static final String NIGHT_IMAGE = "images/Night.png";
 
         // declares the components of the level screen
-        public LevelScreen()
+        public LevelSelect()
         {
-            night = new ImageIcon("images/Night.png").getImage();
-            p1 = new JPanel();
-            p2 = new JPanel();
-            p3 = new JPanel();
-            p4 = new JPanel();
-            p5 = new JPanel();
-            p6 = new JPanel();
-            p7 = new JPanel();
-            p1.setOpaque(false);
-            p2.setOpaque(false);
-            p3.setOpaque(false);
-            p4.setOpaque(false);
-            p5.setOpaque(false);
-            p6.setOpaque(false);
-            p7.setOpaque(false);
-            setLayout(new GridLayout(7, 1));
-            add(p1);
-            add(p2);
-            add(p3);
-            add(p4);
-            add(p5);
-            add(p6);
-            add(p7);
-            one = new JButton("");
-            two = new JButton("");
-            three = new JButton("");
-            one.setPreferredSize(new Dimension(400, 80));
-            two.setPreferredSize(new Dimension(400, 80));
-            three.setPreferredSize(new Dimension(400, 80));
-            p2.add(one);
-            p4.add(two);
-            p6.add(three);
-            // makes it so that the cardlayout goes to the different levels for cardlayout,
+            night = new ImageIcon(NIGHT_IMAGE).getImage();
+            rows = new JPanel[NUM_ROWS];
+
+            setLayout(new GridLayout(NUM_ROWS, 1));
+            for (int i = 0; i < NUM_ROWS; i++)
+            {
+                rows[i] = new JPanel();
+                rows[i].setOpaque(false);
+                add(rows[i]);
+            }
+
+            levelOneButton = new JButton("");
+            levelTwoButton = new JButton("");
+            levelThreeButton = new JButton("");
+            levelOneButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+            levelTwoButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+            levelThreeButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+
+            rows[1].add(levelOneButton);
+            rows[3].add(levelTwoButton);
+            rows[5].add(levelThreeButton);
+
             // the first level
-            one.addActionListener(new java.awt.event.ActionListener()
+            levelOneButton.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    first = true;
-                    layout.show(Manager.this, "blood");
-                    bloodTimer.start();
-                    try
-                    {
-                        String soundName1 = "sounds/mixkit-angry-monster-scream-1963.wav";
-                        AudioInputStream audioInputStream1 = AudioSystem
-                                .getAudioInputStream(new File(soundName1).getAbsoluteFile());
-                        Clip clip1 = AudioSystem.getClip();
-                        clip1.open(audioInputStream1);
-                        clip1.start();
-                    } catch (Exception i)
-                    {
-                    }
+                    showLevelOne();
                 }
             });
-            // makes it so that the cardlayout goes to the different levels for cardlayout,
+
             // the second level
-            two.addActionListener(new java.awt.event.ActionListener()
+            levelTwoButton.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    second = true;
-                    layout.show(Manager.this, "blood");
-                    bloodTimer.start();
-                    try
-                    {
-                        String soundName1 = "sounds/mixkit-angry-monster-scream-1963.wav";
-                        AudioInputStream audioInputStream1 = AudioSystem
-                                .getAudioInputStream(new File(soundName1).getAbsoluteFile());
-                        Clip clip1 = AudioSystem.getClip();
-                        clip1.open(audioInputStream1);
-                        clip1.start();
-                    } catch (Exception i)
-                    {
-                    }
+                    showLevelTwo();
                 }
             });
-            // makes it so that the cardlayout goes to the different levels for cardlayout,
+
             // the third level
-            three.addActionListener(new java.awt.event.ActionListener()
+            levelThreeButton.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    third = true;
-                    layout.show(Manager.this, "blood");
-                    bloodTimer.start();
-                    try
-                    {
-                        String soundName1 = "sounds/mixkit-angry-monster-scream-1963.wav";
-                        AudioInputStream audioInputStream1 = AudioSystem
-                                .getAudioInputStream(new File(soundName1).getAbsoluteFile());
-                        Clip clip1 = AudioSystem.getClip();
-                        clip1.open(audioInputStream1);
-                        clip1.start();
-                    } catch (Exception i)
-                    {
-                    }
+                    showLevelThree();
                 }
             });
+
             med = new ImageIcon("images/med.png").getImage();
             gas = new ImageIcon("images/Gas.png").getImage();
             setBackground(Color.WHITE);
@@ -272,7 +239,7 @@ class Manager extends JPanel
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);
-            g.drawImage(night, 0, 0, 800, 800, null);
+            g.drawImage(night, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, null);
         }
     }
 

@@ -19,12 +19,13 @@ import javax.swing.Timer;
 class Level1 extends JPanel implements KeyListener, MouseListener
 {
     private Manager manager;
+
     private Image run1, back, barneyBlood, number, gas, med, gun, apple, cookie, stunIcon, bloodHead;
     private Timer playerTimer;
-    private int im, health, barneyInt, speed,
-            sprintInt, stamina, numMed, gunTime, barneySpeed, numCookies, numApples, stunTime, cookieTime, index,
+    private int im, health, barneyInt,
+            sprintInt, stamina, numMed, gunTime, numCookies, numApples, stunTime, cookieTime, index,
             noMoveTime, noMoveTime2, barCooldown;
-    private int[] med1, med2, med3, med4, med5, gas1, gas2, gas3;
+    private Point gas1, gas2, gas3;
     private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
             selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
             songStarted, playerDamageOnMove, barAttackCool, damage;
@@ -38,6 +39,9 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     private Clip clip2;
 
     private Point playerPosition, barneyPosition;
+
+    // top left of the visible screen
+    private Point topLeft;
 
     // size of the window that is mapped to the screen
     private final static int SCREEN_WIDTH = 200;
@@ -108,13 +112,10 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         showingSentence2 = "";
         showingSentence3 = "";
         showingSentence4 = "";
-        barneySpeed = 1;
-        gunTimeValue = "";
         gunTime = 1000;
         barCooldown = 500;
         barAttackCool = false;
         bulletCooldown = false;
-        speed = 2;
         sprintInt = 125;
         shiftSprint = false;
         addKeyListener(this);
@@ -266,6 +267,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
 
         playerPosition = new Point(START_X, START_Y);
         barneyPosition = new Point(START_X, START_Y);
+        topLeft = getScreenTopLeft();
     }
 
     private Point getScreenTopLeft()
@@ -303,18 +305,19 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     }
 
     // finds the position of a point on the screen
-    private Point convertPosition(Point screenTopLeft, Point position)
+    private Point convertPosition(Point position)
     {
-        int offsetX = (position.x - screenTopLeft.x) * NightOfBarney.FRAME_WIDTH / SCREEN_WIDTH;
-        int offsetY = (position.y - screenTopLeft.y) * NightOfBarney.FRAME_HEIGHT / SCREEN_HEIGHT;
+        int offsetX = (position.x - topLeft.x) * NightOfBarney.FRAME_WIDTH / SCREEN_WIDTH;
+        int offsetY = (position.y - topLeft.y) * NightOfBarney.FRAME_HEIGHT / SCREEN_HEIGHT;
         return new Point(offsetX, offsetY);
     }
 
     // returns the position where the object was drawn
-    private Point drawOnScreen(Graphics g, Point topLeft, Image image, Point position, Dimension dimension)
+    private Point drawOnScreen(Graphics g, Image image, Point position, Dimension dimension)
     {
-        Point screenPosition = convertPosition(topLeft, position);
+        Point screenPosition = convertPosition(position);
         g.drawImage(image, screenPosition.x, screenPosition.y, dimension.width, dimension.height, null);
+        g.drawRect(screenPosition.x, screenPosition.y, dimension.width, dimension.height);
         return screenPosition;
     }
 
@@ -329,8 +332,6 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-
-        Point topLeft = getScreenTopLeft();
 
         // draw background
         g.drawImage(back, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, 
@@ -366,26 +367,26 @@ class Level1 extends JPanel implements KeyListener, MouseListener
 
         if (!gas1Picked)
         {
-            drawOnScreen(g, topLeft, gas, new Point(gas1[0], gas1[1]), GAS_DIMS);
+            drawOnScreen(g, gas, new Point(gas1.x, gas1.y), GAS_DIMS);
         }
 
         if (!gas2Picked)
         {
-            drawOnScreen(g, topLeft, gas, new Point(gas2[0], gas2[1]), GAS_DIMS);
+            drawOnScreen(g, gas, new Point(gas2.x, gas2.y), GAS_DIMS);
         }
 
         if (!gas3Picked)
         {
-            drawOnScreen(g, topLeft, gas, new Point(gas3[0], gas3[1]), GAS_DIMS);
+            drawOnScreen(g, gas, new Point(gas3.x, gas3.y), GAS_DIMS);
         }
 
         // draw player
-        drawOnScreen(g, topLeft, run1, playerPosition, PLAYER_DIMS);
+        drawOnScreen(g, run1, playerPosition, PLAYER_DIMS);
 
         // barney
         if (barneySpawn)
         {
-            Point barneyOnscreen = drawOnScreen(g, topLeft, barneyBlood, barneyPosition, BARNEY_DIMS);
+            Point barneyOnscreen = drawOnScreen(g, barneyBlood, barneyPosition, BARNEY_DIMS);
 
             if (stun)
                 drawWithOffset(g, barneyOnscreen, stunIcon, new Point(-25, -50), new Dimension(125, 100));
@@ -512,26 +513,35 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         return count;
     }
 
-    public int[] itemCoordinateMaker()
+    public Point itemCoordinateMaker()
     {
-        int[]arr1 =  new int[]
-        {
+        Point position = new Point(
             (int)(Math.random()*1620),
             (int)(Math.random()*1620)
-        };
+        );
+
         boolean works = true;
         for (int i = 0; i < currentBorder.length; i++)
         {
-            if (currentBorder[i].contains(arr1[0],arr1[1]))
+            if (currentBorder[i].contains(position.x, position.y))
             {
                 works = false;
                 break;
             }
         }
-        if(works)
-            return arr1;
+
+        if (works)
+            return position;
         else
             return itemCoordinateMaker();
+    }
+
+    private boolean containsOnScreen(Point itemLocation, Dimension itemDims, Point point)
+    {
+        itemLocation = convertPosition(itemLocation);
+        boolean containsX = itemLocation.x <= point.x && point.x <= itemLocation.x + itemDims.width;
+        boolean containsY = itemLocation.y <= point.y && point.y <= itemLocation.y + itemDims.height;
+        return containsX && containsY;
     }
 
     // class for a timer that moves the characters and map
@@ -652,12 +662,9 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                 stunTime += 40;
                 if (stunTime >= 3000)
                 {
-                    barneySpeed = 1;
                     stun = false;
                     stunTime = 0;
                 }
-                else
-                    barneySpeed = 0;
             }
 
             if (bulletCooldown)
@@ -734,9 +741,8 @@ class Level1 extends JPanel implements KeyListener, MouseListener
 
             if (barneySpawn && !barAttackCool)
             {
-                Point topLeft = getScreenTopLeft();
-                Point playerTopRight = convertPosition(topLeft, playerPosition);
-                Point barneyTopRight = convertPosition(topLeft, barneyPosition);
+                Point playerTopRight = convertPosition(playerPosition);
+                Point barneyTopRight = convertPosition(barneyPosition);
 
                 Point playerBottomRight = new Point(playerTopRight);
                 Point barneyBottomRight = new Point(barneyTopRight);
@@ -794,27 +800,32 @@ class Level1 extends JPanel implements KeyListener, MouseListener
             }
             else
             {
-                if (playerPosition.x > barneyPosition.x)
+                if (!stun)
                 {
-                    barneyPosition.x += BARNEY_X_SPEED;
-                }
-                else if (playerPosition.x < barneyPosition.x)
-                {
-                    barneyPosition.x -= BARNEY_X_SPEED;
-                }
+                    if (playerPosition.x > barneyPosition.x)
+                    {
+                        barneyPosition.x += BARNEY_X_SPEED;
+                    }
+                    else if (playerPosition.x < barneyPosition.x)
+                    {
+                        barneyPosition.x -= BARNEY_X_SPEED;
+                    }
 
-                if (playerPosition.y > barneyPosition.y)
-                {
-                    barneyPosition.y += BARNEY_Y_SPEED;
-                }
-                else if (playerPosition.y < barneyPosition.y)
-                {
-                    barneyPosition.y -= BARNEY_Y_SPEED;
+                    if (playerPosition.y > barneyPosition.y)
+                    {
+                        barneyPosition.y += BARNEY_Y_SPEED;
+                    }
+                    else if (playerPosition.y < barneyPosition.y)
+                    {
+                        barneyPosition.y -= BARNEY_Y_SPEED;
+                    }
                 }
             }
 
             if (!damage)
                 health = 250;
+
+            topLeft = getScreenTopLeft();
 
             repaint();
             grabFocus();
@@ -941,25 +952,24 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         }
         else
         {
-            final int GAS_SIZE = 60;
-            int x = e.getX();
-            int y = e.getY();
+            Point clickPos = new Point(e.getX(), e.getY());
 
-            if (gas1[0] <= x && x <= gas1[0] + GAS_SIZE && gas1[1] <= y && y <= gas1[1] + GAS_SIZE)
+            if (containsOnScreen(gas1, GAS_DIMS, clickPos))
             {
                 gas1Picked = true;
             }
 
-            if (gas2[0] <= x && x <= gas2[0] + GAS_SIZE && gas2[1] <= y && y <= gas2[1] + GAS_SIZE)
+            if (containsOnScreen(gas2, GAS_DIMS, clickPos))
             {
                 gas2Picked = true;
             }
 
-            if (gas3[0] <= x && x <= gas3[0] + GAS_SIZE && gas3[1] <= y && y <= gas3[1] + GAS_SIZE)
+            if (containsOnScreen(gas3, GAS_DIMS, clickPos))
             {
                 gas3Picked = true;
             }
         }
+
         repaint();
         grabFocus();
     }

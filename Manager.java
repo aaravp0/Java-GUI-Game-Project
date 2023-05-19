@@ -27,31 +27,23 @@ class Manager extends JPanel
 
     private Clip screamClip;
 
-    private final String SCREAM_FILE = "sounds/mixkit-angry-monster-scream-1963.wav";
+    private static final String SCREAM_FILE = "sounds/mixkit-angry-monster-scream-1963.wav";
+
+    // identifiers for each of the cards
+    private static final String START_SCREEN_NAME = "start";
+    private static final String END_SCREEN_NAME = "end";
+    private static final String BLOOD_PANEL_NAME = "blood";
+    private static final String LEVEL_1_NAME = "level 1";
+    private static final String LEVEL_2_NAME = "level 2";
+    private static final String LEVEL_3_NAME = "level 3";
+    private static final String LEVEL_SELECT_NAME = "level select";
+    private static final String GAME_OVER_NAME = "Game over1";
 
     // calls runIt()
     public Manager()
     {
-        screamClip = openClip(SCREAM_FILE);
+        screamClip = FileUtils.openClip(SCREAM_FILE);
         runIt();
-    }
-
-    private Clip openClip(String fileName)
-    {
-        Clip clip = null;
-        try
-        {
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(fileName).getAbsoluteFile());
-            clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-        } catch (Exception e)
-        {
-            System.out.printf("Unable to open audio file %s\n", fileName);
-            e.printStackTrace(); 
-            System.exit(1);
-        }
-
-        return clip;
     }
 
     private void playScream()
@@ -65,16 +57,15 @@ class Manager extends JPanel
     {
         layout = new CardLayout();
         setLayout(layout);
-        JPanel lvl2 = new Level2();
 
-        add(new StartScreen(this), "start");
-        add(new JPanel(), "end");
-        add(new Blood(), "blood");
-        add(new Level1(this), "level 1");
-        add(lvl2, "level 2");
-        // add(new Level3(), "level 3");
-        add(new LevelScreen(), "level select");
-        add(new GameOver1(), "Game over1");
+        add(new StartScreen(this), START_SCREEN_NAME);
+        add(new JPanel(), END_SCREEN_NAME);
+        add(new Blood(), BLOOD_PANEL_NAME);
+        add(new Level1(this), LEVEL_1_NAME);
+        add(new Level2(), LEVEL_2_NAME);
+        // add(new Level3(), LEVEL_3_NAME);
+        add(new LevelScreen(), LEVEL_SELECT_NAME);
+        add(new GameOver1(), GAME_OVER_NAME);
 
         setVisible(true);
     }
@@ -82,45 +73,68 @@ class Manager extends JPanel
     public void showLevelOne()
     {
         first = true;
-        layout.show(Manager.this, "blood");
+        layout.show(Manager.this, BLOOD_PANEL_NAME);
         playScream();
         bloodTimer.start();
     }
 
     public void showLevelSelect()
     {
-        layout.show(Manager.this, "level select");
+        layout.show(Manager.this, LEVEL_SELECT_NAME);
         playScream();
     }
 
     public void showGameOver()
     {
-        layout.show(Manager.this, "Game over1");
+        layout.show(Manager.this, GAME_OVER_NAME);
+    }
+
+    public void moveToSetLevel()
+    {
+        if (first)
+        {
+            layout.show(Manager.this, LEVEL_1_NAME);
+        }
+        else if (second)
+        {
+            layout.show(Manager.this, LEVEL_2_NAME);
+        }
+        else if (third)
+        {
+            layout.show(Manager.this, LEVEL_3_NAME);
+        }
     }
 
     // JPanel for the Blood dripping down
     class Blood extends JPanel
     {
         Image night, bloodDrip;
-        BloodMover bloodmover;
-        int length;
+        int bloodHeight;
+
+        private static final String NIGHT_IMAGE = "images/Night.png";
+        private static final String BLOOD_IMAGE = "images/Blood.png";
+
+        // delay in milliseconds
+        private static final int TIMER_DELAY = 10;
+
+        // how many pixels the blood moves down per timer tick
+        private static final int BLOOD_SPEED = 3 * TIMER_DELAY;
 
         // declares the timer
         public Blood()
         {
             setBackground(Color.WHITE);
-            bloodmover = new BloodMover();
-            bloodTimer = new Timer(1, bloodmover);
+            bloodTimer = new Timer(TIMER_DELAY, new BloodMover());
+            night = new ImageIcon(NIGHT_IMAGE).getImage();
+            bloodDrip = new ImageIcon(BLOOD_IMAGE).getImage();
         }
 
         // paint the blood
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);
-            night = new ImageIcon("images/Night.png").getImage();
-            bloodDrip = new ImageIcon("images/Blood.png").getImage();
-            g.drawImage(night, 0, 0, 800, 800, null);
-            g.drawImage(bloodDrip, 0, 0, 800, length / 10, null);
+            g.drawImage(night, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, null);
+            g.drawImage(bloodDrip, 0, 0, NightOfBarney.FRAME_WIDTH, bloodHeight, null);
         }
 
         // class for the timer
@@ -129,22 +143,11 @@ class Manager extends JPanel
             // everytime the timer does an action, it stretches the blood
             public void actionPerformed(ActionEvent e)
             {
-                length += 30;
-                if (length >= 8000)
+                bloodHeight += BLOOD_SPEED;
+                if (bloodHeight >= NightOfBarney.FRAME_WIDTH)
                 {
                     bloodTimer.stop();
-                    if (first)
-                    {
-                        layout.show(Manager.this, "level 1");
-                    }
-                    else if (second)
-                    {
-                        layout.show(Manager.this, "level 2");
-                    }
-                    else if (third)
-                    {
-                        layout.show(Manager.this, "level 3");
-                    }
+                    moveToSetLevel();
                 }
                 repaint();
                 grabFocus();

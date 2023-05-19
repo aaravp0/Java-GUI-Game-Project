@@ -10,13 +10,15 @@ import javax.swing.*;
 //ecompasses the entire program
 public class NightOfBarney extends JFrame
 {
+    public static final int FRAME_WIDTH = 800;
+    public static final int FRAME_HEIGHT = 800;
+
     // has code for the music and frame
     public NightOfBarney()
     {
         JFrame frame = new JFrame("The Night Of Barney");
-        frame.setSize(800, 800);
-        Manager man = new Manager();
-        frame.setContentPane(man);
+        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        frame.setContentPane(new Manager());
         frame.setResizable(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -27,6 +29,7 @@ public class NightOfBarney extends JFrame
         new NightOfBarney();
     }
 }
+
 /*
  * Barney game over image: Alexander Chu, using AI
  * https://www.pngkit.com/view/u2w7t4q8r5r5w7q8_braid-sprite-sheet-pixel-art-

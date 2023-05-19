@@ -143,7 +143,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         inv1 = new JButton("");
         inv1.setBounds(30, 690, 60, 60);
         inv1.setBorderPainted(false);
-        inv1.addActionListener(new java.awt.event.ActionListener()
+        inv1.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -249,6 +249,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         add(inv5, BorderLayout.SOUTH);
         add(blank2, BorderLayout.SOUTH);
     }
+
     // paints the sprites in the level
     public void paintComponent(Graphics g)
     {

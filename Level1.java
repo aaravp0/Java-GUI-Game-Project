@@ -21,7 +21,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     private Manager manager;
     private Image run1, back, barneyBlood, number, gas, med, gun, apple, cookie, stunIcon, bloodHead;
     private Timer playerTimer;
-    private int im, xPos, yPos, health, xBar, yBar, screenX, screenY, screenX2, screenY2, barneyInt, speed,
+    private int im, health, barneyInt, speed,
             sprintInt, stamina, numMed, gunTime, barneySpeed, numCookies, numApples, stunTime, cookieTime, index,
             noMoveTime, noMoveTime2, barCooldown;
     private int[] med1, med2, med3, med4, med5, gas1, gas2, gas3;
@@ -51,6 +51,13 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     private final static Dimension PLAYER_DIMS = new Dimension(75, 75);
     private final static Dimension BARNEY_DIMS = new Dimension(100, 150);
     private final static Dimension GAS_DIMS = new Dimension(50, 50);
+
+    private final static int PLAYER_X_SPEED = 2;
+    private final static int PLAYER_Y_SPEED = 2;
+    private final static int PLAYER_X_SPEED_SPRINT = 3;
+    private final static int PLAYER_Y_SPEED_SPRINT = 3;
+    private final static int BARNEY_X_SPEED = 1;
+    private final static int BARNEY_Y_SPEED = 1;
 
     // declares all of the variables and timers
     public Level1(Manager manager)
@@ -114,13 +121,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         addMouseListener(this);
         movingLeft = false;
         im = 0;
-        xPos = yPos = 400;
-        xBar = yBar = 700;
         health = 250;
-        screenX = 20;
-        screenY = 610;
-        screenX2 = 120;
-        screenY2 = 760;
         /*gas1X = 2450;
         gas1Y = -2800;
         gas2X = 500;
@@ -128,9 +129,6 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         gas3X = 5425;
         gas3Y = 600;*/
         gas1 = itemCoordinateMaker();
-        gas1[0] -= (screenX+screenX2);
-        gas1[0] -= (screenY+screenY);
-        System.out.println(gas1[0] + " " + gas1[1]);
         gas2 = itemCoordinateMaker();
         gas3 = itemCoordinateMaker();
 
@@ -265,12 +263,15 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         add(inv4, BorderLayout.SOUTH);
         add(inv5, BorderLayout.SOUTH);
         add(blank2, BorderLayout.SOUTH);
+
+        playerPosition = new Point(START_X, START_Y);
+        barneyPosition = new Point(START_X, START_Y);
     }
 
     private Point getScreenTopLeft()
     {
         Point result = new Point();
-        Point currentPosition = new Point(START_X, START_Y);
+        Point currentPosition = playerPosition;
 
         if (currentPosition.x - SCREEN_WIDTH / 2 < 0)
         {
@@ -335,7 +336,6 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         g.drawImage(back, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, 
             topLeft.x, topLeft.y, topLeft.x + SCREEN_WIDTH, topLeft.y + SCREEN_HEIGHT, null, null);
 
-        /*
         if (!songStarted)
         {
             try
@@ -353,7 +353,6 @@ class Level1 extends JPanel implements KeyListener, MouseListener
             }
             songStarted = true;
         }
-        */
 
         if (!started)
             playerTimer.start();
@@ -381,7 +380,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         }
 
         // draw player
-        drawOnScreen(g, topLeft, run1, new Point(START_X, START_Y), PLAYER_DIMS);
+        drawOnScreen(g, topLeft, run1, playerPosition, PLAYER_DIMS);
 
         // barney
         if (barneySpawn)
@@ -547,108 +546,49 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                 clip2.stop();
                 manager.showGameOver();
             }
+            
+            Point newPosition = new Point(playerPosition);
 
-            int newScreenX = screenX;
-            int newScreenY = screenY;
-            int newScreenX2 = screenX2;
-            int newScreenY2 = screenY2;
+            int speedX, speedY;
+            if (shiftSprint)
+            {
+                speedX = PLAYER_X_SPEED_SPRINT;
+                speedY = PLAYER_Y_SPEED_SPRINT;
+            }
+            else
+            {
+                speedX = PLAYER_X_SPEED;
+                speedY = PLAYER_Y_SPEED;
+            }
 
             if (moveLeft)
             {
-                newScreenX -= speed;
-                newScreenX2 -= speed;
+                newPosition.x -= speedX;
             }
             else if (moveRight)
             {
-                newScreenX += speed;
-                newScreenX2 += speed;
+                newPosition.x += speedX;
             }
+
             if (moveUp)
             {
-                newScreenY -= speed;
-                newScreenY2 -= speed;
+                newPosition.y -= speedY;
             }
             else if (moveDown)
             {
-                newScreenY += speed;
-                newScreenY2 += speed;
-            }
-
-            int charPosX = (newScreenX + newScreenX2);
-            int charPosY = (newScreenY + newScreenY2);
-
-            if (!shiftSprint)
-            {
-                if (moveLeft)
-                    charPosX -= 2;
-                if (moveRight)
-                    charPosX += 2;
-                if (moveDown)
-                    charPosY += 2;
-                if (moveUp)
-                    charPosX -= 2;
-            }
-            if (shiftSprint)
-            {
-                if (moveLeft)
-                    charPosX -= 3;
-                if (moveRight)
-                    charPosX += 3;
-                if (moveDown)
-                    charPosY += 2;
-                if (moveUp)
-                    charPosX -= 2;
+                newPosition.y += speedY;
             }
 
             boolean canMove = true;
             for (int i = 0; i < currentBorder.length; i++)
             {
-                if (currentBorder[i].contains(charPosX, charPosY))
+                if (currentBorder[i].contains(newPosition.x, newPosition.y))
                 {
                     canMove = false;
                     break;
                 }
             }
-            if (moveLeft)
-            {
-                if (canMove)
-                {
-                    xBar += speed;
-                    gas1[0] += speed * 8;
-                    gas2[0] += speed * 8;
-                    gas3[0] += speed * 8;
-                }
-            }
-            else if (moveRight)
-            {
-                if (canMove)
-                {
-                    xBar -= speed;
-                    gas1[0] -= speed * 8;
-                    gas2[0] -= speed * 8;
-                    gas3[0] -= speed * 8;
-                }
-            }
-            if (moveUp)
-            {
-                if (canMove)
-                {
-                    yBar += speed;
-                    gas1[1] += speed * 5;
-                    gas2[1] += speed * 5;
-                    gas3[1] += speed * 5;
-                }
-            }
-            else if (moveDown)
-            {
-                if (canMove)
-                {
-                    yBar -= speed;
-                    gas1[1] -= speed * 5;
-                    gas2[1] -= speed * 5;
-                    gas3[1] -= speed * 5;
-                }
-            }
+
             if (!playerDamageOnMove)
             {
                 noMoveTime -= 4;
@@ -658,6 +598,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                     noMoveTime = 3000;
                 }
             }
+
             if (playerDamageOnMove)
             {
                 noMoveTime2 -= 4;
@@ -675,6 +616,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                     noMoveTime = 3000;
                 }
             }
+
             if (!barneySpawn)
             {
                 index += 4;
@@ -694,6 +636,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                     }
                 }
             }
+
             if (cookiesActivated)
             {
                 if (numCookies > 0)
@@ -703,6 +646,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                         cookiesActivated = false;
                 }
             }
+
             if (stun)
             {
                 stunTime += 40;
@@ -715,6 +659,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                 else
                     barneySpeed = 0;
             }
+
             if (bulletCooldown)
             {
                 gunTime -= 4;
@@ -733,6 +678,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                     gunTimeValue = "";
                 }
             }
+
             if (shiftSprint)
             {
                 if (sprintInt > 0)
@@ -740,21 +686,20 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                 else if (sprintInt == 0)
                     shiftSprint = false;
             }
+
             if (!shiftSprint)
             {
                 if (sprintInt < 125)
                     sprintInt++;
             }
+
             stamina = sprintInt * 2;
             if (cookiesActivated)
             {
                 shiftSprint = true;
                 sprintInt = 125;
             }
-            if (shiftSprint)
-                speed = 3;
-            else
-                speed = 2;
+
             if (moving && canMove)
             {
                 im++;
@@ -781,25 +726,31 @@ class Level1 extends JPanel implements KeyListener, MouseListener
                 else
                     run1 = new ImageIcon("images/MainStand.png").getImage();
             }
+
             if (canMove)
             {
-                screenX = newScreenX;
-                screenY = newScreenY;
-                screenX2 = newScreenX2;
-                screenY2 = newScreenY2;
+                playerPosition = newPosition;
             }
 
-            int xBar2 = xBar + 100;
-            int yBar2 = yBar + 150;
-
-            if (!barAttackCool)
+            if (barneySpawn && !barAttackCool)
             {
-                if (xBar <= xPos && xPos + 75 <= xBar2 && yBar <= yPos && yPos + 75 <= yBar2)
+                Point topLeft = getScreenTopLeft();
+                Point playerTopRight = convertPosition(topLeft, playerPosition);
+                Point barneyTopRight = convertPosition(topLeft, barneyPosition);
+
+                Point playerBottomRight = new Point(playerTopRight);
+                Point barneyBottomRight = new Point(barneyTopRight);
+                playerBottomRight.translate(PLAYER_DIMS.width, PLAYER_DIMS.height);
+                barneyBottomRight.translate(BARNEY_DIMS.width, BARNEY_DIMS.height);
+
+                boolean separateX = (playerBottomRight.x < barneyTopRight.x) || (barneyBottomRight.x < playerTopRight.x);
+                boolean separateY = (playerBottomRight.y < barneyTopRight.y) || (barneyBottomRight.y < playerTopRight.y);
+
+                if (!separateX && !separateY)
                 {
                     health -= 100;
                     barAttackCool = true;
                 }
-
             }
             else
             {
@@ -843,25 +794,28 @@ class Level1 extends JPanel implements KeyListener, MouseListener
             }
             else
             {
-                if (xPos > xBar)
+                if (playerPosition.x > barneyPosition.x)
                 {
-                    xBar += barneySpeed;
+                    barneyPosition.x += BARNEY_X_SPEED;
                 }
-                else if (xBar > 400)
+                else if (playerPosition.x < barneyPosition.x)
                 {
-                    xBar -= barneySpeed;
+                    barneyPosition.x -= BARNEY_X_SPEED;
                 }
-                if (yPos > yBar)
+
+                if (playerPosition.y > barneyPosition.y)
                 {
-                    yBar += barneySpeed;
+                    barneyPosition.y += BARNEY_Y_SPEED;
                 }
-                else if (yPos < yBar)
+                else if (playerPosition.y < barneyPosition.y)
                 {
-                    yBar -= barneySpeed;
+                    barneyPosition.y -= BARNEY_Y_SPEED;
                 }
             }
+
             if (!damage)
                 health = 250;
+
             repaint();
             grabFocus();
         }

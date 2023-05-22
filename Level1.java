@@ -300,7 +300,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
         if (currentPosition.x - SCREEN_WIDTH / 2 < 0)
         {
-            result.x = SCREEN_WIDTH / 2;
+            result.x = 0;
         }
         else if (currentPosition.x + SCREEN_WIDTH / 2 > BACKGROUND_WIDTH)
         {
@@ -313,7 +313,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
         if (currentPosition.y - SCREEN_HEIGHT / 2 < 0)
         {
-            result.y = SCREEN_HEIGHT / 2;
+            result.y = 0;
         }
         else if (currentPosition.y + SCREEN_HEIGHT / 2 > BACKGROUND_HEIGHT)
         {
@@ -583,8 +583,6 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         {
             if (currentBorder[i].contains(newPosition.x, newPosition.y))
             {
-                System.out.println("violates " + i);
-                System.out.println(newPosition);
                 canMove = false;
                 break;
             }

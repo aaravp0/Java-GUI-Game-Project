@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
+import java.time.Period;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.awt.Font;
@@ -29,6 +30,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     private final static int BACKGROUND_WIDTH = 1628;
     private final static int BACKGROUND_HEIGHT = 1620;
 
+    private final static int UPDATE_DELAY = 40;
+
     private final static Dimension PLAYER_DIMS = new Dimension(75, 75);
     private final static Dimension BARNEY_DIMS = new Dimension(100, 150);
     private final static Dimension GAS_DIMS = new Dimension(50, 50);
@@ -39,6 +42,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     private final static int PLAYER_Y_SPEED_SPRINT = 3;
     private final static int BARNEY_X_SPEED = 1;
     private final static int BARNEY_Y_SPEED = 1;
+
+    private final static int NUM_POSITIONS_KEPT = 5000 / UPDATE_DELAY;
 
     private Manager manager;
 
@@ -140,7 +145,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         stamina = 250;
         numMed = 0;
         playerTime = new PlayerMover();
-        playerTimer = new Timer(40, playerTime);
+        playerTimer = new Timer(UPDATE_DELAY, playerTime);
         this.requestFocus();
         run1 = new ImageIcon("images/MainStand.png").getImage();
         back = new ImageIcon("images/Level1Back.png").getImage();
@@ -730,22 +735,35 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     {
         if (barneySpawn)
         {
+            Point target;
+            if (previousPlayerPosition.isEmpty())
+            {
+                target = new Point(START_X, START_Y);
+            }
+            else
+            {
+                Point oldPosition = previousPlayerPosition.peek();
+                int averageX = (playerPosition.x + oldPosition.x) / 2;
+                int averageY = (playerPosition.y + oldPosition.y) / 2;
+                target = new Point(averageX, averageY);
+            }
+
             if (!stun)
             {
-                if (playerPosition.x > barneyPosition.x)
+                if (target.x > barneyPosition.x)
                 {
                     barneyPosition.x += BARNEY_X_SPEED;
                 }
-                else if (playerPosition.x < barneyPosition.x)
+                else if (target.x < barneyPosition.x)
                 {
                     barneyPosition.x -= BARNEY_X_SPEED;
                 }
 
-                if (playerPosition.y > barneyPosition.y)
+                if (target.y > barneyPosition.y)
                 {
                     barneyPosition.y += BARNEY_Y_SPEED;
                 }
-                else if (playerPosition.y < barneyPosition.y)
+                else if (target.y < barneyPosition.y)
                 {
                     barneyPosition.y -= BARNEY_Y_SPEED;
                 }
@@ -797,6 +815,13 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             }
 
             Point nextPosition = getNextPlayerPosition();
+
+            // update previous list of playerss
+            previousPlayerPosition.add(playerPosition);
+            if (previousPlayerPosition.size() > NUM_POSITIONS_KEPT)
+            {
+                previousPlayerPosition.poll();
+            }
 
             updateNoMoveTime();
             showStartingText();

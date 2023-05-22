@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.awt.Font;
 import java.awt.Point;
 
@@ -18,6 +20,26 @@ import javax.swing.Timer;
 
 public class Level1 extends JPanel implements KeyListener, MouseListener
 {
+    // size of the window that is mapped to the screen
+    private final static int SCREEN_WIDTH = 200;
+    private final static int SCREEN_HEIGHT = 300;
+    private final static int START_X = 140;
+    private final static int START_Y = 1370;
+
+    private final static int BACKGROUND_WIDTH = 1628;
+    private final static int BACKGROUND_HEIGHT = 1620;
+
+    private final static Dimension PLAYER_DIMS = new Dimension(75, 75);
+    private final static Dimension BARNEY_DIMS = new Dimension(100, 150);
+    private final static Dimension GAS_DIMS = new Dimension(50, 50);
+
+    private final static int PLAYER_X_SPEED = 2;
+    private final static int PLAYER_Y_SPEED = 2;
+    private final static int PLAYER_X_SPEED_SPRINT = 3;
+    private final static int PLAYER_Y_SPEED_SPRINT = 3;
+    private final static int BARNEY_X_SPEED = 1;
+    private final static int BARNEY_Y_SPEED = 1;
+
     private Manager manager;
 
     private Image run1, back, barneyBlood, number, gas, med, gun, apple, cookie, stunIcon, bloodHead;
@@ -38,30 +60,12 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     private Rectangle[] currentBorder;
     private Clip clip2;
 
+    private Queue<Point> previousPlayerPosition;
+
     private Point playerPosition, barneyPosition;
 
     // top left of the visible screen
     private Point topLeft;
-
-    // size of the window that is mapped to the screen
-    private final static int SCREEN_WIDTH = 200;
-    private final static int SCREEN_HEIGHT = 300;
-    private final static int START_X = 140;
-    private final static int START_Y = 1370;
-
-    private final static int BACKGROUND_WIDTH = 1628;
-    private final static int BACKGROUND_HEIGHT = 1620;
-
-    private final static Dimension PLAYER_DIMS = new Dimension(75, 75);
-    private final static Dimension BARNEY_DIMS = new Dimension(100, 150);
-    private final static Dimension GAS_DIMS = new Dimension(50, 50);
-
-    private final static int PLAYER_X_SPEED = 2;
-    private final static int PLAYER_Y_SPEED = 2;
-    private final static int PLAYER_X_SPEED_SPRINT = 3;
-    private final static int PLAYER_Y_SPEED_SPRINT = 3;
-    private final static int BARNEY_X_SPEED = 1;
-    private final static int BARNEY_Y_SPEED = 1;
 
     // declares all of the variables and timers
     public Level1(Manager manager)
@@ -267,6 +271,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         playerPosition = new Point(START_X, START_Y);
         barneyPosition = new Point(START_X, START_Y);
         topLeft = getScreenTopLeft();
+
+        previousPlayerPosition = new ArrayDeque<Point>();
     }
 
     private Point getScreenTopLeft()
@@ -543,6 +549,240 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         return containsX && containsY;
     }
 
+    private Point getNextPlayerPosition()
+    {
+        Point newPosition = new Point(playerPosition);
+
+        int speedX, speedY;
+        if (shiftSprint)
+        {
+            speedX = PLAYER_X_SPEED_SPRINT;
+            speedY = PLAYER_Y_SPEED_SPRINT;
+        }
+        else
+        {
+            speedX = PLAYER_X_SPEED;
+            speedY = PLAYER_Y_SPEED;
+        }
+
+        if (moveLeft)
+        {
+            newPosition.x -= speedX;
+        }
+        else if (moveRight)
+        {
+            newPosition.x += speedX;
+        }
+
+        if (moveUp)
+        {
+            newPosition.y -= speedY;
+        }
+        else if (moveDown)
+        {
+            newPosition.y += speedY;
+        }
+
+        boolean canMove = true;
+        for (int i = 0; i < currentBorder.length; i++)
+        {
+            if (currentBorder[i].contains(newPosition.x, newPosition.y))
+            {
+                canMove = false;
+                break;
+            }
+        }
+
+        if (canMove)
+        {
+            return newPosition;
+        }
+        else
+        {
+            return new Point(playerPosition);
+        }
+    }
+
+    private void updateNoMoveTime()
+    {
+        if (!playerDamageOnMove)
+        {
+            noMoveTime -= 4;
+            if (noMoveTime == 0)
+            {
+                playerDamageOnMove = true;
+                noMoveTime = 3000;
+            }
+        }
+
+        if (playerDamageOnMove)
+        {
+            noMoveTime2 -= 4;
+            if (noMoveTime2 == 0)
+            {
+                playerDamageOnMove = false;
+                noMoveTime2 = 300;
+                noMoveTime = 3000;
+            }
+            if (moving && noMoveTime2 <= 200)
+            {
+                health -= 100;
+                playerDamageOnMove = false;
+                noMoveTime2 = 300;
+                noMoveTime = 3000;
+            }
+        }
+    }
+
+    private void showStartingText()
+    {
+        if (!barneySpawn)
+        {
+            index += 4;
+            showingSentence = showingSentence2 = showingSentence3 = showingSentence4 = "";
+            for (int i = 0; i <= (int) ((index / 7)); i++)
+            {
+                if (i < 133)
+                {
+                    if (i >= 99)
+                        showingSentence4 += "" + beginSentence.charAt(i);
+                    else if (i >= 63)
+                        showingSentence3 += "" + beginSentence.charAt(i);
+                    else if (i >= 30)
+                        showingSentence2 += "" + beginSentence.charAt(i);
+                    else
+                        showingSentence += "" + beginSentence.charAt(i);
+                }
+            }
+        }
+    }
+
+    private void showSpawnCountdown()
+    {
+        if (!barneySpawn)
+        {
+            health = 250;
+            barneyInt += 4;
+            if (barneyInt == 100)
+                number = new ImageIcon("images/Ten.png").getImage();
+            if (barneyInt == 200)
+                number = new ImageIcon("images/Nine.png").getImage();
+            if (barneyInt == 300)
+                number = new ImageIcon("images/Eight.png").getImage();
+            if (barneyInt == 400)
+                number = new ImageIcon("images/Seven.png").getImage();
+            if (barneyInt == 500)
+                number = new ImageIcon("images/Six.png").getImage();
+            if (barneyInt == 600)
+                number = new ImageIcon("images/Five.png").getImage();
+            if (barneyInt == 700)
+                number = new ImageIcon("images/Four.png").getImage();
+            if (barneyInt == 800)
+                number = new ImageIcon("images/Three.png").getImage();
+            if (barneyInt == 900)
+                number = new ImageIcon("images/Two.png").getImage();
+            if (barneyInt == 1000)
+                number = new ImageIcon("images/One.png").getImage();
+            if (barneyInt == 1100)
+            {
+                number = null;
+                barneySpawn = true;
+            }
+        }
+    }
+
+    private void performBarneyAttack()
+    {
+        if (barneySpawn)
+        {
+            if (!barAttackCool)
+            {
+                Point playerTopRight = convertPosition(playerPosition);
+                Point barneyTopRight = convertPosition(barneyPosition);
+
+                Point playerBottomRight = new Point(playerTopRight);
+                Point barneyBottomRight = new Point(barneyTopRight);
+                playerBottomRight.translate(PLAYER_DIMS.width, PLAYER_DIMS.height);
+                barneyBottomRight.translate(BARNEY_DIMS.width, BARNEY_DIMS.height);
+
+                boolean separateX = (playerBottomRight.x < barneyTopRight.x) || (barneyBottomRight.x < playerTopRight.x);
+                boolean separateY = (playerBottomRight.y < barneyTopRight.y) || (barneyBottomRight.y < playerTopRight.y);
+
+                if (!separateX && !separateY)
+                {
+                    health -= 100;
+                    barAttackCool = true;
+                }
+            }
+            else
+            {
+                barCooldown -= 4;
+                if (barCooldown == 0)
+                {
+                    barAttackCool = false;
+                    barCooldown = 500;
+                }
+            }
+        }
+    }
+
+    private void updateBarneyPosition()
+    {
+        if (barneySpawn)
+        {
+            if (!stun)
+            {
+                if (playerPosition.x > barneyPosition.x)
+                {
+                    barneyPosition.x += BARNEY_X_SPEED;
+                }
+                else if (playerPosition.x < barneyPosition.x)
+                {
+                    barneyPosition.x -= BARNEY_X_SPEED;
+                }
+
+                if (playerPosition.y > barneyPosition.y)
+                {
+                    barneyPosition.y += BARNEY_Y_SPEED;
+                }
+                else if (playerPosition.y < barneyPosition.y)
+                {
+                    barneyPosition.y -= BARNEY_Y_SPEED;
+                }
+            }
+        }
+    }
+
+    private void updatePlayerSprite()
+    {
+        if (moving)
+        {
+            im++;
+            String ims = "images/";
+            if (!movingLeft)
+            {
+                
+                if (im >= 8)
+                    im = 1;
+                ims += "Right" + im + ".png";
+            }
+            else
+            {
+                if (im == 8)
+                    im = 1;
+                ims += "Run" + im + ".png";
+            }
+            run1 = new ImageIcon(ims).getImage();
+        }
+        else
+        {
+            if (movingLeft)
+                run1 = new ImageIcon("images/MainStandLeft.png").getImage();
+            else
+                run1 = new ImageIcon("images/MainStand.png").getImage();
+        }
+    }
+
     // class for a timer that moves the characters and map
     class PlayerMover implements ActionListener
     {
@@ -555,96 +795,12 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
                 clip2.stop();
                 manager.showGameOver();
             }
-            
-            Point newPosition = new Point(playerPosition);
 
-            int speedX, speedY;
-            if (shiftSprint)
-            {
-                speedX = PLAYER_X_SPEED_SPRINT;
-                speedY = PLAYER_Y_SPEED_SPRINT;
-            }
-            else
-            {
-                speedX = PLAYER_X_SPEED;
-                speedY = PLAYER_Y_SPEED;
-            }
+            Point nextPosition = getNextPlayerPosition();
 
-            if (moveLeft)
-            {
-                newPosition.x -= speedX;
-            }
-            else if (moveRight)
-            {
-                newPosition.x += speedX;
-            }
-
-            if (moveUp)
-            {
-                newPosition.y -= speedY;
-            }
-            else if (moveDown)
-            {
-                newPosition.y += speedY;
-            }
-
-            boolean canMove = true;
-            for (int i = 0; i < currentBorder.length; i++)
-            {
-                if (currentBorder[i].contains(newPosition.x, newPosition.y))
-                {
-                    canMove = false;
-                    break;
-                }
-            }
-
-            if (!playerDamageOnMove)
-            {
-                noMoveTime -= 4;
-                if (noMoveTime == 0)
-                {
-                    playerDamageOnMove = true;
-                    noMoveTime = 3000;
-                }
-            }
-
-            if (playerDamageOnMove)
-            {
-                noMoveTime2 -= 4;
-                if (noMoveTime2 == 0)
-                {
-                    playerDamageOnMove = false;
-                    noMoveTime2 = 300;
-                    noMoveTime = 3000;
-                }
-                if (moving && noMoveTime2 <= 200)
-                {
-                    health -= 100;
-                    playerDamageOnMove = false;
-                    noMoveTime2 = 300;
-                    noMoveTime = 3000;
-                }
-            }
-
-            if (!barneySpawn)
-            {
-                index += 4;
-                showingSentence = showingSentence2 = showingSentence3 = showingSentence4 = "";
-                for (int i = 0; i <= (int) ((index / 7)); i++)
-                {
-                    if (i < 133)
-                    {
-                        if (i >= 99)
-                            showingSentence4 += "" + beginSentence.charAt(i);
-                        else if (i >= 63)
-                            showingSentence3 += "" + beginSentence.charAt(i);
-                        else if (i >= 30)
-                            showingSentence2 += "" + beginSentence.charAt(i);
-                        else
-                            showingSentence += "" + beginSentence.charAt(i);
-                    }
-                }
-            }
+            updateNoMoveTime();
+            showStartingText();
+            showSpawnCountdown();
 
             if (cookiesActivated)
             {
@@ -706,125 +862,15 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
                 sprintInt = 125;
             }
 
-            if (moving && canMove)
-            {
-                im++;
-                String ims = "images/";
-                if (!movingLeft)
-                {
-                    
-                    if (im >= 8)
-                        im = 1;
-                    ims += "Right" + im + ".png";
-                }
-                else
-                {
-                    if (im == 8)
-                        im = 1;
-                    ims += "Run" + im + ".png";
-                }
-                run1 = new ImageIcon(ims).getImage();
-            }
-            else
-            {
-                if (movingLeft)
-                    run1 = new ImageIcon("images/MainStandLeft.png").getImage();
-                else
-                    run1 = new ImageIcon("images/MainStand.png").getImage();
-            }
+            performBarneyAttack();
+            playerPosition = nextPosition;
+            topLeft = getScreenTopLeft();
 
-            if (canMove)
-            {
-                playerPosition = newPosition;
-            }
-
-            if (barneySpawn && !barAttackCool)
-            {
-                Point playerTopRight = convertPosition(playerPosition);
-                Point barneyTopRight = convertPosition(barneyPosition);
-
-                Point playerBottomRight = new Point(playerTopRight);
-                Point barneyBottomRight = new Point(barneyTopRight);
-                playerBottomRight.translate(PLAYER_DIMS.width, PLAYER_DIMS.height);
-                barneyBottomRight.translate(BARNEY_DIMS.width, BARNEY_DIMS.height);
-
-                boolean separateX = (playerBottomRight.x < barneyTopRight.x) || (barneyBottomRight.x < playerTopRight.x);
-                boolean separateY = (playerBottomRight.y < barneyTopRight.y) || (barneyBottomRight.y < playerTopRight.y);
-
-                if (!separateX && !separateY)
-                {
-                    health -= 100;
-                    barAttackCool = true;
-                }
-            }
-            else
-            {
-                barCooldown -= 4;
-                if (barCooldown == 0)
-                {
-                    barAttackCool = false;
-                    barCooldown = 500;
-                }
-            }
-
-            if (!barneySpawn)
-            {
-                health = 250;
-                barneyInt += 4;
-                if (barneyInt == 100)
-                    number = new ImageIcon("images/Ten.png").getImage();
-                if (barneyInt == 200)
-                    number = new ImageIcon("images/Nine.png").getImage();
-                if (barneyInt == 300)
-                    number = new ImageIcon("images/Eight.png").getImage();
-                if (barneyInt == 400)
-                    number = new ImageIcon("images/Seven.png").getImage();
-                if (barneyInt == 500)
-                    number = new ImageIcon("images/Six.png").getImage();
-                if (barneyInt == 600)
-                    number = new ImageIcon("images/Five.png").getImage();
-                if (barneyInt == 700)
-                    number = new ImageIcon("images/Four.png").getImage();
-                if (barneyInt == 800)
-                    number = new ImageIcon("images/Three.png").getImage();
-                if (barneyInt == 900)
-                    number = new ImageIcon("images/Two.png").getImage();
-                if (barneyInt == 1000)
-                    number = new ImageIcon("images/One.png").getImage();
-                if (barneyInt == 1100)
-                {
-                    number = null;
-                    barneySpawn = true;
-                }
-            }
-            else
-            {
-                if (!stun)
-                {
-                    if (playerPosition.x > barneyPosition.x)
-                    {
-                        barneyPosition.x += BARNEY_X_SPEED;
-                    }
-                    else if (playerPosition.x < barneyPosition.x)
-                    {
-                        barneyPosition.x -= BARNEY_X_SPEED;
-                    }
-
-                    if (playerPosition.y > barneyPosition.y)
-                    {
-                        barneyPosition.y += BARNEY_Y_SPEED;
-                    }
-                    else if (playerPosition.y < barneyPosition.y)
-                    {
-                        barneyPosition.y -= BARNEY_Y_SPEED;
-                    }
-                }
-            }
+            updateBarneyPosition();
+            updatePlayerSprite();
 
             if (!damage)
                 health = 250;
-
-            topLeft = getScreenTopLeft();
 
             repaint();
             grabFocus();

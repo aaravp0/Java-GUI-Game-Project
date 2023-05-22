@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
-import java.time.Period;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.awt.Font;
@@ -35,9 +34,12 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     private final static Dimension PLAYER_DIMS = new Dimension(75, 75);
     private final static Dimension BARNEY_DIMS = new Dimension(100, 150);
     private final static Dimension GAS_DIMS = new Dimension(50, 50);
+    private final static Dimension MEDKIT_DIMS = new Dimension(60, 60);
+    private final static Dimension APPLE_DIMS = new Dimension(50, 50);
+    private final static Dimension COOKIE_DIMS = new Dimension(50, 50);
 
-    private final static int PLAYER_X_SPEED = 2;
-    private final static int PLAYER_Y_SPEED = 2;
+    private final static int PLAYER_X_SPEED = 20;
+    private final static int PLAYER_Y_SPEED = 20;
     private final static int PLAYER_X_SPEED_SPRINT = 3;
     private final static int PLAYER_Y_SPEED_SPRINT = 3;
     private final static int BARNEY_X_SPEED = 1;
@@ -45,18 +47,21 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
     private final static int NUM_POSITIONS_KEPT = 5000 / UPDATE_DELAY;
 
+    private final static int TOTAL_GAS = 3;
+    private final static int TOTAL_MEDKIT = 5;
+    private final static int TOTAL_APPLES = 5;
+    private final static int TOTAL_COOKIES = 2;
+
     private Manager manager;
 
     private Image run1, back, barneyBlood, number, gas, med, gun, apple, cookie, stunIcon, bloodHead;
     private Timer playerTimer;
     private int im, health, barneyInt,
-            sprintInt, stamina, numMed, gunTime, numCookies, numApples, stunTime, cookieTime, index,
+            sprintInt, stamina, gunTime, stunTime, cookieTime, index,
             noMoveTime, noMoveTime2, barCooldown;
-    private Point gas1, gas2, gas3;
     private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
             selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
             songStarted, playerDamageOnMove, barAttackCool, damage;
-    private boolean gas1Picked, gas2Picked, gas3Picked;
     private PlayerMover playerTime;
     private JButton inv1, inv2, inv3, inv4, inv5;
     private String gunTimeValue, beginSentence, showingSentence, showingSentence2, showingSentence3,
@@ -64,6 +69,9 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     private Font minecraft;
     private Rectangle[] currentBorder;
     private Clip clip2;
+
+    // Sets of collectibles
+    private CollectibleSet gasItems, medkits, apples, cookies;
 
     private Queue<Point> previousPlayerPosition;
 
@@ -113,8 +121,6 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
         cookiesActivated = false;
         cookieTime = 1000;
-        numCookies = 0;
-        numApples = 0;
         index = -1;
         beginSentence = "Oh no! My car ran out of gas. This city seems to be abandoned. Is that Barney? I need to get 3 gas cans to fuel up my car and escape.";
         showingSentence = "";
@@ -132,18 +138,9 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         movingLeft = false;
         im = 0;
         health = 250;
-        /*gas1X = 2450;
-        gas1Y = -2800;
-        gas2X = 500;
-        gas2Y = -975;
-        gas3X = 5425;
-        gas3Y = 600;*/
-        gas1 = itemCoordinateMaker();
-        gas2 = itemCoordinateMaker();
-        gas3 = itemCoordinateMaker();
+
         damage = true;
         stamina = 250;
-        numMed = 0;
         playerTime = new PlayerMover();
         playerTimer = new Timer(UPDATE_DELAY, playerTime);
         this.requestFocus();
@@ -277,7 +274,23 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         barneyPosition = new Point(START_X, START_Y);
         topLeft = getScreenTopLeft();
 
+        // initialize items
+        gasItems = new CollectibleSet(gas, generateRandomLocations(TOTAL_GAS), GAS_DIMS);
+        medkits = new CollectibleSet(med, generateRandomLocations(TOTAL_MEDKIT), MEDKIT_DIMS);
+        apples = new CollectibleSet(apple, generateRandomLocations(TOTAL_APPLES), APPLE_DIMS);
+        cookies = new CollectibleSet(cookie, generateRandomLocations(TOTAL_COOKIES), COOKIE_DIMS);
+
         previousPlayerPosition = new ArrayDeque<Point>();
+    }
+
+    private Point[] generateRandomLocations(int locationCount)
+    {
+        Point[] locations = new Point[locationCount];
+        for (int i = 0; i < locationCount; i++)
+        {
+            locations[i] = itemCoordinateMaker();
+        }
+        return locations;
     }
 
     private Point getScreenTopLeft()
@@ -375,20 +388,10 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             g.drawImage(bloodHead, 200, 200, 400, 400, null);
         }
 
-        if (!gas1Picked)
-        {
-            drawOnScreen(g, gas, new Point(gas1.x, gas1.y), GAS_DIMS);
-        }
-
-        if (!gas2Picked)
-        {
-            drawOnScreen(g, gas, new Point(gas2.x, gas2.y), GAS_DIMS);
-        }
-
-        if (!gas3Picked)
-        {
-            drawOnScreen(g, gas, new Point(gas3.x, gas3.y), GAS_DIMS);
-        }
+        gasItems.drawAll(g);
+        medkits.drawAll(g);
+        apples.drawAll(g);
+        cookies.drawAll(g);
 
         // draw player
         drawOnScreen(g, run1, playerPosition, PLAYER_DIMS);
@@ -491,13 +494,12 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
         g.setFont(minecraft);
         g.setColor(Color.WHITE);
-        g.drawString("" + numMed, 405, 755);
-        g.drawString("" + numMed, 405, 755);
+        g.drawString("" + medkits.getCount(), 405, 755);
         if(bulletCooldown)
             g.drawString("" + gunTimeValue, 75, 755);
-        g.drawString("" + numCookies, 725, 755);
-        g.drawString("" + numApples, 565, 755);
-        g.drawString(getNumGas() + "/3", 245, 755);
+        g.drawString("" + cookies.getCount(), 725, 755);
+        g.drawString("" + apples.getCount(), 565, 755);
+        g.drawString(gasItems.getCount() + "/3", 245, 755);
 
         // letters at beginning
         if (!barneySpawn)
@@ -509,18 +511,6 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             g.drawString(showingSentence3, 100, 270);
             g.drawString(showingSentence4, 100, 300);
         }
-    }
-
-    public int getNumGas()
-    {
-        int count = 0;
-        if (gas1Picked)
-            count++;
-        if (gas2Picked)
-            count++;
-        if (gas3Picked)
-            count++;
-        return count;
     }
 
     public Point itemCoordinateMaker()
@@ -593,6 +583,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         {
             if (currentBorder[i].contains(newPosition.x, newPosition.y))
             {
+                System.out.println("violates " + i);
+                System.out.println(newPosition);
                 canMove = false;
                 break;
             }
@@ -807,7 +799,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         // everytime timer occurs
         public void actionPerformed(ActionEvent e)
         {
-            if (health <= 0 || getNumGas() == 3)
+            if (health <= 0 || gasItems.getCount() == 3)
             {
                 playerTimer.stop();
                 clip2.stop();
@@ -829,7 +821,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
             if (cookiesActivated)
             {
-                if (numCookies > 0)
+                if (cookies.getCount() > 0)
                 {
                     cookieTime -= 4;
                     if (cookieTime <= 0)
@@ -902,6 +894,91 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         }
     }
 
+    class CollectibleSet
+    {
+        private Collectible[] items;
+        int collectedCount;
+
+        public CollectibleSet(Image image, Point[] locations, Dimension dimension)
+        {
+            items = new Collectible[locations.length];
+            for (int i = 0; i < locations.length; i++)
+            {
+                items[i] = new Collectible(image, locations[i], dimension);
+            }
+            
+            collectedCount = 0;
+        }
+
+        public void drawAll(Graphics g)
+        {
+            for (int i = 0; i < items.length; i++)
+            {
+                items[i].draw(g);
+            }
+        }
+
+        public void tryCollecting(Point clickPos)
+        {
+            for (int i = 0; i < items.length; i++)
+            {
+                if (items[i].checkIfCollected(clickPos))
+                {
+                    collectedCount++;
+                }
+            }
+        }
+
+        public int getCount()
+        {
+            return collectedCount;
+        }
+
+        public void useItem()
+        {
+            collectedCount--;
+        }
+    }
+
+    class Collectible
+    {
+        private Image image;
+        private Point location;
+        private Dimension dimension;
+        private boolean picked;
+
+        public Collectible(Image image, Point location, Dimension dimension)
+        {
+            this.image = image;
+            this.location = location;
+            this.dimension = dimension;
+            picked = false;
+        }
+
+        public void draw(Graphics g)
+        {
+            if (!picked)
+            {
+                drawOnScreen(g, image, location, dimension);
+            }
+        }
+
+        public boolean checkIfCollected(Point clickPos)
+        {
+            if (!picked && containsOnScreen(location, dimension, clickPos))
+            {
+                picked = true;
+                return true;
+            }
+            return false;
+        }
+
+        public boolean isPicked()
+        {
+            return picked;
+        }
+    }
+
     // movement input
     public void keyPressed(KeyEvent e)
     {
@@ -916,9 +993,9 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         }
         if (e.getKeyChar() == 'k')
         {
-            numCookies = 5;
-            numApples = 5;
-            numMed = 5;
+            // numCookies = 5;
+            // numApples = 5;
+            // numMed = 5;
         }
         if (e.getKeyCode() == KeyEvent.VK_SHIFT)
         {
@@ -992,21 +1069,21 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         }
         else if (selected3)
         {
-            if (numMed > 0)
+            if (medkits.getCount() > 0)
             {
+                medkits.useItem();
                 health += 50;
                 if (health > 250)
                 {
                     health = 250;
                 }
-                numMed--;
             }
         }
         else if (selected4)
         {
-            if (numApples > 0)
+            if (apples.getCount() > 0)
             {
-                numApples--;
+                apples.useItem();
                 stamina += 50;
                 if (stamina >= 125)
                     sprintInt = 125;
@@ -1014,30 +1091,19 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         }
         else if (selected5)
         {
-            if (numCookies > 0)
+            if (cookies.getCount() > 0)
             {
-                numCookies--;
+                cookies.useItem();
                 cookiesActivated = true;
             }
         }
         else
         {
             Point clickPos = new Point(e.getX(), e.getY());
-
-            if (containsOnScreen(gas1, GAS_DIMS, clickPos))
-            {
-                gas1Picked = true;
-            }
-
-            if (containsOnScreen(gas2, GAS_DIMS, clickPos))
-            {
-                gas2Picked = true;
-            }
-
-            if (containsOnScreen(gas3, GAS_DIMS, clickPos))
-            {
-                gas3Picked = true;
-            }
+            gasItems.tryCollecting(clickPos);
+            medkits.tryCollecting(clickPos);
+            apples.tryCollecting(clickPos);
+            cookies.tryCollecting(clickPos);
         }
 
         repaint();

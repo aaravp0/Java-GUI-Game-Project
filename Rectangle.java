@@ -13,6 +13,6 @@ public class Rectangle
 
     public boolean contains(int x, int y) 
     {
-        return topLeftX <= x && x <= bottomRightX && topLeftY <= y && y <= bottomRightY || topLeftX <= x+75 && x+75 <= bottomRightX && topLeftY <= y+75 && y+75 <= bottomRightY;
+        return topLeftX <= x && x <= bottomRightX && topLeftY <= y && y <= bottomRightY || topLeftX <= x && x <= bottomRightX && topLeftY <= y && y <= bottomRightY;
     }
 }

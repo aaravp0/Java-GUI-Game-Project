@@ -21,13 +21,11 @@ import javax.swing.Timer;
 public class Level1 extends JPanel implements KeyListener, MouseListener
 {
     // size of the window that is mapped to the screen
-    private final static int SCREEN_WIDTH = 200;
-    private final static int SCREEN_HEIGHT = 300;
-    private final static int START_X = 140;
-    private final static int START_Y = 1370;
+    private final static Dimension SCREEN_DIMS = new Dimension(200, 300);
+    private final static Point START = new Point(140, 1370);
 
-    private final static int BACKGROUND_WIDTH = 1628;
-    private final static int BACKGROUND_HEIGHT = 1620;
+    // background information
+    private final static Dimension BACKGROUND_DIMS = new Dimension(1628, 1620);
 
     private final static int UPDATE_DELAY = 40;
 
@@ -270,8 +268,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         add(inv5, BorderLayout.SOUTH);
         add(blank2, BorderLayout.SOUTH);
 
-        playerPosition = new Point(START_X, START_Y);
-        barneyPosition = new Point(START_X, START_Y);
+        playerPosition = new Point(START.x, START.y);
+        barneyPosition = new Point(START.x, START.y);
         topLeft = getScreenTopLeft();
 
         // initialize items
@@ -298,30 +296,30 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         Point result = new Point();
         Point currentPosition = playerPosition;
 
-        if (currentPosition.x - SCREEN_WIDTH / 2 < 0)
+        if (currentPosition.x - SCREEN_DIMS.width / 2 < 0)
         {
             result.x = 0;
         }
-        else if (currentPosition.x + SCREEN_WIDTH / 2 > BACKGROUND_WIDTH)
+        else if (currentPosition.x + SCREEN_DIMS.width / 2 > BACKGROUND_DIMS.width)
         {
-            result.x = BACKGROUND_WIDTH - SCREEN_WIDTH;
+            result.x = BACKGROUND_DIMS.width - SCREEN_DIMS.width;
         }
         else
         {
-            result.x = currentPosition.x - SCREEN_WIDTH / 2;
+            result.x = currentPosition.x - SCREEN_DIMS.width / 2;
         }
 
-        if (currentPosition.y - SCREEN_HEIGHT / 2 < 0)
+        if (currentPosition.y - SCREEN_DIMS.height / 2 < 0)
         {
             result.y = 0;
         }
-        else if (currentPosition.y + SCREEN_HEIGHT / 2 > BACKGROUND_HEIGHT)
+        else if (currentPosition.y + SCREEN_DIMS.height / 2 > BACKGROUND_DIMS.height)
         {
-            result.y = BACKGROUND_HEIGHT - SCREEN_HEIGHT;
+            result.y = BACKGROUND_DIMS.height - SCREEN_DIMS.height;
         }
         else
         {
-            result.y = currentPosition.y - SCREEN_HEIGHT / 2;
+            result.y = currentPosition.y - SCREEN_DIMS.height / 2;
         }
 
         return result;
@@ -330,8 +328,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     // finds the position of a point on the screen
     private Point convertPosition(Point position)
     {
-        int offsetX = (position.x - topLeft.x) * NightOfBarney.FRAME_WIDTH / SCREEN_WIDTH;
-        int offsetY = (position.y - topLeft.y) * NightOfBarney.FRAME_HEIGHT / SCREEN_HEIGHT;
+        int offsetX = (position.x - topLeft.x) * NightOfBarney.FRAME_DIMS.width / SCREEN_DIMS.width;
+        int offsetY = (position.y - topLeft.y) * NightOfBarney.FRAME_DIMS.width / SCREEN_DIMS.height;
         return new Point(offsetX, offsetY);
     }
 
@@ -357,8 +355,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         super.paintComponent(g);
 
         // draw background
-        g.drawImage(back, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, 
-            topLeft.x, topLeft.y, topLeft.x + SCREEN_WIDTH, topLeft.y + SCREEN_HEIGHT, null, null);
+        g.drawImage(back, 0, 0, NightOfBarney.FRAME_DIMS.width, NightOfBarney.FRAME_DIMS.height, 
+            topLeft.x, topLeft.y, topLeft.x + SCREEN_DIMS.width, topLeft.y + SCREEN_DIMS.height, null, null);
 
         if (!songStarted)
         {
@@ -728,7 +726,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             Point target;
             if (previousPlayerPosition.isEmpty())
             {
-                target = new Point(START_X, START_Y);
+                target = new Point(START.x, START.y);
             }
             else
             {

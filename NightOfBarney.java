@@ -5,19 +5,20 @@ A horror game, where Barney and his friends try to kill you, and you have to esc
 (make sure to install the font that is in the fonts folder)
 */
 
+import java.awt.Dimension;
+
 import javax.swing.*;
 
 //ecompasses the entire program
 public class NightOfBarney extends JFrame
 {
-    public static final int FRAME_WIDTH = 800;
-    public static final int FRAME_HEIGHT = 800;
+    public static final Dimension FRAME_DIMS = new Dimension(800, 800);
 
     // has code for the music and frame
     public NightOfBarney()
     {
         JFrame frame = new JFrame("The Night Of Barney");
-        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        frame.setSize(FRAME_DIMS.width, FRAME_DIMS.height);
         frame.setContentPane(new Manager());
         frame.setResizable(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

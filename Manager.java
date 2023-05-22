@@ -137,8 +137,8 @@ class Manager extends JPanel
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);
-            g.drawImage(night, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, null);
-            g.drawImage(bloodDrip, 0, 0, NightOfBarney.FRAME_WIDTH, bloodHeight, null);
+            g.drawImage(night, 0, 0, NightOfBarney.FRAME_DIMS.width, NightOfBarney.FRAME_DIMS.height, null);
+            g.drawImage(bloodDrip, 0, 0, NightOfBarney.FRAME_DIMS.width, bloodHeight, null);
         }
 
         // class for the timer
@@ -148,7 +148,7 @@ class Manager extends JPanel
             public void actionPerformed(ActionEvent e)
             {
                 bloodHeight += BLOOD_SPEED;
-                if (bloodHeight >= NightOfBarney.FRAME_WIDTH)
+                if (bloodHeight >= NightOfBarney.FRAME_DIMS.height)
                 {
                     bloodTimer.stop();
                     moveToSetLevel();
@@ -189,35 +189,4 @@ class Manager extends JPanel
             g.drawString("Game Over!", 100, 100);
         }
     }
-    /*class EndCutscene1 extends JPanel
-    {
-        Image endback, car;
-        Timer carBarMover;
-        int xCarPos;
-        public EndCutscene1()
-        {
-        setBackground(Color.BLACK);
-        xCarPos = 0;
-        endback = new ImageIcon("images/EndBack1.png").getImage();
-        car = new ImageIcon("images/Car_Red_Side.png").getImage();
-        CarMover carmover = new CarMover();
-        carBarMover = new Timer(1, carmover);
-        carBarMover.start();
-        }
-        public void paintComponent(Graphics g)
-        {
-            super.paintComponent(g);
-            g.drawImage(endback,0,0,800,800,null);
-            g.drawImage(car,xCarPos,400,200,100,null);
-        }
-        class CarMover implements ActionListener
-        {
-        public void actionPerformed(ActionEvent e)
-        {
-            xCarPos++;
-            repaint();
-            grabFocus();
-        }
-    }
-}*/
 }

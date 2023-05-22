@@ -124,7 +124,7 @@ class LevelSelect extends JPanel
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        g.drawImage(night, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, null);
+        g.drawImage(night, 0, 0, NightOfBarney.FRAME_DIMS.width, NightOfBarney.FRAME_DIMS.height, null);
         g.drawImage(button,200,116,400,80,null);
         g.drawImage(button,200,335,400,80,null);
         g.drawImage(button,200,555,400,80,null);

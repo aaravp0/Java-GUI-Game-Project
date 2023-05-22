@@ -16,7 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-class Level1 extends JPanel implements KeyListener, MouseListener
+public class Level1 extends JPanel implements KeyListener, MouseListener
 {
     private Manager manager;
 
@@ -75,31 +75,31 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         minecraft = new Font("Minecraft", Font.BOLD, 16);
         currentBorder = new Rectangle[]
         {
-                new Rectangle(132, 127, 466, 165),
-                new Rectangle(132, 208, 466, 320),
-                new Rectangle(132, 363, 466, 486),
-                new Rectangle(132, 530, 466, 647),
-                new Rectangle(132, 691, 466, 808),
-                new Rectangle(132, 850, 466, 903),
-                new Rectangle(132, 1000, 466, 1058),
-                new Rectangle(889, 115, 894, 494),
-                new Rectangle(895, 453, 1003, 494),
-                new Rectangle(1055, 453, 1555, 494),
-                new Rectangle(755, 100, 818, 193),
-                new Rectangle(755, 260, 818, 372),
-                new Rectangle(820, 584, 1354, 654),
-                new Rectangle(1354, 554, 1493, 654),
-                new Rectangle(819, 762, 1472, 853),
-                new Rectangle(827, 984, 1504, 1068),
-                new Rectangle(820, 1132, 934, 1580),
-                new Rectangle(976, 1132, 1084, 1580),
-                new Rectangle(1128, 1132, 1237, 1580),
-                new Rectangle(1278, 1132, 1384, 1580),
-                new Rectangle(1425, 1132, 1504, 1580),
-                new Rectangle(0, 0, 1628, 123),
-                new Rectangle(1505, 0, 1628, 1614),
-                new Rectangle(0, 1501, 1628, 1614),
-                new Rectangle(0, 0, 126, 1616)
+            new Rectangle(132, 127, 466, 165),
+            new Rectangle(132, 208, 466, 320),
+            new Rectangle(132, 363, 466, 486),
+            new Rectangle(132, 530, 466, 647),
+            new Rectangle(132, 691, 466, 808),
+            new Rectangle(132, 850, 466, 903),
+            new Rectangle(132, 1000, 466, 1058),
+            new Rectangle(889, 115, 894, 494),
+            new Rectangle(895, 453, 1003, 494),
+            new Rectangle(1055, 453, 1555, 494),
+            new Rectangle(755, 100, 818, 193),
+            new Rectangle(755, 260, 818, 372),
+            new Rectangle(820, 584, 1354, 654),
+            new Rectangle(1354, 554, 1493, 654),
+            new Rectangle(819, 762, 1472, 853),
+            new Rectangle(827, 984, 1504, 1068),
+            new Rectangle(820, 1132, 934, 1580),
+            new Rectangle(976, 1132, 1084, 1580),
+            new Rectangle(1128, 1132, 1237, 1580),
+            new Rectangle(1278, 1132, 1384, 1580),
+            new Rectangle(1425, 1132, 1504, 1580),
+            new Rectangle(0, 0, 1628, 123),
+            new Rectangle(1505, 0, 1628, 1614),
+            new Rectangle(0, 1501, 1628, 1614),
+            new Rectangle(0, 0, 126, 1616)
         };
 
         cookiesActivated = false;
@@ -132,7 +132,6 @@ class Level1 extends JPanel implements KeyListener, MouseListener
         gas1 = itemCoordinateMaker();
         gas2 = itemCoordinateMaker();
         gas3 = itemCoordinateMaker();
-
         damage = true;
         stamina = 250;
         numMed = 0;
@@ -317,7 +316,7 @@ class Level1 extends JPanel implements KeyListener, MouseListener
     {
         Point screenPosition = convertPosition(position);
         g.drawImage(image, screenPosition.x, screenPosition.y, dimension.width, dimension.height, null);
-        g.drawRect(screenPosition.x, screenPosition.y, dimension.width, dimension.height);
+        // g.drawRect(screenPosition.x, screenPosition.y, dimension.width, dimension.height);
         return screenPosition;
     }
 

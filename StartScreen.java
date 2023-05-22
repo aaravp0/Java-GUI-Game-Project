@@ -17,7 +17,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class StartScreen extends JPanel {
+public class StartScreen extends JPanel 
+{
     private Manager manager;
     private Clip themeSong;
     private final String THEME_SONG = "sounds/barneyTheme.wav";

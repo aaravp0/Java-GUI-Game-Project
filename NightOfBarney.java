@@ -19,7 +19,7 @@ public class NightOfBarney extends JFrame
         JFrame frame = new JFrame("The Night Of Barney");
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setContentPane(new Manager());
-        frame.setResizable(true);
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

@@ -1,32 +1,12 @@
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.awt.Font;
-import java.awt.*;
-
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import java.util.Arrays;
-import javax.swing.*;
 
+//class for sending the image for the main character
 public class Runner 
 {
     private Image[] runningLeft, runningRight;
     private Image standingLeft, standingRight;
+    //creates the arrays for the images
     public Runner()
     {
         runningLeft = new Image[]
@@ -54,6 +34,7 @@ public class Runner
         standingLeft = new ImageIcon("images/MainStandLeft2.png").getImage();
         standingRight = new ImageIcon("images/MainStand2.png").getImage();
     }
+    //return the image for the current character model
     public Image returnImage(int speed, boolean left, boolean moving)
     {
         if(moving)

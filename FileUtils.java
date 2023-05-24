@@ -4,7 +4,10 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
-public class FileUtils {
+//a class for the music
+public class FileUtils 
+{
+    //returns the music clip
     public static Clip openClip(String fileName)
     {
         Clip clip = null;

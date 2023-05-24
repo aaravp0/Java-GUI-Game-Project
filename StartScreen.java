@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+//it is the beginning panel
 public class StartScreen extends JPanel 
 {
     private Manager manager;
@@ -59,8 +60,9 @@ public class StartScreen extends JPanel
 
         startHover = false;
         levelHover = false;
-        // when the start button is pressed
+       
         toStartButton = new JButton("");
+        // when the start button is pressed
         toStartButton.addActionListener(new ActionListener()
         {
             // everytime button is clicked

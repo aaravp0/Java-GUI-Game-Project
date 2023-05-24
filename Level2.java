@@ -1,9 +1,11 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,8 +18,8 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private Image barGreen, barYellow, back2, player, med, bulletMove, countdownImage;
     private Image bulletIcon;
     private Timer playerTimer;
-    private int greenX, greenY, yellowX, yellowY, im, xPos, yPos, bl, numBullets, bLocX, bLocY, xClick, yClick, countdownInt, greenHealth, health;
-    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shot;
+    private int greenX, greenY, yellowX, yellowY, im, xPos, yPos, bl, numBullets, countdownInt, greenHealth, health;
+    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted;
     private Image[] countDown;
     private JButton shoot, collect;
     private Rectangle2[] currentBorder;
@@ -26,11 +28,18 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private int[] blArr, gArrX, gArrY, gGoTo;
     private double mag;
 
+    // bullet location
+    private double bulletX, bulletY;
+    private double bulletAngle;
+
     private final static int BARNEY_X_SPEED = 3;
     private final static int BARNEY_Y_SPEED = 3;
+    private final static Dimension GREEN_DIMS = new Dimension(75, 125);
 
     private final static int NUM_GROUND_BULLETS = 10;
     private final static Dimension BULLET_DIMS = new Dimension(20, 10);
+    private final static double BULLET_SPEED = 20;
+    private final static int NUM_INTERMEDIATE = 10;
 
     //add listeners, components, and set values to variables
     public Level2()
@@ -44,7 +53,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         bl = 0;
         im = 0;
         health = 250;
-        xPos = yPos = bLocX = bLocY = 400;
+        xPos = yPos = 400;
         barGreen = new ImageIcon("images/GreenStand.png").getImage();
         barYellow = new ImageIcon("images/BarYellow.png").getImage();
         back2 = new ImageIcon("images/Background2.png").getImage();
@@ -144,7 +153,18 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         }
 
         if(bulletShow)
-            g.drawImage(bulletMove, bLocX, bLocY, 20,10,null);
+        {
+            Graphics2D g2d = (Graphics2D) g;
+            AffineTransform old = g2d.getTransform();
+
+            int roundedX = (int) Math.round(bulletX);
+            int roundedY = (int) Math.round(bulletY);
+            g2d.rotate(bulletAngle, roundedX + BULLET_DIMS.width / 2, roundedY + BULLET_DIMS.height / 2);
+            g2d.drawImage(bulletMove, roundedX, roundedY, BULLET_DIMS.width, BULLET_DIMS.height,null);
+            g2d.setTransform(old);
+
+            updateBullet();
+        }
 
         g.drawImage(player, xPos, yPos, 50, 50, null);
         g.setColor(new Color(197, 167, 119));
@@ -155,7 +175,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             g.drawImage(countdownImage,350, 50, 100, 100, null);
         if(greenSpawn)
         {
-            g.drawImage(barGreen,greenX, greenY,75,125,null);
+            g.drawImage(barGreen,greenX, greenY,GREEN_DIMS.width,GREEN_DIMS.height,null);
             g.setColor(new Color(197, 167, 119));
             g.fillRect(greenX-15,greenY-15,108,20);
             g.setColor(Color.RED);
@@ -255,6 +275,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
                     xPos-=5;
                 }
             }
+
             Runner rn = new Runner();
             player = rn.returnImage(im,movingLeft,moving);
             im++;
@@ -265,43 +286,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             {
                 bulletPresent[bl/300-1] = true;
             }
-            if(bulletShow)
-            if(bLocX != xClick && yClick != bLocX)
-            {
-                bulletShow = true;
-                if(xClick >= xPos)
-                {
-                    bLocX += 5*(int)(mag/(xClick - xPos));
-                    if((bLocX == xClick && bLocY == yClick)|| bLocX >= 800 || bLocY >= 800 || bLocX <= 0 || bLocY <= 0)
-                    {
-                        bulletShow = false;
-                        bLocX = xPos;
-                        bLocY = yPos;
-                        xClick = xPos;
-                        yClick = yPos;
-                    }
-                }
-                else
-                {
-                    bLocX -= 5*(int)(mag/(xClick - xPos));
-                }
-                if(yClick >= yPos)
-                {
-                    bLocY += 5*(int)(mag/(xClick - xPos));
-                    if((bLocX == xClick && bLocY == yClick)|| bLocX >= 800 || bLocY >= 800 || bLocX <= 0 || bLocY <= 0)
-                    {
-                        bulletShow = false;
-                        bLocX = xPos;
-                        bLocY = yPos;
-                        xClick = xPos;
-                        yClick = yPos;
-                    }
-                }
-                else
-                {
-                    bLocY -= 5*(int)(mag/(xClick - xPos));
-                }
-            }
+            
             if(greenSpawn)
             {
                 if(!countRestarted)
@@ -421,6 +406,38 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         else
             return giveLocation();
     }
+
+    public void updateBullet()
+    {
+        double newBulletX = bulletX +  BULLET_SPEED * Math.cos(bulletAngle);
+        double newBulletY = bulletY +  BULLET_SPEED * Math.sin(bulletAngle);
+
+        boolean hitTarget = false;
+        Rectangle hitbox = new Rectangle(greenX, greenY, greenX + GREEN_DIMS.width, greenY + GREEN_DIMS.height);
+        for (int i = 1; i <= NUM_INTERMEDIATE; i++)
+        {
+            double ratio = (double) i / (NUM_INTERMEDIATE + 1);
+            double fractionalX = ratio * bulletX + (1 - ratio) * newBulletX;
+            double fractionalY = ratio * bulletY + (1 - ratio) * newBulletY;
+            if (hitbox.contains((int) fractionalX, (int) fractionalY))
+            {
+                hitTarget = true;
+                break;
+            }
+        }
+
+        // if we are out of bounds or we hit, then don't show the bullet
+        if (newBulletX < 0 || newBulletY < 0 || newBulletX >= 800 || newBulletY >= 800 || hitTarget)
+        {
+            bulletShow = false;
+        }
+        else
+        {
+            bulletX = newBulletX;
+            bulletY = newBulletY;
+        }
+    }
+
     //movement input
     public void keyPressed(KeyEvent e)
     {
@@ -474,21 +491,25 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         grabFocus();
     }
     // for shooting bullets
-    public void mouseClicked(MouseEvent e)
+    public void mousePressed(MouseEvent e)
     {
-        if(numBullets >= 1)
+        // check if we are already shooting a bullet
+        if(numBullets >= 1 && !bulletShow)
         {
-            xClick = e.getX();
-            yClick = e.getY();
-            shot = true;
+            double bulletOffsetX = e.getX() - xPos;
+            double bulletOffsetY = e.getY() - yPos;
+            bulletAngle = Math.atan2(bulletOffsetY, bulletOffsetX);
+            bulletX = xPos;
+            bulletY = yPos;
+            bulletShow = true;
         }
-        //mag = Math.sqrt(Math.pow((xClick - xPos),2) + Math.pow((yClick - yPos),2));
+
         repaint();
         grabFocus();
     }
 
     //not going to be used
-    public void mousePressed(MouseEvent e)
+    public void mouseClicked(MouseEvent e)
     {}
     //not going to be used
     public void mouseReleased(MouseEvent e)

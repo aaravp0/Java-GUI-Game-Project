@@ -1,6 +1,8 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.*;
 
 import javax.swing.ImageIcon;
@@ -12,18 +14,23 @@ import javax.swing.Timer;
 public class Level2 extends JPanel implements MouseListener, KeyListener, MouseMotionListener
 {
     private Image barGreen, barYellow, back2, player, med, bulletMove, countdownImage;
+    private Image bulletIcon;
     private Timer playerTimer;
     private int greenX, greenY, yellowX, yellowY, im, xPos, yPos, bl, numBullets, bLocX, bLocY, xClick, yClick, countdownInt, greenHealth, health;
     private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shot;
-    private Image[] bullet, countDown;
+    private Image[] countDown;
     private JButton shoot, collect;
     private Rectangle2[] currentBorder;
-    private boolean[] bulletBoolean;
-    private int[] arr1,arr2,arr3,arr4,arr5,arr6,arr7,arr8,arr9,arr10, blArr, gArrX, gArrY, gGoTo;
+    private boolean[] bulletPresent;
+    private Point[] bulletLocations;
+    private int[] blArr, gArrX, gArrY, gGoTo;
     private double mag;
 
     private final static int BARNEY_X_SPEED = 3;
     private final static int BARNEY_Y_SPEED = 3;
+
+    private final static int NUM_GROUND_BULLETS = 10;
+    private final static Dimension BULLET_DIMS = new Dimension(20, 10);
 
     //add listeners, components, and set values to variables
     public Level2()
@@ -102,50 +109,43 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             new ImageIcon("Nine.png").getImage(),
             new ImageIcon("Ten.png").getImage()
         };
-        bullet = new Image[10];
-        bulletBoolean = new boolean[10];
+
+        bulletIcon = new ImageIcon("images/Bullet.png").getImage();
+        bulletPresent = new boolean[NUM_GROUND_BULLETS];
+        bulletLocations = new Point[NUM_GROUND_BULLETS];
         for(int i = 0; i < 10; i++)
         {
-            bullet[i] = new ImageIcon("images/Bullet.png").getImage();
             blArr[i] = 0;
         }
+
         PlayerMover playerMover = new PlayerMover();
         playerTimer = new Timer(40,playerMover);
         playerTimer.start();
         bulletLocator();
         setBackground(Color.WHITE);
     }
+
     //paints the images in level 2
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
         g.drawImage(back2,0,0,800,800,null);
-        
-        if(bulletBoolean[0])
-            g.drawImage(bullet[0],arr1[0],arr1[1],20,10,null);
-        if(bulletBoolean[1])
-            g.drawImage(bullet[1],arr2[0],arr2[1],20,10,null);
-        if(bulletBoolean[2])
-            g.drawImage(bullet[2],arr3[0],arr3[1],20,10,null);
-        if(bulletBoolean[3])
-            g.drawImage(bullet[3],arr4[0],arr4[1],20,10,null);
-        if(bulletBoolean[4])
-            g.drawImage(bullet[4],arr5[0],arr5[1],20,10,null);
-        if(bulletBoolean[5])
-            g.drawImage(bullet[5],arr6[0],arr6[1],20,10,null);
-        if(bulletBoolean[6])
-            g.drawImage(bullet[6],arr7[0],arr7[1],20,10,null);
-        if(bulletBoolean[7])
-            g.drawImage(bullet[7],arr8[0],arr8[1],20,10,null);
-        if(bulletBoolean[8])
-            g.drawImage(bullet[8],arr9[0],arr9[1],20,10,null);
-        if(bulletBoolean[9])
+
+        for (int i = 0; i < NUM_GROUND_BULLETS; i++)
         {
-            g.drawImage(bullet[9],arr10[0],arr10[1],20,10,null);
-            bulletStop = true;
+            if (bulletPresent[i])
+            {
+                g.drawImage(bulletIcon, bulletLocations[i].x, bulletLocations[i].y, BULLET_DIMS.width, BULLET_DIMS.height, null);
+                if (i == NUM_GROUND_BULLETS - 1)
+                {
+                    bulletStop = true;
+                }
+            }
         }
+
         if(bulletShow)
             g.drawImage(bulletMove, bLocX, bLocY, 20,10,null);
+
         g.drawImage(player, xPos, yPos, 50, 50, null);
         g.setColor(new Color(197, 167, 119));
         g.fillRect(xPos-10,yPos-19,58,20);
@@ -165,18 +165,12 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     //gives the random locations to the bullets for the first time
     public void bulletLocator()
     {
-        arr1 = giveLocation();
-        arr2 = giveLocation();
-        arr3 = giveLocation();
-        arr4 = giveLocation();
-        arr4 = giveLocation();
-        arr5 = giveLocation();
-        arr6 = giveLocation();
-        arr7 = giveLocation();
-        arr8 = giveLocation();
-        arr9 = giveLocation();
-        arr10 = giveLocation();
+        for (int i = 0; i < NUM_GROUND_BULLETS; i++)
+        {
+            bulletLocations[i] = giveLocation();
+        }
     }
+
     //the timer class for level 2
     class PlayerMover implements ActionListener
     {
@@ -190,129 +184,31 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
                 if(countdownInt == 0)
                     countdown = false;
             }
-            if(bulletStop)
+
+            if (bulletStop)
             {
-                if(bulletBoolean[0])
-                    bulletBoolean[0] = collectBullet(arr1[0], arr1[1], 0);
-                if(bulletBoolean[1])
-                    bulletBoolean[1] = collectBullet(arr2[0], arr2[1], 1);
-                if(bulletBoolean[2])
-                    bulletBoolean[2] = collectBullet(arr3[0], arr3[1], 2);
-                if(bulletBoolean[3])
-                    bulletBoolean[3] = collectBullet(arr4[0], arr4[1], 3);
-                if(bulletBoolean[4])
-                    bulletBoolean[4] = collectBullet(arr5[0], arr5[1], 4);
-                if(bulletBoolean[5])
-                    bulletBoolean[5] = collectBullet(arr6[0], arr6[1], 5);
-                if(bulletBoolean[6])
-                    bulletBoolean[6] = collectBullet(arr7[0], arr7[1], 6);
-                if(bulletBoolean[7])
-                    bulletBoolean[7] = collectBullet(arr8[0], arr8[1], 7);
-                if(bulletBoolean[8])
-                    bulletBoolean[8] = collectBullet(arr9[0], arr9[1], 8);
-                if(bulletBoolean[9])
-                    bulletBoolean[9] = collectBullet(arr10[0], arr10[1], 9);
-                if(!bulletBoolean[0])
+                for (int i = 0; i < NUM_GROUND_BULLETS; i++)
                 {
-                    blArr[0]+=4;
-                    if(blArr[0] == 500)
+                    if (bulletPresent[i])
                     {
-                        blArr[0] = 0;
-                        arr1 = giveLocation();
-                        bulletBoolean[0] = true;
+                        bulletPresent[i] = collectBullet(bulletLocations[i].x, bulletLocations[i].y, i);
+                    }
+
+                    // if its now not present anymore
+                    if (!bulletPresent[i])
+                    {
+                        blArr[i] += 4;
+                        if (blArr[i] == 500)
+                        {
+                            blArr[i] = 0;
+                            bulletLocations[i] = giveLocation();
+                            bulletPresent[i] = true;
+                        }
                     }
                 }
-                if(!bulletBoolean[1])
-                {
-                    blArr[1]+=4;
-                    if(blArr[1] == 500)
-                    {
-                        blArr[1] = 0;
-                        arr2 = giveLocation();
-                        bulletBoolean[1] = true;
-                    }
-                }
-                if(!bulletBoolean[2])
-                {
-                    blArr[2]+=4;
-                    if(blArr[2] == 500)
-                    {
-                        blArr[2] = 0;
-                        arr3 = giveLocation();
-                        bulletBoolean[2] = true;
-                    }
-                }
-                if(!bulletBoolean[3])
-                {
-                    blArr[3]+=4;
-                    if(blArr[3] == 500)
-                    {
-                        blArr[3] = 0;
-                        arr4 = giveLocation();
-                        bulletBoolean[3] = true;
-                    }
-                }
-                if(!bulletBoolean[0])
-                {
-                    blArr[4]+=4;
-                    if(blArr[4] == 500)
-                    {
-                        blArr[4] = 0;
-                        arr5 = giveLocation();
-                        bulletBoolean[4] = true;
-                    }
-                }
-                if(!bulletBoolean[5])
-                {
-                    blArr[5]+=4;
-                    if(blArr[5] == 500)
-                    {
-                        blArr[5] = 0;
-                        arr6 = giveLocation();
-                        bulletBoolean[5] = true;
-                    }
-                }
-                if(!bulletBoolean[6])
-                {
-                    blArr[6]+=4;
-                    if(blArr[0] == 500)
-                    {
-                        blArr[6] = 0;
-                        arr7 = giveLocation();
-                        bulletBoolean[6] = true;
-                    }
-                }
-                if(!bulletBoolean[7])
-                {
-                    blArr[7]+=4;
-                    if(blArr[7] == 500)
-                    {
-                        blArr[7] = 0;
-                        arr8 = giveLocation();
-                        bulletBoolean[7] = true;
-                    }
-                }
-                if(!bulletBoolean[8])
-                {
-                    blArr[8]+=4;
-                    if(blArr[8] == 500)
-                    {
-                        blArr[8] = 0;
-                        arr9 = giveLocation();
-                        bulletBoolean[8] = true;
-                    }
-                }
-                if(!bulletBoolean[9])
-                {
-                    blArr[9]+=4;
-                    if(blArr[9] == 500)
-                    {
-                        blArr[9] = 0;
-                        arr10 = giveLocation();
-                        bulletBoolean[9] = true;
-                    }
-                }
+
             }
+
             int charPosY = yPos;
             int charPosX = xPos;
             if(moveDown)
@@ -367,7 +263,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             bl+=4;
             if(bl%300 == 0 && !bulletStop)
             {
-                bulletBoolean[bl/300-1] = true;
+                bulletPresent[bl/300-1] = true;
             }
             if(bulletShow)
             if(bLocX != xClick && yClick != bLocX)
@@ -498,29 +394,30 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     //checks when you collected a bullet
     public boolean collectBullet(int xB, int yB, int bulletNum)
     {
-        if(bulletBoolean[bulletNum] == true)
+        if(bulletPresent[bulletNum] == true)
             numBullets++;
         return !(xB >= xPos && xPos+50 >= xB && yB >= yPos && yPos+50 >= yB);
     }
     //gives the location of an object randomly
-    public int[] giveLocation()
+    public Point giveLocation()
     {
-        int[]arr = new int[]
-        {
+        Point loc = new Point(
             (int)(Math.random()*770),
             (int)(Math.random()*780)
-        };
+        );
+
         boolean bulletInBounds = true;
         for (int i = 0; i < currentBorder.length; i++)
         {
-            if (currentBorder[i].contains(arr[0],arr[1]))
+            if (currentBorder[i].contains(loc.x, loc.y))
             {
                 bulletInBounds = false;
                 break;
             }
         }
-        if(bulletInBounds)
-            return arr;
+
+        if (bulletInBounds)
+            return loc;
         else
             return giveLocation();
     }

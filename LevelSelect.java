@@ -48,6 +48,7 @@ class LevelSelect extends JPanel
         }
 
         levelOneButton = new JButton("");
+        //mouse adapter for button that takes you to level 1
         levelOneButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             // when mouse is over the button
@@ -65,6 +66,7 @@ class LevelSelect extends JPanel
             }
         });
         levelTwoButton = new JButton("");
+        //mouse adapter for button that takes you to level 2
         levelTwoButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             // when mouse is over the button
@@ -82,6 +84,7 @@ class LevelSelect extends JPanel
             }
         });
         levelThreeButton = new JButton("");
+        //mouse adapter for button that takes you to level 3
         levelThreeButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             // when mouse is over the button
@@ -120,7 +123,7 @@ class LevelSelect extends JPanel
         setBackground(Color.WHITE);
     }
 
-    // nothing currently, but paints the levels screen
+    //paints the level select screen
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);

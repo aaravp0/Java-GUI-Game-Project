@@ -1,5 +1,3 @@
-// manages all of the panels in cardLayout
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;

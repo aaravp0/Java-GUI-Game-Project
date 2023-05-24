@@ -14,7 +14,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private Image barGreen, barYellow, back2, player, med, bulletMove, countdownImage;
     private Timer playerTimer;
     private int greenX, greenY, yellowX, yellowY, im, xPos, yPos, bl, numBullets, bLocX, bLocY, xClick, yClick, countdownInt, greenHealth, health;
-    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, started, bulletFallCool, tenBullets, bulletStop, bulletShow, countdown, greenSpawn, countRestarted;
+    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shot;
     private Image[] bullet, countDown;
     private JButton shoot, collect;
     private Rectangle2[] currentBorder;
@@ -35,7 +35,6 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         bulletStop = false;
         blArr = new int[10];
         bl = 0;
-        bulletFallCool = true;
         im = 0;
         health = 250;
         xPos = yPos = bLocX = bLocY = 400;
@@ -489,6 +488,13 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             greenY += BARNEY_X_SPEED;
         }
     }
+    /*public void bulletChecker()
+    {
+        if(xClick > xBulletPos)
+        {
+
+        }
+    }*/
     //checks when you collected a bullet
     public boolean collectBullet(int xB, int yB, int bulletNum)
     {
@@ -525,7 +531,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
                 || e.getKeyCode() == KeyEvent.VK_SHIFT)
         {
             moving = true;
-            started = true;
+            //started = true;
         }
         else
         {
@@ -573,9 +579,13 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     // for shooting bullets
     public void mouseClicked(MouseEvent e)
     {
-        xClick = e.getX();
-        yClick = e.getY();
-        mag = Math.sqrt(Math.pow((xClick - xPos),2) + Math.pow((yClick - yPos),2));
+        if(numBullets >= 1)
+        {
+            xClick = e.getX();
+            yClick = e.getY();
+            shot = true;
+        }
+        //mag = Math.sqrt(Math.pow((xClick - xPos),2) + Math.pow((yClick - yPos),2));
         repaint();
         grabFocus();
     }

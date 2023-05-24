@@ -52,19 +52,21 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     private final static int TOTAL_APPLES = 5;
     private final static int TOTAL_COOKIES = 2;
 
+    private final static int GUN_SHOT_DELAY = 10000;
+
     private Manager manager;
 
     private Image run1, back, barneyBlood, number, gas, med, gun, apple, cookie, stunIcon, bloodHead;
     private Timer playerTimer;
     private int im, health, barneyInt,
-            sprintInt, stamina, gunTime, stunTime, cookieTime, index,
+            sprintInt, stamina, shotCooldownLeft, stunTime, cookieTime, index,
             noMoveTime, noMoveTime2, barCooldown;
     private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
             selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
             songStarted, playerDamageOnMove, barAttackCool, damage;
     private PlayerMover playerTime;
     private JButton inv1, inv2, inv3, inv4, inv5;
-    private String gunTimeValue, beginSentence, showingSentence, showingSentence2, showingSentence3,
+    private String beginSentence, showingSentence, showingSentence2, showingSentence3,
             showingSentence4;
     private Font minecraft;
     private Rectangle[] currentBorder;
@@ -90,31 +92,31 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         minecraft = new Font("Minecraft", Font.BOLD, 16);
         currentBorder = new Rectangle[]
         {
-            new Rectangle(132, 127, 466, 165),
-            new Rectangle(132, 208, 466, 320),
-            new Rectangle(132, 363, 466, 486),
-            new Rectangle(132, 530, 466, 647),
-            new Rectangle(132, 691, 466, 808),
-            new Rectangle(132, 850, 466, 903),
-            new Rectangle(132, 1000, 466, 1058),
-            new Rectangle(889, 115, 894, 494),
-            new Rectangle(895, 453, 1003, 494),
-            new Rectangle(1055, 453, 1555, 494),
-            new Rectangle(755, 100, 818, 193),
-            new Rectangle(755, 260, 818, 372),
-            new Rectangle(820, 584, 1354, 654),
-            new Rectangle(1354, 554, 1493, 654),
-            new Rectangle(819, 762, 1472, 853),
-            new Rectangle(827, 984, 1504, 1068),
-            new Rectangle(820, 1132, 934, 1580),
-            new Rectangle(976, 1132, 1084, 1580),
-            new Rectangle(1128, 1132, 1237, 1580),
-            new Rectangle(1278, 1132, 1384, 1580),
-            new Rectangle(1425, 1132, 1504, 1580),
-            new Rectangle(0, 0, 1628, 123),
-            new Rectangle(1505, 0, 1628, 1614),
-            new Rectangle(0, 1501, 1628, 1614),
-            new Rectangle(0, 0, 126, 1616)
+                new Rectangle(132, 127, 466, 165),
+                new Rectangle(132, 208, 466, 320),
+                new Rectangle(132, 363, 466, 486),
+                new Rectangle(132, 530, 466, 647),
+                new Rectangle(132, 691, 466, 808),
+                new Rectangle(132, 850, 466, 903),
+                new Rectangle(132, 1000, 466, 1058),
+                new Rectangle(889, 115, 894, 494),
+                new Rectangle(895, 453, 1003, 494),
+                new Rectangle(1055, 453, 1555, 494),
+                new Rectangle(755, 100, 818, 193),
+                new Rectangle(755, 260, 818, 372),
+                new Rectangle(820, 584, 1354, 654),
+                new Rectangle(1354, 554, 1493, 654),
+                new Rectangle(819, 762, 1472, 853),
+                new Rectangle(827, 984, 1504, 1068),
+                new Rectangle(820, 1132, 934, 1580),
+                new Rectangle(976, 1132, 1084, 1580),
+                new Rectangle(1128, 1132, 1237, 1580),
+                new Rectangle(1278, 1132, 1384, 1580),
+                new Rectangle(1425, 1132, 1504, 1580),
+                new Rectangle(0, 0, 1628, 123),
+                new Rectangle(1505, 0, 1628, 1614),
+                new Rectangle(0, 1501, 1628, 1614),
+                new Rectangle(0, 0, 126, 1616)
         };
 
         cookiesActivated = false;
@@ -125,7 +127,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         showingSentence2 = "";
         showingSentence3 = "";
         showingSentence4 = "";
-        gunTime = 1000;
+        shotCooldownLeft = GUN_SHOT_DELAY;
         barCooldown = 500;
         barAttackCool = false;
         bulletCooldown = false;
@@ -162,13 +164,13 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         inv1 = new JButton("");
         inv1.setBounds(30, 690, 60, 60);
         inv1.setBorderPainted(false);
-        //action listener for the first inventory slot
+        // action listener for the first inventory slot
         inv1.addActionListener(new ActionListener()
         {
-            //every time the button is clicked
+            // every time the button is clicked
             public void actionPerformed(ActionEvent e)
             {
-                if(!selected1)
+                if (!selected1)
                 {
                     selected1 = true;
                     selected2 = false;
@@ -183,13 +185,13 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         inv2 = new JButton("");
         inv2.setBounds(190, 690, 60, 60);
         inv2.setBorderPainted(false);
-        //action listener for the second inventory slot
+        // action listener for the second inventory slot
         inv2.addActionListener(new ActionListener()
         {
-            //every time the button is clicked
+            // every time the button is clicked
             public void actionPerformed(ActionEvent e)
             {
-                if(!selected2)
+                if (!selected2)
                 {
                     selected1 = false;
                     selected2 = true;
@@ -204,13 +206,13 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         inv3 = new JButton("");
         inv3.setBounds(350, 690, 60, 60);
         inv3.setBorderPainted(false);
-        //action listener for the third inventory slot
+        // action listener for the third inventory slot
         inv3.addActionListener(new ActionListener()
         {
-            //every time the button is clicked
+            // every time the button is clicked
             public void actionPerformed(ActionEvent e)
             {
-                if(!selected3)
+                if (!selected3)
                 {
                     selected1 = false;
                     selected2 = false;
@@ -225,13 +227,13 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         inv4 = new JButton("");
         inv4.setBounds(510, 690, 60, 60);
         inv4.setBorderPainted(false);
-        //action listener for the fourth inventory slot
+        // action listener for the fourth inventory slot
         inv4.addActionListener(new ActionListener()
         {
-            //every time the button is clicked
+            // every time the button is clicked
             public void actionPerformed(ActionEvent e)
             {
-                if(!selected4)
+                if (!selected4)
                 {
                     selected1 = false;
                     selected2 = false;
@@ -246,13 +248,13 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         inv5 = new JButton("");
         inv5.setBounds(670, 690, 60, 60);
         inv5.setBorderPainted(false);
-        //action listener for the fifth inventory slot
+        // action listener for the fifth inventory slot
         inv5.addActionListener(new ActionListener()
         {
-            //every time the button is clicked
+            // every time the button is clicked
             public void actionPerformed(ActionEvent e)
             {
-                if(!selected5)
+                if (!selected5)
                 {
                     selected1 = false;
                     selected2 = false;
@@ -289,7 +291,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
         previousPlayerPosition = new ArrayDeque<Point>();
     }
-    //generates random locations for the items
+
+    // generates random locations for the items
     private Point[] generateRandomLocations(int locationCount)
     {
         Point[] locations = new Point[locationCount];
@@ -299,7 +302,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         }
         return locations;
     }
-    //gets the top left of the screen in terms of the map
+
+    // gets the top left of the screen in terms of the map
     private Point getScreenTopLeft()
     {
         Point result = new Point();
@@ -347,10 +351,12 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     {
         Point screenPosition = convertPosition(position);
         g.drawImage(image, screenPosition.x, screenPosition.y, dimension.width, dimension.height, null);
-        // g.drawRect(screenPosition.x, screenPosition.y, dimension.width, dimension.height);
+        // g.drawRect(screenPosition.x, screenPosition.y, dimension.width,
+        // dimension.height);
         return screenPosition;
     }
-    //draws everything on the screen with the offset
+
+    // draws everything on the screen with the offset
     private Point drawWithOffset(Graphics g, Point original, Image image, Point offset, Dimension dimension)
     {
         Point screenPosition = new Point(original.x + offset.x, original.y + offset.y);
@@ -362,8 +368,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
-        g.drawImage(back, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT, 
-            topLeft.x, topLeft.y, topLeft.x + SCREEN_WIDTH, topLeft.y + SCREEN_HEIGHT, null, null);
+        g.drawImage(back, 0, 0, NightOfBarney.FRAME_WIDTH, NightOfBarney.FRAME_HEIGHT,
+                topLeft.x, topLeft.y, topLeft.x + SCREEN_WIDTH, topLeft.y + SCREEN_HEIGHT, null, null);
 
         if (!songStarted)
         {
@@ -499,8 +505,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         g.setFont(minecraft);
         g.setColor(Color.WHITE);
         g.drawString("" + medkits.getCount(), 405, 755);
-        if(bulletCooldown)
-            g.drawString("" + gunTimeValue, 75, 755);
+        if (bulletCooldown)
+            g.drawString(String.format("%.1f", shotCooldownLeft / 1000.0), 75, 755);
         g.drawString("" + cookies.getCount(), 725, 755);
         g.drawString("" + apples.getCount(), 565, 755);
         g.drawString(gasItems.getCount() + "/3", 245, 755);
@@ -516,13 +522,13 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             g.drawString(showingSentence4, 100, 300);
         }
     }
-    //returns random coordinates for the top left of the items
+
+    // returns random coordinates for the top left of the items
     public Point itemCoordinateMaker()
     {
         Point position = new Point(
-            (int)(Math.random()*1620),
-            (int)(Math.random()*1620)
-        );
+                (int) (Math.random() * 1620),
+                (int) (Math.random() * 1620));
 
         boolean works = true;
         for (int i = 0; i < currentBorder.length; i++)
@@ -539,7 +545,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         else
             return itemCoordinateMaker();
     }
-    //checks if the user clicked the screen
+
+    // checks if the user clicked the screen
     private boolean containsOnScreen(Point itemLocation, Dimension itemDims, Point point)
     {
         itemLocation = convertPosition(itemLocation);
@@ -547,7 +554,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         boolean containsY = itemLocation.y <= point.y && point.y <= itemLocation.y + itemDims.height;
         return containsX && containsY;
     }
-    //checks if the character's next position will be in a border
+
+    // checks if the character's next position will be in a border
     private Point getNextPlayerPosition()
     {
         Point newPosition = new Point(playerPosition);
@@ -601,7 +609,9 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             return new Point(playerPosition);
         }
     }
-    //barney's supernatural ability, that makes it so that you take damage if you move
+
+    // barney's supernatural ability, that makes it so that you take damage if you
+    // move
     private void updateNoMoveTime()
     {
         if (!playerDamageOnMove)
@@ -632,7 +642,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             }
         }
     }
-    //for the text that shows at the start of the game
+
+    // for the text that shows at the start of the game
     private void showStartingText()
     {
         if (!barneySpawn)
@@ -655,7 +666,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             }
         }
     }
-    //shows the spawn countdown
+
+    // shows the spawn countdown
     private void showSpawnCountdown()
     {
         if (!barneySpawn)
@@ -689,7 +701,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             }
         }
     }
-    //performs barney's physical attack
+
+    // performs barney's physical attack
     private void performBarneyAttack()
     {
         if (barneySpawn)
@@ -704,8 +717,10 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
                 playerBottomRight.translate(PLAYER_DIMS.width, PLAYER_DIMS.height);
                 barneyBottomRight.translate(BARNEY_DIMS.width, BARNEY_DIMS.height);
 
-                boolean separateX = (playerBottomRight.x < barneyTopRight.x) || (barneyBottomRight.x < playerTopRight.x);
-                boolean separateY = (playerBottomRight.y < barneyTopRight.y) || (barneyBottomRight.y < playerTopRight.y);
+                boolean separateX = (playerBottomRight.x < barneyTopRight.x)
+                        || (barneyBottomRight.x < playerTopRight.x);
+                boolean separateY = (playerBottomRight.y < barneyTopRight.y)
+                        || (barneyBottomRight.y < playerTopRight.y);
 
                 if (!separateX && !separateY)
                 {
@@ -724,7 +739,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             }
         }
     }
-    //updates barney's position
+
+    // updates barney's position
     private void updateBarneyPosition()
     {
         if (barneySpawn)
@@ -764,7 +780,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             }
         }
     }
-    //updates the player sprite, for running and standing still
+
+    // updates the player sprite, for running and standing still
     private void updatePlayerSprite()
     {
         if (moving)
@@ -773,7 +790,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             String ims = "images/";
             if (!movingLeft)
             {
-                
+
                 if (im >= 8)
                     im = 1;
                 ims += "Right" + im + ".png";
@@ -842,20 +859,12 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
             if (bulletCooldown)
             {
-                gunTime -= 4;
-                gunTimeValue = "" + gunTime;
-                if (gunTime <= 1000)
+                shotCooldownLeft -= UPDATE_DELAY;
+
+                if (shotCooldownLeft <= 0)
                 {
-                    gunTimeValue = "";
-                    gunTime = 10000;
+                    shotCooldownLeft = GUN_SHOT_DELAY;
                     bulletCooldown = false;
-                }
-                else
-                    gunTimeValue = "" + gunTimeValue.charAt(1) + "." + gunTimeValue.charAt(2);
-                if (gunTimeValue.equals("0.0"))
-                {
-                    bulletCooldown = false;
-                    gunTimeValue = "";
                 }
             }
 
@@ -894,12 +903,14 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             grabFocus();
         }
     }
-    //keeps track of the items on the ground
+
+    // keeps track of the items on the ground
     class CollectibleSet
     {
         private Collectible[] items;
         int collectedCount;
-        //looks at the collectible class for the each item's information
+
+        // looks at the collectible class for the each item's information
         public CollectibleSet(Image image, Point[] locations, Dimension dimension)
         {
             items = new Collectible[locations.length];
@@ -907,10 +918,11 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             {
                 items[i] = new Collectible(image, locations[i], dimension);
             }
-            
+
             collectedCount = 0;
         }
-        //draws the items
+
+        // draws the items
         public void drawAll(Graphics g)
         {
             for (int i = 0; i < items.length; i++)
@@ -918,36 +930,46 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
                 items[i].draw(g);
             }
         }
-        //checks if the item is collected
-        public void tryCollecting(Point clickPos)
+
+        // checks if the item is collected
+        public boolean tryCollecting(Point clickPos)
         {
+            boolean anySelected = false;
+
             for (int i = 0; i < items.length; i++)
             {
                 if (items[i].checkIfCollected(clickPos))
                 {
+                    anySelected = true;
                     collectedCount++;
                 }
             }
+
+            return anySelected;
         }
-        //gets the count for each item
+
+        // gets the count for each item
         public int getCount()
         {
             return collectedCount;
         }
-        //reduces the count when the item is collected
+
+        // reduces the count when the item is collected
         public void useItem()
         {
             collectedCount--;
         }
     }
-    //class for drawing the items
+
+    // class for drawing the items
     class Collectible
     {
         private Image image;
         private Point location;
         private Dimension dimension;
         private boolean picked;
-        //gives information for the item to draw it
+
+        // gives information for the item to draw it
         public Collectible(Image image, Point location, Dimension dimension)
         {
             this.image = image;
@@ -955,6 +977,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             this.dimension = dimension;
             picked = false;
         }
+
         // draws the image
         public void draw(Graphics g)
         {
@@ -963,7 +986,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
                 drawOnScreen(g, image, location, dimension);
             }
         }
-        //checks if the item is collected, and sees if it should be drawn or not
+
+        // checks if the item is collected, and sees if it should be drawn or not
         public boolean checkIfCollected(Point clickPos)
         {
             if (!picked && containsOnScreen(location, dimension, clickPos))
@@ -973,7 +997,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             }
             return false;
         }
-        //returns picked for the item
+
+        // returns picked for the item
         public boolean isPicked()
         {
             return picked;
@@ -983,27 +1008,30 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     // movement input
     public void keyPressed(KeyEvent e)
     {
-        /*if (e.getKeyChar() == 'g')
-        {
-            damage = !damage;
-        }
-        if (e.getKeyChar() == 'e')
-        {
-            playerTimer.stop();
-            manager.showGameOver();
-        }
-        if (e.getKeyChar() == 'k')
-        {
-            // numCookies = 5;
-            // numApples = 5;
-            // numMed = 5;
-        }*/
+        /*
+         * if (e.getKeyChar() == 'g')
+         * {
+         * damage = !damage;
+         * }
+         * if (e.getKeyChar() == 'e')
+         * {
+         * playerTimer.stop();
+         * manager.showGameOver();
+         * }
+         * if (e.getKeyChar() == 'k')
+         * {
+         * // numCookies = 5;
+         * // numApples = 5;
+         * // numMed = 5;
+         * }
+         */
         if (e.getKeyCode() == KeyEvent.VK_SHIFT)
         {
             shiftSprint = true;
         }
         if (e.getKeyChar() == 'd' || e.getKeyChar() == 'a' || e.getKeyChar() == 's' || e.getKeyChar() == 'w'
-                || e.getKeyCode() == KeyEvent.VK_SHIFT || e.getKeyChar() == 'D' || e.getKeyChar() == 'A' || e.getKeyChar() == 'S' || e.getKeyChar() == 'W')
+                || e.getKeyCode() == KeyEvent.VK_SHIFT || e.getKeyChar() == 'D' || e.getKeyChar() == 'A'
+                || e.getKeyChar() == 'S' || e.getKeyChar() == 'W')
         {
             moving = true;
             started = true;
@@ -1054,76 +1082,89 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
     public void keyTyped(KeyEvent e)
     {
     }
-    //activates the abilities in the inventory slots and picks up stuff
-    public void mouseClicked(MouseEvent e)
+
+    // activates the abilities in the inventory slots and picks up stuff
+    public void mousePressed(MouseEvent e)
     {
-        if (selected1)
+        if (!tryCollectingAll(e))
         {
-            if (!bulletCooldown)
+            if (selected1)
             {
-                stun = true;
-                bulletCooldown = true;
-            }
-        }
-        else if (selected2)
-        {
-        }
-        else if (selected3)
-        {
-            if (medkits.getCount() > 0)
-            {
-                medkits.useItem();
-                health += 50;
-                if (health > 250)
+                if (!bulletCooldown)
                 {
-                    health = 250;
+                    stun = true;
+                    bulletCooldown = true;
                 }
             }
-        }
-        else if (selected4)
-        {
-            if (apples.getCount() > 0)
+            else if (selected2)
             {
-                apples.useItem();
-                stamina += 50;
-                if (stamina >= 125)
-                    sprintInt = 125;
             }
-        }
-        else if (selected5)
-        {
-            if (cookies.getCount() > 0)
+            else if (selected3)
             {
-                cookies.useItem();
-                cookiesActivated = true;
+                if (medkits.getCount() > 0)
+                {
+                    medkits.useItem();
+                    health += 50;
+                    if (health > 250)
+                    {
+                        health = 250;
+                    }
+                }
             }
-        }
-        else
-        {
-            Point clickPos = new Point(e.getX(), e.getY());
-            gasItems.tryCollecting(clickPos);
-            medkits.tryCollecting(clickPos);
-            apples.tryCollecting(clickPos);
-            cookies.tryCollecting(clickPos);
+            else if (selected4)
+            {
+                if (apples.getCount() > 0)
+                {
+                    apples.useItem();
+                    stamina += 50;
+                    if (stamina >= 125)
+                        sprintInt = 125;
+                }
+            }
+            else if (selected5)
+            {
+                if (cookies.getCount() > 0)
+                {
+                    cookies.useItem();
+                    cookiesActivated = true;
+                }
+            }
         }
 
         repaint();
         grabFocus();
     }
 
+    private boolean tryCollectingAll(MouseEvent e)
+    {
+        boolean anySelected = false;
+        Point clickPos = new Point(e.getX(), e.getY());
+
+        anySelected |= gasItems.tryCollecting(clickPos);
+        anySelected |= medkits.tryCollecting(clickPos);
+        anySelected |= apples.tryCollecting(clickPos);
+        anySelected |= cookies.tryCollecting(clickPos);
+
+        return anySelected;
+    }
+
     // nothing inside, does nothing, will do nothing
-    public void mousePressed(MouseEvent e)
-    {}
+    public void mouseClicked(MouseEvent e)
+    {
+    }
 
     // nothing inside, does nothing, will do nothing
     public void mouseReleased(MouseEvent e)
-    {}
+    {
+    }
 
     // nothing inside, does nothing, will do nothing
     public void mouseEntered(MouseEvent e)
-    {}
+    {
+    }
 
     // nothing inside, does nothing, will do nothing
     public void mouseExited(MouseEvent e)
-    {}
+    {
+    }
 }

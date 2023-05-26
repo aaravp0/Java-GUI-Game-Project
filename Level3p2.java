@@ -15,7 +15,7 @@ import javax.swing.Timer;
 import java.awt.BorderLayout;
 
 //level2 class
-public class Level2 extends JPanel implements MouseListener, KeyListener, MouseMotionListener
+public class Level3p2 extends JPanel implements MouseListener, KeyListener, MouseMotionListener
 {
     private Manager manager;
     private Image barGreen, back2, player, bulletMove, countdownImage;
@@ -50,183 +50,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private final static Dimension MED_DIMS = new Dimension(30,30);
 
     //add listeners, components, and set values to variables
-    public void reset()
-    {
-        minecraft = new Font("Minecraft",Font.BOLD,18);
-        greenInt = 1;
-        greenMoving = false;
-        greenMovingLeft = false;
-        cooldownAttack = 500;
-        setLayout(new BorderLayout());
-        JPanel blank = new JPanel();
-        blank.setSize(800,720);
-        blank.setOpaque(false);
-        add(blank, BorderLayout.CENTER);
-        JPanel blank2 = new JPanel();
-        shootSelected = false;
-        blank2.setSize(800, 80);
-        shoot = new JButton("");
-        shoot.setPreferredSize(new Dimension(80,80));
-        heal = new JButton("");
-        shoot.setBorderPainted(false);
-        heal.setBorderPainted(false);
-        medLocations = new Point[5];
-        medPresent = new boolean[5];
-        heal.setPreferredSize(new Dimension(80,80));
-        numBullets = 0;
-        numMed = 0;
-        health = 250;
-        mArr = new int[5];
-        shootHover = true;
-        shoot.addMouseListener(new MouseAdapter()
-        {
-            // when mouse is over the button
-            public void mouseEntered(MouseEvent e)
-            {
-                shootHover = false;
-                repaint();
-            }
-
-            // when mouse is away from the button
-            public void mouseExited(MouseEvent e)
-            {
-                shootHover = true;
-                repaint();
-            }
-        });
-        healHover = true;
-        heal.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            // when mouse is over the button
-            public void mouseEntered(MouseEvent e)
-            {
-                healHover = false;
-                repaint();
-                grabFocus();
-            }
-
-            // when mouse is away from the button
-            public void mouseExited(MouseEvent e)
-            {
-                healHover = true;
-                repaint();
-                grabFocus();
-            }
-        });
-        shoot.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                if(shootSelected)
-                {
-                    shootSelected = false;
-                }
-                else
-                {
-                    shootSelected = true;
-                }
-            }
-        });
-        heal.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                if(numMed >= 1)
-                {
-                    numMed--;
-                    health+=60;
-                    if(health >= 250)
-                        health = 250;
-                    shootSelected = false;
-                }
-            }
-        });
-        med = new ImageIcon("images/med.png").getImage();
-        //blank2.setLayout(new BorderLayout());
-        blank2.add(shoot);
-        blank2.add(heal);
-        blank2.setOpaque(false);
-        add(blank2, BorderLayout.SOUTH);
-        this.manager = manager;
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        addKeyListener(this);
-        mag = 0;
-        greenSpawn = false;
-        bulletStop = false;
-        blArr = new int[10];
-        bl = 0;
-        im = 0;
-        
-        xPos = yPos = 400;
-        barGreen = new ImageIcon("images/GreenStand.png").getImage();
-        back2 = new ImageIcon("images/Background2.png").getImage();
-        player = new ImageIcon("images/MainStandLeft.png").getImage();
-        bulletMove = new ImageIcon("images/Bullet.png").getImage();
-        countdownImage = new ImageIcon("images/Ten.png").getImage();
-        bulletShow = false;
-        movingLeft = true;
-        countdown = true;
-        gArrX = new int[5];
-        gArrY = new int[5];
-        gGoTo = new int[2];
-        greenHealth = 500;
-        currentBorder = new Rectangle2[]
-        {
-            new Rectangle2(0,700,69,776),
-            new Rectangle2(43,590,69,776),
-            new Rectangle2(43,590,177,669),
-            new Rectangle2(147,537,230,610),
-            new Rectangle2(198,491,231,610),
-            new Rectangle2(198,491,285,558),
-            new Rectangle2(261,429,285,558),
-            new Rectangle2(261,429,339,501),
-            new Rectangle2(314,369,341,501),
-            new Rectangle2(314,369,395,448),
-            new Rectangle2(368,316,395,444),
-            new Rectangle2(368,316,447,391),
-            new Rectangle2(447,309,476,445),
-            new Rectangle2(473,361,507,445),
-            new Rectangle2(0,0,1,1215),
-            new Rectangle2(0,0,1215,1),
-            new Rectangle2(1214,0,1215,1215),
-            new Rectangle2(0,1214,1215,1215),
-            new Rectangle2(602,375,709,446),
-            new Rectangle2(631,320,679,375),
-            new Rectangle2(710,370,732,606),
-            new Rectangle2(732,531,763,606),
-            new Rectangle2(764,533,794,660),
-            new Rectangle2(794,588,957,660),
-            new Rectangle2(955,543,980,656),
-            new Rectangle2(980,540,1086,608),
-            new Rectangle2(1063,300,1088,611),
-            new Rectangle2(1037,299,1088,322),
-            new Rectangle2(1016,251,1037,322),
-            new Rectangle2(958,106,986,264),
-            new Rectangle2(906,155,958,264),
-            new Rectangle2(965,67,1037,168),
-            new Rectangle2(1014,0,1035,168),
-            new Rectangle2(320,720,160,80)
-        };
-
-        bulletIcon = new ImageIcon("images/Bullet.png").getImage();
-        bulletPresent = new boolean[NUM_GROUND_BULLETS];
-        bulletLocations = new Point[NUM_GROUND_BULLETS];
-        for(int i = 0; i < 10; i++)
-        {
-            blArr[i] = 0;
-        }
-        for(int i = 0; i < 5; i++)
-        {
-            mArr[i] = 0;
-        }
-
-        PlayerMover playerMover = new PlayerMover();
-        playerTimer = new Timer(40,playerMover);
-        bulletLocator();
-        setBackground(Color.WHITE);
-    }
-    public Level2(Manager manager)
+    public Level3p2(Manager manager)
     {
         minecraft = new Font("Minecraft",Font.BOLD,18);
         greenInt = 1;
@@ -558,8 +382,8 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             {
                 showSpawnCountdown();
             }
-            if (bulletStop)
-            {
+            /*if (bulletStop)
+            {*/
                 for (int i = 0; i < NUM_GROUND_BULLETS; i++)
                 {
                     if (bulletPresent[i])
@@ -581,9 +405,9 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
                         }
                     }
                 }
-            }
-            if (medStop)
-            {
+            //}
+            /*if (medStop)
+            {*/
                 for (int i = 0; i < NUM_GROUND_MED; i++)
                 {
                     if (medPresent[i])
@@ -603,7 +427,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
                         }
                     }
                 }
-            }
+            //}
 
             int charPosY = yPos;
             int charPosX = xPos;

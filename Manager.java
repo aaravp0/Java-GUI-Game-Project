@@ -11,12 +11,21 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.io.Console;
+import java.nio.charset.Charset;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import static java.lang.System.out;
 
 //class that manages all of the panels in cardlayout
 class Manager extends JPanel
 {
     private CardLayout layout;
     private Blood bloodPanel;
+    private Level1 lvl1;
+    private Level2 lvl2;
+    private Level3p1 lvl3;
     private Timer bloodTimer;
     private String nextLevelName;
 
@@ -53,14 +62,18 @@ class Manager extends JPanel
         layout = new CardLayout();
         setLayout(layout);
 
+        lvl1 = new Level1(this);
+        lvl2 = new Level2(this);
+        lvl3 = new Level3p1(this);
         bloodPanel = new Blood();
 
         add(new StartScreen(this), START_SCREEN_NAME);
         add(new JPanel(), END_SCREEN_NAME);
         add(bloodPanel, BLOOD_PANEL_NAME);
-        add(new Level1(this), LEVEL_1_NAME);
-        add(new Level2(this), LEVEL_2_NAME);
-        // add(new Level3(this), LEVEL_3_NAME);
+        add(lvl1, LEVEL_1_NAME);
+        add(lvl2, LEVEL_2_NAME);
+        add(lvl3, LEVEL_3_NAME);
+
         add(new LevelSelect(this), LEVEL_SELECT_NAME);
         add(new GameOver1(), GAME_OVER_NAME);
 
@@ -71,18 +84,21 @@ class Manager extends JPanel
     public void showLevelOne()
     {
         nextLevelName = LEVEL_1_NAME;
+        lvl1 = new Level1(this);
         playBloodTransition();
     }
     //shows level 2
     public void showLevelTwo()
     {
         nextLevelName = LEVEL_2_NAME;
+        
         playBloodTransition();
     }
     //shows level 3
     public void showLevelThree()
     {
-        nextLevelName = LEVEL_2_NAME;
+        nextLevelName = LEVEL_3_NAME;
+        lvl3 = new Level3p1(this);
         playBloodTransition();
     }
     //shows the level select screen

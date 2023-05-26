@@ -59,8 +59,8 @@ class Manager extends JPanel
         add(new JPanel(), END_SCREEN_NAME);
         add(bloodPanel, BLOOD_PANEL_NAME);
         add(new Level1(this), LEVEL_1_NAME);
-        add(new Level2(), LEVEL_2_NAME);
-        // add(new Level3(), LEVEL_3_NAME);
+        add(new Level2(this), LEVEL_2_NAME);
+        // add(new Level3(this), LEVEL_3_NAME);
         add(new LevelSelect(this), LEVEL_SELECT_NAME);
         add(new GameOver1(), GAME_OVER_NAME);
 

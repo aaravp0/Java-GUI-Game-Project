@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -9,7 +10,6 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.awt.Font;
 import java.awt.Point;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -17,18 +17,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
 public class Level3p1 extends JPanel implements KeyListener, MouseListener
 {
     // size of the window that is mapped to the screen
     private final static Dimension SCREEN_DIMS = new Dimension(200, 300);
-    private final static Point START = new Point(400, 400);
+    private final static Point START = new Point(36, 547);
 
     // background information
     private final static Dimension BACKGROUND_DIMS = new Dimension(1392, 960);
 
     private final static int UPDATE_DELAY = 40;
 
-    private final static Dimension PLAYER_DIMS = new Dimension(75, 75);
+    private final static Dimension PLAYER_DIMS = new Dimension(50, 50);
     private final static Dimension BARNEY_DIMS = new Dimension(100, 150);
     private final static Dimension CHILD_DIMS = new Dimension(50, 50);
     private final static Dimension MEDKIT_DIMS = new Dimension(60, 60);
@@ -76,12 +77,15 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
     private Point playerPosition, barneyPosition;
 
     private Point topLeft;
+    private CardLayout cl;
 
     // declares all of the variables and timers
-    public Level3p1(Manager manager)
+    public void reset(Manager manager)
     {
         this.manager = manager;
         setLayout(new BorderLayout());
+        CardLayout cl = new CardLayout();
+        setLayout(cl);
         songStarted = false;
         noMoveTime = 3000;
         noMoveTime2 = 300;
@@ -89,7 +93,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         minecraft = new Font("Minecraft", Font.BOLD, 16);
         currentBorder = new Rectangle[]
         {
-                new Rectangle(132, 127, 466, 165),
+            new Rectangle(132, 127, 466, 165),
         };
 
         cookiesActivated = false;
@@ -262,6 +266,10 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         cookies = new CollectibleSet(cookie, generateRandomLocations(TOTAL_COOKIES), COOKIE_DIMS);
 
         previousPlayerPosition = new ArrayDeque<Point>();
+    }
+    public Level3p1(Manager manager)
+    {
+        reset(manager);
     }
 
     // generates random locations for the items

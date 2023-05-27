@@ -11,12 +11,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import java.io.Console;
-import java.nio.charset.Charset;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import static java.lang.System.out;
 
 //class that manages all of the panels in cardlayout
 class Manager extends JPanel
@@ -84,21 +78,21 @@ class Manager extends JPanel
     public void showLevelOne()
     {
         nextLevelName = LEVEL_1_NAME;
-        lvl1 = new Level1(this);
+        lvl1.reset(this);
         playBloodTransition();
     }
     //shows level 2
     public void showLevelTwo()
     {
         nextLevelName = LEVEL_2_NAME;
-        
+        lvl2.reset(this);
         playBloodTransition();
     }
     //shows level 3
     public void showLevelThree()
     {
         nextLevelName = LEVEL_3_NAME;
-        lvl3 = new Level3p1(this);
+        lvl3.reset(this);
         playBloodTransition();
     }
     //shows the level select screen

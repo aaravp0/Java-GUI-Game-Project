@@ -79,8 +79,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
     private Point topLeft;
 
-    // declares all of the variables and timers
-    public Level1(Manager manager)
+    public void reset(Manager manager)
     {
         this.manager = manager;
         setLayout(new BorderLayout());
@@ -289,6 +288,11 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         cookies = new CollectibleSet(cookie, generateRandomLocations(TOTAL_COOKIES), COOKIE_DIMS);
 
         previousPlayerPosition = new ArrayDeque<Point>();
+    }
+    // declares all of the variables and timers
+    public Level1(Manager manager)
+    {
+        reset(manager);
     }
 
     // generates random locations for the items

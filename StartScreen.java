@@ -80,6 +80,7 @@ public class StartScreen extends JPanel
             // everytime button is clicked
             public void actionPerformed(ActionEvent e)
             {
+                themeSong.stop();
                 manager.showLevelSelect();
             }
         });

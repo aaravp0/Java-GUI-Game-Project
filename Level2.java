@@ -13,6 +13,13 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.awt.BorderLayout;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
+import java.io.IOException;
 
 //level2 class
 public class Level2 extends JPanel implements MouseListener, KeyListener, MouseMotionListener
@@ -22,7 +29,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private Image bulletIcon;
     private Timer playerTimer;
     private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, greenInt, numGreenImage, numMed, cooldownAttack, mag, ml;
-    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover;
+    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover,songStarted;
     private Image med;
     private JButton shoot, heal;
     private Rectangle2[] currentBorder;
@@ -34,6 +41,8 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     // bullet location
     private double bulletX, bulletY;
     private double bulletAngle;
+
+    private Clip themeSong, scream2;
 
     private final static int BARNEY_X_SPEED = 3;
     private final static int BARNEY_Y_SPEED = 3;
@@ -49,9 +58,68 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private final static int NUM_GROUND_MED = 5;
     private final static Dimension MED_DIMS = new Dimension(30,30);
 
+    private String THEME_SONG = "sounds/barneyTheme.wav";
+    private String SCREAM_SONG = "sounds/Scream2.wav";
+
+    private void playClip()
+    {
+        if(!songStarted)
+        {
+            themeSong.start();
+            themeSong.loop(Clip.LOOP_CONTINUOUSLY);
+            songStarted = true;
+        }
+    }
     //add listeners, components, and set values to variables
     public void reset(Manager manager)
     {
+        songStarted = false;
+        themeSong = null;
+        try
+        {
+            AudioInputStream audioInputStream = AudioSystem
+                    .getAudioInputStream(new File(THEME_SONG).getAbsoluteFile());
+            themeSong = AudioSystem.getClip();
+            themeSong.open(audioInputStream);
+        } catch (IOException e)
+        {
+            System.err.printf("Unable to find sound clip %s\n", THEME_SONG);
+            e.printStackTrace();
+            System.exit(1);
+        } catch (UnsupportedAudioFileException e)
+        {
+            System.err.printf("Unable to open sound clip %s\n", THEME_SONG);
+            e.printStackTrace();
+            System.exit(1);
+        } catch (LineUnavailableException e)
+        {
+            System.err.printf("Unable to open sound clip %s\n", THEME_SONG);
+            e.printStackTrace();
+            System.exit(1);
+        }
+        scream2 = null;
+        try
+        {
+            AudioInputStream audioInputStream = AudioSystem
+                    .getAudioInputStream(new File(SCREAM_SONG).getAbsoluteFile());
+            scream2 = AudioSystem.getClip();
+            scream2.open(audioInputStream);
+        } catch (IOException e)
+        {
+            System.err.printf("Unable to find sound clip %s\n", THEME_SONG);
+            e.printStackTrace();
+            System.exit(1);
+        } catch (UnsupportedAudioFileException e)
+        {
+            System.err.printf("Unable to open sound clip %s\n", THEME_SONG);
+            e.printStackTrace();
+            System.exit(1);
+        } catch (LineUnavailableException e)
+        {
+            System.err.printf("Unable to open sound clip %s\n", THEME_SONG);
+            e.printStackTrace();
+            System.exit(1);
+        }
         minecraft = new Font("Minecraft",Font.BOLD,18);
         greenInt = 1;
         greenMoving = false;
@@ -234,6 +302,10 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     //paints the images in level 2
     public void paintComponent(Graphics g)
     {
+        if(!songStarted)
+        {
+            playClip();
+        }
         super.paintComponent(g);
         g.drawImage(back2,0,0,800,800,null);
 
@@ -555,12 +627,15 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     {
         if(greenHealth <= 0)
         {
+            themeSong.stop();
             playerTimer.stop();
             manager.showGameOver();
         }
         else if(health <= 0)
         {
+            themeSong.stop();
             playerTimer.stop();
+            scream2.start();
             manager.showGameOver();
         }
     }

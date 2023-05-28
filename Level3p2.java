@@ -18,10 +18,10 @@ import java.awt.BorderLayout;
 public class Level3p2 extends JPanel implements MouseListener, KeyListener, MouseMotionListener
 {
     private Manager manager;
-    private Image barGreen, back2, player, bulletMove, countdownImage;
+    private Image barGreen, back2, player, bulletMove, countdownImage,bloodSplatter;
     private Image bulletIcon;
     private Timer playerTimer;
-    private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, greenInt, numGreenImage, numMed, cooldownAttack, mag, ml;
+    private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, numMed, cooldownAttack, mag, ml,bloodInt,gunInt;
     private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover;
     private Image med;
     private JButton shoot, heal;
@@ -57,7 +57,6 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
     private void reset(Manager manager)
     {
         minecraft = new Font("Minecraft",Font.BOLD,18);
-        greenInt = 1;
         greenMoving = false;
         greenMovingLeft = false;
         cooldownAttack = 500;
@@ -146,7 +145,6 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             }
         });
         med = new ImageIcon("images/med.png").getImage();
-        //blank2.setLayout(new BorderLayout());
         blank2.add(shoot);
         blank2.add(heal);
         blank2.setOpaque(false);
@@ -161,13 +159,14 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         blArr = new int[10];
         bl = 0;
         im = 0;
-        
+        bloodInt = 50;
         xPos = yPos = 400;
         barGreen = new ImageIcon("images/BarneyStandRight.png").getImage();
         back2 = new ImageIcon("images/Level3p2Back.png").getImage();
         player = new ImageIcon("images/MainStandLeft.png").getImage();
         bulletMove = new ImageIcon("images/Bullet.png").getImage();
         countdownImage = new ImageIcon("images/Ten.png").getImage();
+        bloodSplatter = new ImageIcon("images/BloodSplatter.gif").getImage();
         bulletShow = false;
         movingLeft = true;
         countdown = true;
@@ -180,12 +179,17 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             new Rectangle3(0,276,91,603),
             new Rectangle3(146,275,586,375),
             new Rectangle3(146,275,473,606),
-            new Rectangle3(563,491,727,561),
-            new Rectangle3(563,491,624,666),
-            new Rectangle3(657,596,707,673),
-            new Rectangle3(657,596,719,664),
-            new Rectangle3(657,596,728,653),
-            new Rectangle3(,,739,642),
+            new Rectangle3(687,174,872,409),
+            new Rectangle3(1087,295,1159,327),
+            new Rectangle3(1086,325,1229,490),
+            new Rectangle3(1272,295,1414,490),
+            new Rectangle3(1069,769,1241,900),
+            new Rectangle3(1263,770,1423,979),
+            new Rectangle3(1263,770,1342,1022),
+            new Rectangle3(900,1003,1088,1189),
+            new Rectangle3(206,940,370,1190),
+            new Rectangle3(400,1043,512,1188),
+            new Rectangle3(512,1001,686,1189)
         };
 
         bulletIcon = new ImageIcon("images/Bullet.png").getImage();
@@ -257,13 +261,23 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             g.drawImage(countdownImage,350, 50, 100, 100, null);
         if(greenSpawn)
         {
-            /*g.setColor(Color.BLACK);
-            g.drawRect(greenX, greenY, GREEN_DIMS.width, GREEN_DIMS.height);*/
             g.drawImage(barGreen,greenX, greenY,GREEN_DIMS.width,GREEN_DIMS.height,null);
             g.setColor(new Color(197, 167, 119));
             g.fillRect(greenX-15,greenY-15,108,20);
             g.setColor(Color.RED);
             g.fillRect(greenX-11,greenY-11,(int)(greenHealth/5),12);
+            if(bloodInt < 250)
+            {
+                bloodInt+=4;
+                g.drawImage(bloodSplatter,greenX,greenY,GREEN_DIMS.width,GREEN_DIMS.height,null);
+            }
+        }
+        gunInt+=4;
+        if(gunInt <= 30)
+        {
+            g.setColor(Color.WHITE);
+            g.setFont(minecraft);
+            g.drawString("My gun is jammed: " + (30-(int)(gunInt/100)),300,300);
         }
         
         if(healHover)
@@ -650,7 +664,10 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         }
 
         if(hitTarget)
+        {
+            bloodInt = 0;
             greenHealth -= 50;
+        }
         // if we are out of bounds or we hit, then don't show the bullet
         if (newBulletX < 0 || newBulletY < 0 || newBulletX >= 800 || newBulletY >= 800 || hitTarget)
         {

@@ -25,7 +25,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
     private final static Point START = new Point(36, 547);
 
     // background information
-    private final static Dimension BACKGROUND_DIMS = new Dimension(1392, 960);
+    private final static Dimension BACKGROUND_DIMS = new Dimension(1392, 959);
 
     private final static int UPDATE_DELAY = 40;
 
@@ -61,7 +61,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
             noMoveTime, noMoveTime2, barCooldown;
     private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
             selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
-            songStarted, playerDamageOnMove, barAttackCool, damage;
+            songStarted, playerDamageOnMove, barAttackCool, damage,barLeft,barMove,barMove1,barMove2;
     private PlayerMover playerTime;
     private JButton inv1, inv2, inv3, inv4, inv5;
     private String beginSentence, showingSentence, showingSentence2, showingSentence3,
@@ -93,7 +93,129 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         minecraft = new Font("Minecraft", Font.BOLD, 16);
         currentBorder = new Rectangle[]
         {
-            new Rectangle(132, 127, 466, 165),
+            new Rectangle(0,0,117,53),
+            new Rectangle(0,117,153,157),
+            new Rectangle(136,116,214,156),
+            new Rectangle(157,0,171,9),
+            new Rectangle(171,0,265,11),
+            new Rectangle(218,0,265,40),
+            new Rectangle(218,0,265,66),
+            new Rectangle(231,66,265,88),
+            new Rectangle(246,88,265,94),
+            new Rectangle(253,94,263,113),
+            new Rectangle(265,119,335,151),
+            new Rectangle(306,21,338,69),
+            new Rectangle(376,3,407,50),
+            new Rectangle(417,69,499,72),
+            new Rectangle(414,59,496,69),
+            new Rectangle(417,47,496,59),
+            new Rectangle(420,44,496,47),
+            new Rectangle(423,31,496,44),
+            new Rectangle(426,28,496,31),
+            new Rectangle(429,25,496,28),
+            new Rectangle(445,21,496,25),
+            new Rectangle(448,18,496,21),
+            new Rectangle(451,15,496,18),
+            new Rectangle(382,116,414,163),
+            new Rectangle(433,116,464,163),
+            new Rectangle(505,116,537,163),
+            new Rectangle(546,138,560,157),
+            new Rectangle(543,138,546,151),
+            new Rectangle(546,135,552,138),
+            new Rectangle(559,141,565,176),
+            new Rectangle(565,148,568,173),
+            new Rectangle(568,151,574,163),
+            new Rectangle(546,151,574,160),
+            new Rectangle(552,160,571,163),
+            new Rectangle(556,163,568,173),
+            new Rectangle(543,3,574,50),
+            new Rectangle(634,0,666,36),
+            new Rectangle(584,103,616,138),
+            new Rectangle(679,104,710,138),
+            new Rectangle(347,214,379,261),
+            new Rectangle(429,214,461,261),
+            new Rectangle(483,214,515,261),
+            new Rectangle(688,214,720,261),
+            new Rectangle(732,214,764,261),
+            new Rectangle(0,107,22,135),
+            new Rectangle(35,107,67,135),
+            new Rectangle(0,195,10,223),
+            new Rectangle(22,195,67,223),
+            new Rectangle(22,227,67,258),
+            new Rectangle(123,195,155,223),
+            new Rectangle(152,220,186,258),
+            new Rectangle(243,204,300,290),
+            new Rectangle(111,305,142,334),
+            new Rectangle(13,309,13,520),
+            new Rectangle(60,413,325,520),
+            new Rectangle(335,413,439,520),
+            new Rectangle(439,413,477,450),
+            new Rectangle(505,384,562,460),
+            new Rectangle(628,422,650,432),
+            new Rectangle(628,432,672,482),
+            new Rectangle(685,422,729,482),
+            new Rectangle(742,413,912,520),
+            new Rectangle(912,437,998,520),
+            new Rectangle(565,330,631,355),
+            new Rectangle(666,331,792,359),
+            new Rectangle(792,299,836,360),
+            new Rectangle(803,210,824,299),
+            new Rectangle(761,0,877,176),
+            new Rectangle(848,0,1092,103),
+            new Rectangle(896,107,1022,171),
+            new Rectangle(1019,104,1105,147),
+            new Rectangle(1105,0,1392,137),
+            new Rectangle(1345,137,1392,338),
+            new Rectangle(1275,345,1353,394),
+            new Rectangle(881,204,966,226),
+            new Rectangle(852,249,884,277),
+            new Rectangle(890,249,922,277),
+            new Rectangle(947,249,978,277),
+            new Rectangle(1032,220,1070,258),
+            new Rectangle(893,312,987,340),
+            new Rectangle(1029,312,1073,337),
+            new Rectangle(1013,353,1073,372),
+            new Rectangle(931,379,980,419),
+            new Rectangle(0,571,13,950),
+            new Rectangle(71,678,231,719),
+            new Rectangle(63,574,322,693),
+            new Rectangle(339,576,433,601),
+            new Rectangle(362,601,426,641),
+            new Rectangle(357,621,407,688),
+            new Rectangle(417,630,451,697),
+            new Rectangle(451,640,505,697),
+            new Rectangle(571,640,628,697),
+            new Rectangle(625,566,676,615),
+            new Rectangle(682,657,733,634),
+            new Rectangle(682,657,707,646),
+            new Rectangle(749,565,1004,643),
+            new Rectangle(749,565,865,694),
+            new Rectangle(896,646,928,674),
+            new Rectangle(940,646,972,674),
+            new Rectangle(978,706,1010,734),
+            new Rectangle(1004,413,1079,454),
+            new Rectangle(1057,485,1073,505),
+            new Rectangle(1073,505,1392,517),
+            new Rectangle(1250,427,1392,517),
+            new Rectangle(1120,447,1190,473),
+            new Rectangle(1057,573,1392,649),
+            new Rectangle(1249,649,1392,774),
+            new Rectangle(127,826,1319,854),
+            new Rectangle(1332,826,1363,854),
+            new Rectangle(1054,775,1224,892),
+            new Rectangle(1193,889,1224,930),
+            new Rectangle(1291,902,1313,927),
+            new Rectangle(1332,902,1354,927),
+            new Rectangle(1291,943,1313,959),
+            new Rectangle(1086,921,1117,949),
+            new Rectangle(554,737,1007,865),
+            new Rectangle(742,865,1007,924),
+            new Rectangle(213,737,508,801),
+            new Rectangle(211,742,518,905),
+            new Rectangle(118,775,149,804),
+            new Rectangle(0,877,74,959),
+            new Rectangle(1094,701,1121,730),
+            new Rectangle(1094,701,1164,715)
         };
 
         cookiesActivated = false;
@@ -720,7 +842,6 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         }
     }
 
-    // updates barney's position
     private void updateBarneyPosition()
     {
         if (barneySpawn)
@@ -740,24 +861,57 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
 
             if (!stun)
             {
+                barMove1 = barMove2 = false;
                 if (target.x > barneyPosition.x)
                 {
                     barneyPosition.x += BARNEY_X_SPEED;
+                    barLeft = false;
+                    barMove1 = true;
                 }
                 else if (target.x < barneyPosition.x)
                 {
                     barneyPosition.x -= BARNEY_X_SPEED;
+                    barLeft = true;
+                    barMove1 = true;
                 }
 
                 if (target.y > barneyPosition.y)
                 {
                     barneyPosition.y += BARNEY_Y_SPEED;
+                    barMove2 = true;
                 }
                 else if (target.y < barneyPosition.y)
                 {
                     barneyPosition.y -= BARNEY_Y_SPEED;
+                    barMove2 = true;
                 }
+
+                if(!barMove1 && !barMove2)
+                    barMove = false;
+                else
+                    barMove = true;
             }
+            else
+                barMove = false;
+
+        }
+    }
+    //updates barney's sprite
+    private void updateBarneySprite()
+    {
+        if(barMove)
+        {
+            if(barLeft)
+                barneyBlood = new ImageIcon("images/BarneyLeft.gif").getImage();
+            else
+                barneyBlood = new ImageIcon("images/BarneyRun.gif").getImage();
+        }
+        else
+        {
+            if(barLeft)
+                barneyBlood = new ImageIcon("images/BarneyStandLeft.png").getImage();
+            else
+                barneyBlood = new ImageIcon("images/BarneyStandRight.png").getImage();
         }
     }
 
@@ -874,6 +1028,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
             topLeft = getScreenTopLeft();
 
             updateBarneyPosition();
+            updateBarneySprite();
             updatePlayerSprite();
 
             if (!damage)

@@ -62,7 +62,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             noMoveTime, noMoveTime2, barCooldown;
     private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
             selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
-            songStarted, playerDamageOnMove, barAttackCool, damage;
+            songStarted, playerDamageOnMove, barAttackCool, damage, barLeft, barMove1,barMove2,barMove;
     private PlayerMover playerTime;
     private JButton inv1, inv2, inv3, inv4, inv5;
     private String beginSentence, showingSentence, showingSentence2, showingSentence3,
@@ -765,27 +765,59 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
             if (!stun)
             {
+                barMove1 = barMove2 = false;
                 if (target.x > barneyPosition.x)
                 {
                     barneyPosition.x += BARNEY_X_SPEED;
+                    barLeft = false;
+                    barMove1 = true;
                 }
                 else if (target.x < barneyPosition.x)
                 {
                     barneyPosition.x -= BARNEY_X_SPEED;
+                    barLeft = true;
+                    barMove1 = true;
                 }
 
                 if (target.y > barneyPosition.y)
                 {
                     barneyPosition.y += BARNEY_Y_SPEED;
+                    barMove2 = true;
                 }
                 else if (target.y < barneyPosition.y)
                 {
                     barneyPosition.y -= BARNEY_Y_SPEED;
+                    barMove2 = true;
                 }
+
+                if(!barMove1 && !barMove2)
+                    barMove = false;
+                else
+                    barMove = true;
             }
+            else
+                barMove = false;
+
         }
     }
-
+    //updates barney's sprite
+    private void updateBarneySprite()
+    {
+        if(barMove)
+        {
+            if(barLeft)
+                barneyBlood = new ImageIcon("images/BarneyLeft.gif").getImage();
+            else
+                barneyBlood = new ImageIcon("images/BarneyRun.gif").getImage();
+        }
+        else
+        {
+            if(barLeft)
+                barneyBlood = new ImageIcon("images/BarneyStandLeft.png").getImage();
+            else
+                barneyBlood = new ImageIcon("images/BarneyStandRight.png").getImage();
+        }
+    }
     // updates the player sprite, for running and standing still
     private void updatePlayerSprite()
     {
@@ -899,6 +931,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             topLeft = getScreenTopLeft();
 
             updateBarneyPosition();
+            updateBarneySprite();
             updatePlayerSprite();
 
             if (!damage)

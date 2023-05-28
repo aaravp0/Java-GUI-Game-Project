@@ -162,7 +162,7 @@ public class StartScreen extends JPanel
         ht = new ImageIcon("images/HT.png").getImage();
         of = new ImageIcon("images/OF.png").getImage();
         sad = new ImageIcon("images/BarneySad.png").getImage();
-        bloody = new ImageIcon("images/BarneyBlood.png").getImage();
+        bloody = new ImageIcon("images/BarneyStandLeft.png").getImage();
         bar = new ImageIcon("images/BAR.png").getImage();
         ney = new ImageIcon("images/NEY.png").getImage();
         g.drawImage(the, 20, 20, 250, 200, null);

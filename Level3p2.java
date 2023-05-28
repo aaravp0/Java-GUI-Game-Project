@@ -25,7 +25,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
     private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover;
     private Image med;
     private JButton shoot, heal;
-    private Rectangle2[] currentBorder;
+    private Rectangle3[] currentBorder;
     private boolean[] bulletPresent, medPresent;
     private Point[] bulletLocations, medLocations;
     private int[] blArr, gArrX, gArrY, gGoTo, mArr;
@@ -49,8 +49,12 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
     private final static int NUM_GROUND_MED = 5;
     private final static Dimension MED_DIMS = new Dimension(30,30);
 
-    //add listeners, components, and set values to variables
     public Level3p2(Manager manager)
+    {
+        reset(manager);
+    }
+    //add listeners, components, and set values to variables
+    private void reset(Manager manager)
     {
         minecraft = new Font("Minecraft",Font.BOLD,18);
         greenInt = 1;
@@ -159,8 +163,8 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         im = 0;
         
         xPos = yPos = 400;
-        barGreen = new ImageIcon("images/GreenStand.png").getImage();
-        back2 = new ImageIcon("images/Background2.png").getImage();
+        barGreen = new ImageIcon("images/BarneyStandRight.png").getImage();
+        back2 = new ImageIcon("images/Level3p2Back.png").getImage();
         player = new ImageIcon("images/MainStandLeft.png").getImage();
         bulletMove = new ImageIcon("images/Bullet.png").getImage();
         countdownImage = new ImageIcon("images/Ten.png").getImage();
@@ -171,42 +175,17 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         gArrY = new int[5];
         gGoTo = new int[2];
         greenHealth = 500;
-        currentBorder = new Rectangle2[]
+        currentBorder = new Rectangle3[]
         {
-            new Rectangle2(0,700,69,776),
-            new Rectangle2(43,590,69,776),
-            new Rectangle2(43,590,177,669),
-            new Rectangle2(147,537,230,610),
-            new Rectangle2(198,491,231,610),
-            new Rectangle2(198,491,285,558),
-            new Rectangle2(261,429,285,558),
-            new Rectangle2(261,429,339,501),
-            new Rectangle2(314,369,341,501),
-            new Rectangle2(314,369,395,448),
-            new Rectangle2(368,316,395,444),
-            new Rectangle2(368,316,447,391),
-            new Rectangle2(447,309,476,445),
-            new Rectangle2(473,361,507,445),
-            new Rectangle2(0,0,1,1215),
-            new Rectangle2(0,0,1215,1),
-            new Rectangle2(1214,0,1215,1215),
-            new Rectangle2(0,1214,1215,1215),
-            new Rectangle2(602,375,709,446),
-            new Rectangle2(631,320,679,375),
-            new Rectangle2(710,370,732,606),
-            new Rectangle2(732,531,763,606),
-            new Rectangle2(764,533,794,660),
-            new Rectangle2(794,588,957,660),
-            new Rectangle2(955,543,980,656),
-            new Rectangle2(980,540,1086,608),
-            new Rectangle2(1063,300,1088,611),
-            new Rectangle2(1037,299,1088,322),
-            new Rectangle2(1016,251,1037,322),
-            new Rectangle2(958,106,986,264),
-            new Rectangle2(906,155,958,264),
-            new Rectangle2(965,67,1037,168),
-            new Rectangle2(1014,0,1035,168),
-            new Rectangle2(320,720,160,80)
+            new Rectangle3(0,276,91,603),
+            new Rectangle3(146,275,586,375),
+            new Rectangle3(146,275,473,606),
+            new Rectangle3(563,491,727,561),
+            new Rectangle3(563,491,624,666),
+            new Rectangle3(657,596,707,673),
+            new Rectangle3(657,596,719,664),
+            new Rectangle3(657,596,728,653),
+            new Rectangle3(,,739,642),
         };
 
         bulletIcon = new ImageIcon("images/Bullet.png").getImage();
@@ -632,30 +611,24 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
     }
     public void barneySpriteMover()
     {
-        greenInt+=25;
-        numGreenImage = (int)(greenInt/100);
         if(greenMoving)
         {
-            String greenImageString = "";
             if(greenMovingLeft)
             {
-                greenImageString = "images/LeftGreen" + numGreenImage + ".png";
+                barGreen = new ImageIcon("images/BarneyLeft.gif").getImage();
             }
             else
             {
-                greenImageString = "images/Green" + numGreenImage + ".png";
+                barGreen = new ImageIcon("images/BarneyRun.gif").getImage();
             }
-            barGreen = new ImageIcon(greenImageString).getImage();
         }
         else
         {
             if(movingLeft)
-                barGreen = new ImageIcon("images/GreenStand.png").getImage();
+                barGreen = new ImageIcon("images/BarneyStandRight.png").getImage();
             else
-                barGreen = new ImageIcon("images/GreenStandLeft.png").getImage();
+                barGreen = new ImageIcon("images/BarneyStandLeft.png").getImage();
         }
-        if(greenInt >= 370)
-            greenInt = 100;
     }
     public void updateBullet()
     {
@@ -689,7 +662,6 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             bulletY = newBulletY;
         }
     }
-
     //movement input
     public void keyPressed(KeyEvent e)
     {

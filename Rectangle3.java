@@ -9,8 +9,8 @@ public class Rectangle3
     {
         this.topLeftX = topLeftX*800/1550;
         this.topLeftY = topLeftY*800/1550;
-        this.bottomRightX = bottomRightX*800/1215;
-        this.bottomRightY = bottomRightY*800/1215;
+        this.bottomRightX = bottomRightX*800/1426;
+        this.bottomRightY = bottomRightY*800/1426;
     }
     //returns a boolean to check if the next place the character will move to is in a border
     public boolean contains(int x, int y) 

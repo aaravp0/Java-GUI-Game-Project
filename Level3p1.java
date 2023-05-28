@@ -17,6 +17,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.awt.GraphicsEnvironment;
+import java.io.*;
+import java.awt.FontFormatException;
 
 public class Level3p1 extends JPanel implements KeyListener, MouseListener
 {
@@ -34,34 +37,31 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
     private final static Dimension CHILD_DIMS = new Dimension(40, 40);
     private final static Dimension MEDKIT_DIMS = new Dimension(30, 30);
     private final static Dimension APPLE_DIMS = new Dimension(30, 30);
-    private final static Dimension COOKIE_DIMS = new Dimension(30, 30);
 
-    private final static int PLAYER_X_SPEED = 3;
-    private final static int PLAYER_Y_SPEED = 3;
-    private final static int PLAYER_X_SPEED_SPRINT = 4;
-    private final static int PLAYER_Y_SPEED_SPRINT = 4;
+    private final static int PLAYER_X_SPEED = 2;
+    private final static int PLAYER_Y_SPEED = 2;
+    private final static int PLAYER_X_SPEED_SPRINT = 3;
+    private final static int PLAYER_Y_SPEED_SPRINT = 3;
     private final static int BARNEY_X_SPEED = 1;
     private final static int BARNEY_Y_SPEED = 1;
 
     private final static int NUM_POSITIONS_KEPT = 5000 / UPDATE_DELAY;
 
-    private final static int TOTAL_CHILD = 3;
+    private final static int TOTAL_CHILD = 4;
     private final static int TOTAL_MEDKIT = 5;
     private final static int TOTAL_APPLES = 5;
-    private final static int TOTAL_COOKIES = 2;
 
     private final static int GUN_SHOT_DELAY = 10000;
 
     private Manager manager;
 
-    private Image[] child;
-    private Image run1, back, barneyBlood, number, med, gun, apple, cookie, stunIcon, bloodHead, barneyArm, page;
+    private Image run1, back, barneyBlood, child, number, med, gun, apple, stunIcon, bloodHead, page;
     private Timer playerTimer;
     private int im, health, barneyInt,
-            sprintInt, stamina, shotCooldownLeft, stunTime, cookieTime, index,
-            noMoveTime, noMoveTime2, barCooldown, armInt, childInt;
+            sprintInt, stamina, shotCooldownLeft, stunTime,
+            noMoveTime, noMoveTime2, barCooldown;
     private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
-            selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
+            selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun,
             songStarted, playerDamageOnMove, barAttackCool, damage,barLeft,barMove,barMove1,barMove2;
     private PlayerMover playerTime;
     private JButton inv1, inv2, inv3, inv4, inv5;
@@ -69,24 +69,31 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
     private Rectangle[] currentBorder;
     private Clip clip2;
 
-    private CollectibleSet childItems, medkits, apples, cookies;
+    private CollectibleSet childItems, medkits, apples;
 
     private Queue<Point> previousPlayerPosition;
 
     private Point playerPosition, barneyPosition;
-    private Point[] childPositions;
 
     private Point topLeft;
-    private CardLayout cl;
 
     // declares all of the variables and timers
     public void reset(Manager manager)
     {
+        try 
+        {
+            minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(18f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(minecraft);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch(FontFormatException e) {
+            e.printStackTrace();
+        }
         this.manager = manager;
         setLayout(new BorderLayout());
         CardLayout cl = new CardLayout();
         setLayout(cl);
-        childInt = 4;
         songStarted = false;
         noMoveTime = 3000;
         noMoveTime2 = 300;
@@ -218,15 +225,6 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
             new Rectangle(1094,701,1121,730),
             new Rectangle(1094,701,1164,715)
         };
-
-        childPositions = new Point[]
-        {
-            itemCoordinateMaker(),
-            itemCoordinateMaker(),
-            itemCoordinateMaker(),
-            itemCoordinateMaker()
-        };
-        armInt = 148;
         shotCooldownLeft = GUN_SHOT_DELAY;
         barCooldown = 500;
         barAttackCool = false;
@@ -249,19 +247,11 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         stunIcon = new ImageIcon("images/stun.gif").getImage();
         number = new ImageIcon("images/Ten.png").getImage();
         setBackground(Color.BLACK);
-        child = new Image[]
-        {
-            new ImageIcon("images/Child1.png").getImage(),
-            new ImageIcon("images/Child2.png").getImage(),
-            new ImageIcon("images/Child3.png").getImage(),
-            new ImageIcon("images/Child4.png").getImage()
-        };
+        child = new ImageIcon("images/Child3.png").getImage();
         page = new ImageIcon("images/Sheet.png").getImage();
-        barneyArm = new ImageIcon("images/BarneyArm.png").getImage();
         gun = new ImageIcon("images/Gun.png").getImage();
         med = new ImageIcon("images/med.png").getImage();
         apple = new ImageIcon("images/Apple.png").getImage();
-        cookie = new ImageIcon("images/Cookie.png").getImage();
         started = false;
         selected1 = false;
         selected2 = false;
@@ -379,6 +369,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         JPanel blank2 = new JPanel();
         blank2.setOpaque(false);
         bloodHead = new ImageIcon("images/BloodHead.png").getImage();
+        setLayout(new BorderLayout());
         add(blank, BorderLayout.CENTER);
         add(inv1, BorderLayout.SOUTH);
         add(inv2, BorderLayout.SOUTH);
@@ -391,12 +382,13 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         barneyPosition = new Point(START.x, START.y);
         topLeft = getScreenTopLeft();
 
+        childItems = new CollectibleSet(child, generateRandomLocations(TOTAL_CHILD), CHILD_DIMS);
         medkits = new CollectibleSet(med, generateRandomLocations(TOTAL_MEDKIT), MEDKIT_DIMS);
         apples = new CollectibleSet(apple, generateRandomLocations(TOTAL_APPLES), APPLE_DIMS);
-        cookies = new CollectibleSet(cookie, generateRandomLocations(TOTAL_COOKIES), COOKIE_DIMS);
 
         previousPlayerPosition = new ArrayDeque<Point>();
     }
+    //calls reset to set variables
     public Level3p1(Manager manager)
     {
         reset(manager);
@@ -491,6 +483,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
                 clip2 = AudioSystem.getClip();
                 clip2.open(audioInputStream2);
                 clip2.start();
+                clip2.loop(Clip.LOOP_CONTINUOUSLY);
             } catch (Exception i)
             {
                 System.err.println("Unable to load song for level1");
@@ -504,14 +497,12 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
 
         if (playerDamageOnMove)
         {
-            // g.setColor(Color.RED);
-            // g.fillRect(0, 0, NightOfBarney.FRAME_DIMS.width, NightOfBarney.FRAME_DIMS.height);
             g.drawImage(bloodHead, 200, 200, 400, 400, null);
         }
 
+        childItems.drawAll(g);
         medkits.drawAll(g);
         apples.drawAll(g);
-        cookies.drawAll(g);
 
         drawOnScreen(g, run1, playerPosition, PLAYER_DIMS);
 
@@ -604,7 +595,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         g.drawImage(apple, 515, 695, 50, 50, null);
 
         // cookie
-        g.drawImage(cookie, 675, 695, 50, 50, null);
+        g.drawImage(child, 675, 695, 50, 50, null);
 
         // child
         g.drawImage(page, 195, 695, 50, 50, null);
@@ -617,9 +608,8 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         g.drawString("" + medkits.getCount(), 405, 755);
         if (bulletCooldown)
             g.drawString(String.format("%.1f", shotCooldownLeft / 1000.0), 75, 755);
-        g.drawString("" + cookies.getCount(), 725, 755);
+        g.drawString("" + childItems.getCount() + "/4", 725, 755);
         g.drawString("" + apples.getCount(), 565, 755);
-        //g.drawString(childItems.getCount() + "/3", 245, 755);
     }
 
     // returns random coordinates for the top left of the items
@@ -707,11 +697,6 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         {
             return new Point(playerPosition);
         }
-    }
-
-    private void barneyArm()
-    {
-
     }
     // barney's supernatural ability, that makes it so that you take damage if you
     // move
@@ -929,7 +914,13 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         // everytime timer occurs
         public void actionPerformed(ActionEvent e)
         {
-            if (health <= 0 || childInt == 4)
+            if (childItems.getCount() == 4)
+            {
+                playerTimer.stop();
+                clip2.stop();
+                manager.showPartTwo();
+            }
+            if(health <= 0)
             {
                 playerTimer.stop();
                 clip2.stop();
@@ -946,16 +937,6 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
 
             updateNoMoveTime();
             showSpawnCountdown();
-
-            if (cookiesActivated)
-            {
-                if (cookies.getCount() > 0)
-                {
-                    cookieTime -= 4;
-                    if (cookieTime <= 0)
-                        cookiesActivated = false;
-                }
-            }
 
             if (stun)
             {
@@ -993,11 +974,6 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
             }
 
             stamina = sprintInt * 2;
-            if (cookiesActivated)
-            {
-                shiftSprint = true;
-                sprintInt = 125;
-            }
 
             performBarneyAttack();
             playerPosition = nextPosition;
@@ -1119,23 +1095,12 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
     // movement input
     public void keyPressed(KeyEvent e)
     {
-        /*
-         * if (e.getKeyChar() == 'g')
-         * {
-         * damage = !damage;
-         * }
-         * if (e.getKeyChar() == 'e')
-         * {
-         * playerTimer.stop();
-         * manager.showGameOver();
-         * }
-         * if (e.getKeyChar() == 'k')
-         * {
-         * // numCookies = 5;
-         * // numApples = 5;
-         * // numMed = 5;
-         * }
-         */
+        if(e.getKeyChar() == 'e')
+        {
+            playerTimer.stop();
+                clip2.stop();
+                manager.showPartTwo();
+        }
         if (e.getKeyCode() == KeyEvent.VK_SHIFT)
         {
             shiftSprint = true;
@@ -1208,8 +1173,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
                 }
             }
             else if (selected2)
-            {
-            }
+            {}
             else if (selected3)
             {
                 if (medkits.getCount() > 0)
@@ -1233,13 +1197,7 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
                 }
             }
             else if (selected5)
-            {
-                if (cookies.getCount() > 0)
-                {
-                    cookies.useItem();
-                    cookiesActivated = true;
-                }
-            }
+            {}
         }
 
         repaint();
@@ -1254,7 +1212,6 @@ public class Level3p1 extends JPanel implements KeyListener, MouseListener
         anySelected |= childItems.tryCollecting(clickPos);
         anySelected |= medkits.tryCollecting(clickPos);
         anySelected |= apples.tryCollecting(clickPos);
-        anySelected |= cookies.tryCollecting(clickPos);
 
         return anySelected;
     }

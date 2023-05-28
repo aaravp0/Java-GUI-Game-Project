@@ -14,6 +14,15 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import java.awt.BorderLayout;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.io.File;
+
+import java.awt.GraphicsEnvironment;
+import java.io.*;
+import java.awt.FontFormatException;
+
 //level2 class
 public class Level3p2 extends JPanel implements MouseListener, KeyListener, MouseMotionListener
 {
@@ -22,7 +31,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
     private Image bulletIcon;
     private Timer playerTimer;
     private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, numMed, cooldownAttack, mag, ml,bloodInt,gunInt;
-    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover;
+    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover,songStarted;
     private Image med;
     private JButton shoot, heal;
     private Rectangle3[] currentBorder;
@@ -35,28 +44,39 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
     private double bulletX, bulletY;
     private double bulletAngle;
 
-    private final static int BARNEY_X_SPEED = 3;
-    private final static int BARNEY_Y_SPEED = 3;
-    private final static Dimension GREEN_DIMS = new Dimension(75, 125);
+    private final static int BARNEY_X_SPEED = 2;
+    private final static int BARNEY_Y_SPEED = 2;
+    private final static Dimension GREEN_DIMS = new Dimension(50, 75);
 
     private final static int NUM_GROUND_BULLETS = 10;
     
-    private final static Dimension BULLET_DIMS = new Dimension(20, 10);
+    private final static Dimension BULLET_DIMS = new Dimension(10, 5);
     
     private final static double BULLET_SPEED = 20;
     private final static int NUM_INTERMEDIATE = 10;
     
     private final static int NUM_GROUND_MED = 5;
-    private final static Dimension MED_DIMS = new Dimension(30,30);
+    private final static Dimension MED_DIMS = new Dimension(20,20);
+    
+    private Clip clip2;
 
+    //calls reset
     public Level3p2(Manager manager)
     {
         reset(manager);
     }
     //add listeners, components, and set values to variables
-    private void reset(Manager manager)
+    public void reset(Manager manager)
     {
-        minecraft = new Font("Minecraft",Font.BOLD,18);
+        try {
+            minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(18f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(minecraft);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch(FontFormatException e) {
+            e.printStackTrace();
+        }
         greenMoving = false;
         greenMovingLeft = false;
         cooldownAttack = 500;
@@ -179,7 +199,6 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             new Rectangle3(0,276,91,603),
             new Rectangle3(146,275,586,375),
             new Rectangle3(146,275,473,606),
-            new Rectangle3(687,174,872,409),
             new Rectangle3(1087,295,1159,327),
             new Rectangle3(1086,325,1229,490),
             new Rectangle3(1272,295,1414,490),
@@ -189,7 +208,11 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             new Rectangle3(900,1003,1088,1189),
             new Rectangle3(206,940,370,1190),
             new Rectangle3(400,1043,512,1188),
-            new Rectangle3(512,1001,686,1189)
+            new Rectangle3(512,1001,686,1189),
+            new Rectangle3(0,0,0,1426),
+            new Rectangle3(0,0,1550,0),
+            new Rectangle3(1550,0,1550,1426),
+            new Rectangle3(0,1426,1550,1426),
         };
 
         bulletIcon = new ImageIcon("images/Bullet.png").getImage();
@@ -203,7 +226,6 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         {
             mArr[i] = 0;
         }
-
         PlayerMover playerMover = new PlayerMover();
         playerTimer = new Timer(40,playerMover);
         bulletLocator();
@@ -213,6 +235,24 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
     //paints the images in level 2
     public void paintComponent(Graphics g)
     {
+        if(!songStarted)
+        {
+            songStarted = true;
+            try
+            {
+                String soundName2 = "sounds/BarneyLevelTheme.wav";
+                AudioInputStream audioInputStream2 = AudioSystem
+                        .getAudioInputStream(new File(soundName2).getAbsoluteFile());
+                clip2 = AudioSystem.getClip();
+                clip2.open(audioInputStream2);
+                clip2.start();
+                clip2.loop(Clip.LOOP_CONTINUOUSLY);
+            } catch (Exception i)
+            {
+                System.err.println("Unable to load song for level3p2");
+                System.exit(1);
+            }
+        }
         super.paintComponent(g);
         g.drawImage(back2,0,0,800,800,null);
 
@@ -252,7 +292,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             updateBullet();
         }
 
-        g.drawImage(player, xPos, yPos, 50, 50, null);
+        g.drawImage(player, xPos, yPos, 30, 30, null);
         g.setColor(new Color(197, 167, 119));
         g.fillRect(xPos-10,yPos-19,58,20);
         g.setColor(Color.GREEN);
@@ -273,7 +313,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             }
         }
         gunInt+=4;
-        if(gunInt <= 30)
+        if(gunInt <= 3000)
         {
             g.setColor(Color.WHITE);
             g.setFont(minecraft);
@@ -425,13 +465,13 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             int charPosY = yPos;
             int charPosX = xPos;
             if(moveDown)
-                charPosY+=5;
+                charPosY+=3;
             else if(moveUp)
-                charPosY-=5;
+                charPosY-=3;
             if(moveRight)
-                charPosX+=5;
+                charPosX+=3;
             else if(moveLeft)
-                charPosX-=5;
+                charPosX-=3;
             boolean canMove = true;
             for (int i = 0; i < currentBorder.length; i++)
             {
@@ -444,13 +484,13 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             if(canMove)
             {
                 if(moveDown)
-                    yPos+=5;
+                    yPos+=3;
                 else if(moveUp)
-                    yPos-=5;
+                    yPos-=3;
                 if(moveRight)
-                    xPos+=5;
+                    xPos+=3;
                 else if(moveLeft)
-                    xPos-=5;
+                    xPos-=3;
             }
 
             Runner rn = new Runner();
@@ -545,7 +585,8 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         if(greenHealth <= 0)
         {
             playerTimer.stop();
-            manager.showGameOver();
+            clip2.stop();
+            manager.showReturn();
         }
         else if(health <= 0)
         {

@@ -17,6 +17,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.awt.GraphicsEnvironment;
+import java.io.*;
+import java.awt.FontFormatException;
 
 //class for level 1
 public class Level1 extends JPanel implements KeyListener, MouseListener
@@ -81,13 +84,21 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
     public void reset(Manager manager)
     {
+        try {
+            minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(16f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(minecraft);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch(FontFormatException e) {
+            e.printStackTrace();
+        }
         this.manager = manager;
         setLayout(new BorderLayout());
         songStarted = false;
         noMoveTime = 3000;
         noMoveTime2 = 300;
         playerDamageOnMove = false;
-        minecraft = new Font("Minecraft", Font.BOLD, 16);
         currentBorder = new Rectangle[]
         {
                 new Rectangle(132, 127, 466, 165),
@@ -855,7 +866,13 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         // everytime timer occurs
         public void actionPerformed(ActionEvent e)
         {
-            if (health <= 0 || gasItems.getCount() == 3)
+            if (gasItems.getCount() == 3)
+            {
+                playerTimer.stop();
+                clip2.stop();
+                manager.showReturn();
+            }
+            if(health <= 0)
             {
                 playerTimer.stop();
                 clip2.stop();

@@ -11,6 +11,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.awt.GraphicsEnvironment;
+import java.io.*;
+import java.awt.FontFormatException;
 
 //class that manages all of the panels in cardlayout
 class Manager extends JPanel
@@ -20,6 +23,7 @@ class Manager extends JPanel
     private Level1 lvl1;
     private Level2 lvl2;
     private Level3p1 lvl3;
+    private Level3p2 lvl3p2;
     private Timer bloodTimer;
     private String nextLevelName;
 
@@ -33,8 +37,10 @@ class Manager extends JPanel
     private static final String LEVEL_1_NAME = "level 1";
     private static final String LEVEL_2_NAME = "level 2";
     private static final String LEVEL_3_NAME = "level 3";
+    private static final String LEVEL_3_P2_NAME = "level3p2";
     private static final String LEVEL_SELECT_NAME = "level select";
     private static final String GAME_OVER_NAME = "Game over1";
+    private static final String RETURN_NAME = "return";
 
     // calls runIt()
     public Manager()
@@ -59,6 +65,7 @@ class Manager extends JPanel
         lvl1 = new Level1(this);
         lvl2 = new Level2(this);
         lvl3 = new Level3p1(this);
+        lvl3p2 = new Level3p2(this);
         bloodPanel = new Blood();
 
         add(new StartScreen(this), START_SCREEN_NAME);
@@ -67,13 +74,19 @@ class Manager extends JPanel
         add(lvl1, LEVEL_1_NAME);
         add(lvl2, LEVEL_2_NAME);
         add(lvl3, LEVEL_3_NAME);
-
+        add(lvl3p2, LEVEL_3_P2_NAME);
         add(new LevelSelect(this), LEVEL_SELECT_NAME);
         add(new GameOver1(), GAME_OVER_NAME);
+        add(new Return(),RETURN_NAME);
 
         setVisible(true);
     }
 
+    //returns to level select jpanel
+    public void showReturn()
+    {
+        layout.show(Manager.this, RETURN_NAME);
+    }
     //shows level 1
     public void showLevelOne()
     {
@@ -93,6 +106,13 @@ class Manager extends JPanel
     {
         nextLevelName = LEVEL_3_NAME;
         lvl3.reset(this);
+        playBloodTransition();
+    }
+    //shows the second part to level 3
+    public void showPartTwo()
+    {
+        nextLevelName = LEVEL_3_P2_NAME;
+        lvl3p2.reset(this);
         playBloodTransition();
     }
     //shows the level select screen
@@ -204,6 +224,62 @@ class Manager extends JPanel
             g.setFont(new Font("Minecraft", Font.BOLD, 50));
             g.setColor(Color.WHITE);
             g.drawString("Game Over!", 100, 100);
+        }
+    }
+    
+    //goes back to level screen and congratulates player
+    class Return extends JPanel
+    {
+        JButton goBack;
+        Font minecraft;
+        Image character,night;
+        public Return()
+        {
+            minecraft = null;
+            try {
+                minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(25f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(minecraft);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch(FontFormatException e) {
+                e.printStackTrace();
+            }
+            setLayout(new BorderLayout());
+            JPanel blank = new JPanel();
+            blank.setSize(800,730);
+            add(blank, BorderLayout.CENTER);
+            JPanel blank2 = new JPanel();
+            blank.setOpaque(false);
+            blank2.setOpaque(false);
+            goBack = new JButton("Return");
+            goBack.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    showLevelSelect();
+                }
+            });
+            goBack.setPreferredSize(new Dimension(200,80));
+            goBack.setBackground(Color.RED);
+            goBack.setForeground(Color.WHITE);
+            goBack.setOpaque(true);
+            goBack.setBorderPainted(false);
+            goBack.setFont(minecraft);
+            character = new ImageIcon("images/MainStand.png").getImage();
+            night = new ImageIcon("images/Night.png").getImage();
+            add(blank2,BorderLayout.SOUTH);
+            blank2.add(goBack);
+            setBackground(Color.BLACK);
+        }
+        public void paintComponent(Graphics g)
+        {
+            super.paintComponent(g);
+            g.drawImage(night,0,0,800,800,null);
+            g.drawImage(character,290,350,200,200,null);
+            g.setFont(minecraft);
+            g.setColor(new Color(255,255,255));
+            g.drawString("CONGRATULATIONS!",260,200);
         }
     }
 }

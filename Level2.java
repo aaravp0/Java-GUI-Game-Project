@@ -20,6 +20,9 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.awt.GraphicsEnvironment;
+import java.io.*;
+import java.awt.FontFormatException;
 
 //level2 class
 public class Level2 extends JPanel implements MouseListener, KeyListener, MouseMotionListener
@@ -28,7 +31,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private Image barGreen, back2, player, bulletMove, countdownImage;
     private Image bulletIcon;
     private Timer playerTimer;
-    private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, greenInt, numGreenImage, numMed, cooldownAttack, mag, ml;
+    private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, greenInt, numGreenImage, numMed, cooldownAttack, mag, ml,gunInt;
     private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover,songStarted;
     private Image med;
     private JButton shoot, heal;
@@ -73,6 +76,17 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     //add listeners, components, and set values to variables
     public void reset(Manager manager)
     {
+        gunInt = 0;
+        try 
+        {
+            minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(18f);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(minecraft);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch(FontFormatException e) {
+            e.printStackTrace();
+        }
         songStarted = false;
         themeSong = null;
         try
@@ -120,7 +134,6 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             e.printStackTrace();
             System.exit(1);
         }
-        minecraft = new Font("Minecraft",Font.BOLD,18);
         greenInt = 1;
         greenMoving = false;
         greenMovingLeft = false;
@@ -307,6 +320,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             playClip();
         }
         super.paintComponent(g);
+
         g.drawImage(back2,0,0,800,800,null);
 
         for (int i = 0; i < NUM_GROUND_BULLETS; i++)
@@ -361,6 +375,14 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             g.fillRect(greenX-15,greenY-15,108,20);
             g.setColor(Color.RED);
             g.fillRect(greenX-11,greenY-11,(int)(greenHealth/5),12);
+        }
+        
+        gunInt+=4;
+        if(gunInt <= 3000)
+        {
+            g.setColor(Color.WHITE);
+            g.setFont(minecraft);
+            g.drawString("My gun is jammed: " + (30-(int)(gunInt/100)),300,300);
         }
         
         if(healHover)
@@ -629,7 +651,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         {
             themeSong.stop();
             playerTimer.stop();
-            manager.showGameOver();
+            manager.showReturn();
         }
         else if(health <= 0)
         {

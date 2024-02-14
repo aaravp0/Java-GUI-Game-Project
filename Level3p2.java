@@ -27,11 +27,14 @@ import java.awt.FontFormatException;
 public class Level3p2 extends JPanel implements MouseListener, KeyListener, MouseMotionListener
 {
     private Manager manager;
-    private Image barGreen, back2, player, bulletMove, countdownImage,bloodSplatter;
+    private Image barGreen, back2, player, bulletMove, countdownImage, bloodSplatter;
     private Image bulletIcon;
     private Timer playerTimer;
-    private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, numMed, cooldownAttack, mag, ml,bloodInt,gunInt;
-    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover,songStarted;
+    private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, numMed, cooldownAttack,
+            mag, ml, bloodInt, gunInt;
+    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown,
+            greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop, barAttackCool, shootHover,
+            healHover, songStarted;
     private Image med;
     private JButton shoot, heal;
     private Rectangle3[] currentBorder;
@@ -49,32 +52,36 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
     private final static Dimension GREEN_DIMS = new Dimension(50, 75);
 
     private final static int NUM_GROUND_BULLETS = 10;
-    
+
     private final static Dimension BULLET_DIMS = new Dimension(10, 5);
-    
+
     private final static double BULLET_SPEED = 20;
     private final static int NUM_INTERMEDIATE = 10;
-    
+
     private final static int NUM_GROUND_MED = 5;
-    private final static Dimension MED_DIMS = new Dimension(20,20);
-    
+    private final static Dimension MED_DIMS = new Dimension(20, 20);
+
     private Clip clip2;
 
-    //calls reset
+    // calls reset
     public Level3p2(Manager manager)
     {
         reset(manager);
     }
-    //add listeners, components, and set values to variables
+
+    // add listeners, components, and set values to variables
     public void reset(Manager manager)
     {
-        try {
+        try
+        {
             minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(18f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(minecraft);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
-        } catch(FontFormatException e) {
+        } catch (FontFormatException e)
+        {
             e.printStackTrace();
         }
         greenMoving = false;
@@ -82,20 +89,20 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         cooldownAttack = 500;
         setLayout(new BorderLayout());
         JPanel blank = new JPanel();
-        blank.setSize(800,720);
+        blank.setSize(800, 720);
         blank.setOpaque(false);
         add(blank, BorderLayout.CENTER);
         JPanel blank2 = new JPanel();
         shootSelected = false;
         blank2.setSize(800, 80);
         shoot = new JButton("");
-        shoot.setPreferredSize(new Dimension(80,80));
+        shoot.setPreferredSize(new Dimension(80, 80));
         heal = new JButton("");
         shoot.setBorderPainted(false);
         heal.setBorderPainted(false);
         medLocations = new Point[5];
         medPresent = new boolean[5];
-        heal.setPreferredSize(new Dimension(80,80));
+        heal.setPreferredSize(new Dimension(80, 80));
         numBullets = 0;
         numMed = 0;
         health = 250;
@@ -140,7 +147,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         {
             public void actionPerformed(ActionEvent e)
             {
-                if(shootSelected)
+                if (shootSelected)
                 {
                     shootSelected = false;
                 }
@@ -154,11 +161,11 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         {
             public void actionPerformed(ActionEvent e)
             {
-                if(numMed >= 1)
+                if (numMed >= 1)
                 {
                     numMed--;
-                    health+=60;
-                    if(health >= 250)
+                    health += 60;
+                    if (health >= 250)
                         health = 250;
                     shootSelected = false;
                 }
@@ -196,47 +203,48 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         greenHealth = 500;
         currentBorder = new Rectangle3[]
         {
-            new Rectangle3(0,276,91,603),
-            new Rectangle3(146,275,586,375),
-            new Rectangle3(146,275,473,606),
-            new Rectangle3(1087,295,1159,327),
-            new Rectangle3(1086,325,1229,490),
-            new Rectangle3(1272,295,1414,490),
-            new Rectangle3(1069,769,1241,900),
-            new Rectangle3(1263,770,1423,979),
-            new Rectangle3(1263,770,1342,1022),
-            new Rectangle3(900,1003,1088,1189),
-            new Rectangle3(206,940,370,1190),
-            new Rectangle3(400,1043,512,1188),
-            new Rectangle3(512,1001,686,1189),
-            new Rectangle3(0,0,0,1426),
-            new Rectangle3(0,0,1550,0),
-            new Rectangle3(1550,0,1550,1426),
-            new Rectangle3(0,1426,1550,1426),
+                new Rectangle3(0, 276, 91, 603),
+                new Rectangle3(146, 275, 586, 375),
+                new Rectangle3(146, 275, 473, 606),
+                new Rectangle3(1087, 295, 1159, 327),
+                new Rectangle3(1086, 325, 1229, 490),
+                new Rectangle3(1272, 295, 1414, 490),
+                new Rectangle3(1069, 769, 1241, 900),
+                new Rectangle3(1263, 770, 1423, 979),
+                new Rectangle3(1263, 770, 1342, 1022),
+                new Rectangle3(900, 1003, 1088, 1189),
+                new Rectangle3(206, 940, 370, 1190),
+                new Rectangle3(400, 1043, 512, 1188),
+                new Rectangle3(512, 1001, 686, 1189),
+                new Rectangle3(0, 0, 0, 1426),
+                new Rectangle3(0, 0, 1550, 0),
+                new Rectangle3(1550, 0, 1550, 1426),
+                new Rectangle3(0, 1426, 1550, 1426),
         };
 
         bulletIcon = new ImageIcon("images/Bullet.png").getImage();
         bulletPresent = new boolean[NUM_GROUND_BULLETS];
         bulletLocations = new Point[NUM_GROUND_BULLETS];
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             blArr[i] = 0;
         }
-        for(int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             mArr[i] = 0;
         }
         PlayerMover playerMover = new PlayerMover();
-        playerTimer = new Timer(40,playerMover);
+        playerTimer = new Timer(40, playerMover);
         bulletLocator();
         setBackground(Color.WHITE);
     }
 
-    //paints the images in level 2
+    // paints the images in level 2
     public void paintComponent(Graphics g)
     {
-        if(!songStarted)
+        if (!songStarted)
         {
+            playerTimer.start();
             songStarted = true;
             try
             {
@@ -254,13 +262,14 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             }
         }
         super.paintComponent(g);
-        g.drawImage(back2,0,0,800,800,null);
+        g.drawImage(back2, 0, 0, 800, 800, null);
 
         for (int i = 0; i < NUM_GROUND_BULLETS; i++)
         {
             if (bulletPresent[i])
             {
-                g.drawImage(bulletIcon, bulletLocations[i].x, bulletLocations[i].y, BULLET_DIMS.width, BULLET_DIMS.height, null);
+                g.drawImage(bulletIcon, bulletLocations[i].x, bulletLocations[i].y, BULLET_DIMS.width,
+                        BULLET_DIMS.height, null);
                 if (i == NUM_GROUND_BULLETS - 1)
                 {
                     bulletStop = true;
@@ -279,7 +288,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             }
         }
 
-        if(bulletShow)
+        if (bulletShow)
         {
             Graphics2D g2d = (Graphics2D) g;
             AffineTransform old = g2d.getTransform();
@@ -287,90 +296,92 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             int roundedX = (int) Math.round(bulletX);
             int roundedY = (int) Math.round(bulletY);
             g2d.rotate(bulletAngle, roundedX + BULLET_DIMS.width / 2, roundedY + BULLET_DIMS.height / 2);
-            g2d.drawImage(bulletMove, roundedX, roundedY, BULLET_DIMS.width, BULLET_DIMS.height,null);
+            g2d.drawImage(bulletMove, roundedX, roundedY, BULLET_DIMS.width, BULLET_DIMS.height, null);
             g2d.setTransform(old);
             updateBullet();
         }
 
         g.drawImage(player, xPos, yPos, 30, 30, null);
         g.setColor(new Color(197, 167, 119));
-        g.fillRect(xPos-10,yPos-19,58,20);
+        g.fillRect(xPos - 10, yPos - 19, 58, 20);
         g.setColor(Color.GREEN);
-        g.fillRect(xPos-6,yPos-15,(int)(health/5),12);
-        if(countdown)
-            g.drawImage(countdownImage,350, 50, 100, 100, null);
-        if(greenSpawn)
+        g.fillRect(xPos - 6, yPos - 15, (int) (health / 5), 12);
+        if (countdown)
+            g.drawImage(countdownImage, 350, 50, 100, 100, null);
+        if (greenSpawn)
         {
-            g.drawImage(barGreen,greenX, greenY,GREEN_DIMS.width,GREEN_DIMS.height,null);
+            g.drawImage(barGreen, greenX, greenY, GREEN_DIMS.width, GREEN_DIMS.height, null);
             g.setColor(new Color(197, 167, 119));
-            g.fillRect(greenX-15,greenY-15,108,20);
+            g.fillRect(greenX - 15, greenY - 15, 108, 20);
             g.setColor(Color.RED);
-            g.fillRect(greenX-11,greenY-11,(int)(greenHealth/5),12);
-            if(bloodInt < 250)
+            g.fillRect(greenX - 11, greenY - 11, (int) (greenHealth / 5), 12);
+            if (bloodInt < 250)
             {
-                bloodInt+=4;
-                g.drawImage(bloodSplatter,greenX,greenY,GREEN_DIMS.width,GREEN_DIMS.height,null);
+                bloodInt += 4;
+                g.drawImage(bloodSplatter, greenX, greenY, GREEN_DIMS.width, GREEN_DIMS.height, null);
             }
         }
-        gunInt+=4;
-        if(gunInt <= 3000)
+        gunInt += 4;
+        if (gunInt <= 3000)
         {
             g.setColor(Color.WHITE);
             g.setFont(minecraft);
-            g.drawString("My gun is jammed: " + (30-(int)(gunInt/100)),300,300);
+            g.drawString("My gun is jammed: " + (30 - (int) (gunInt / 100)), 300, 300);
         }
-        
-        if(healHover)
-            g.setColor(new Color(133,0,0));
-        else
-            g.setColor(new Color(100,0,0));
-        g.fillRoundRect(403,685,80,80,20,20);
 
-        if(shootHover)
-            g.setColor(new Color(0,0,133));
+        if (healHover)
+            g.setColor(new Color(133, 0, 0));
         else
-            g.setColor(new Color(0,0,100));
-        g.fillRoundRect(317,685,80,80,20,20);
+            g.setColor(new Color(100, 0, 0));
+        g.fillRoundRect(403, 685, 80, 80, 20, 20);
 
-        if(shootHover)
+        if (shootHover)
+            g.setColor(new Color(0, 0, 133));
+        else
+            g.setColor(new Color(0, 0, 100));
+        g.fillRoundRect(317, 685, 80, 80, 20, 20);
+
+        if (shootHover)
             g.setColor(Color.BLUE);
         else
-            g.setColor(new Color(0,0,200));
-        g.fillRoundRect(322,690,70,70,20,20);
+            g.setColor(new Color(0, 0, 200));
+        g.fillRoundRect(322, 690, 70, 70, 20, 20);
 
-        if(healHover)
+        if (healHover)
             g.setColor(Color.RED);
         else
-            g.setColor(new Color(200,0,0));
-        g.fillRoundRect(408,690,70,70,20,20);
+            g.setColor(new Color(200, 0, 0));
+        g.fillRoundRect(408, 690, 70, 70, 20, 20);
 
         g.setFont(minecraft);
-        if(shootHover)
+        if (shootHover)
             g.setColor(Color.WHITE);
         else
             g.setColor(Color.LIGHT_GRAY);
-        g.drawString("SHOOT",326,733);
-        if(healHover)
+        g.drawString("SHOOT", 326, 733);
+        if (healHover)
             g.setColor(Color.WHITE);
         else
             g.setColor(Color.LIGHT_GRAY);
-        g.drawString("HEAL",422,733);
-        g.drawString("" + numBullets, 390,768);
-        g.drawString("" + numMed, 476,768);
+        g.drawString("HEAL", 422, 733);
+        g.drawString("" + numBullets, 390, 768);
+        g.drawString("" + numMed, 476, 768);
     }
-    //gives the random locations to the bullets for the first time
+
+    // gives the random locations to the bullets for the first time
     public void bulletLocator()
     {
         for (int i = 0; i < NUM_GROUND_BULLETS; i++)
         {
             bulletLocations[i] = giveLocation();
         }
-        for(int i = 0; i < NUM_GROUND_MED; i++)
+        for (int i = 0; i < NUM_GROUND_MED; i++)
         {
             medLocations[i] = giveLocation();
         }
     }
-    //has the countdown till the game starts
+
+    // has the countdown till the game starts
     private void showSpawnCountdown()
     {
         if (!greenSpawn)
@@ -405,18 +416,18 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         }
     }
 
-    //the timer class for level 2
+    // the timer class for level 2
     class PlayerMover implements ActionListener
     {
-        //what happens every time the timer calls the class
+        // what happens every time the timer calls the class
         public void actionPerformed(ActionEvent e)
         {
-            if(!greenSpawn)
+            if (!greenSpawn)
             {
                 showSpawnCountdown();
             }
-            /*if (bulletStop)
-            {*/
+            if (bulletStop)
+            {
                 for (int i = 0; i < NUM_GROUND_BULLETS; i++)
                 {
                     if (bulletPresent[i])
@@ -425,7 +436,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
                     // if its now not present anymore
                     if (!bulletPresent[i])
                     {
-                        if(blArr[i] == 0)
+                        if (blArr[i] == 0)
                         {
                             mag++;
                         }
@@ -438,9 +449,9 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
                         }
                     }
                 }
-            //}
-            /*if (medStop)
-            {*/
+            }
+            if (medStop)
+            {
                 for (int i = 0; i < NUM_GROUND_MED; i++)
                 {
                     if (medPresent[i])
@@ -448,7 +459,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
                         medPresent[i] = collectMed(medLocations[i].x, medLocations[i].y, i);
                     }
 
-                    // if its now not present anymore
+                    //if its now not present anymore
                     if (!medPresent[i])
                     {
                         mArr[i] += 4;
@@ -460,18 +471,18 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
                         }
                     }
                 }
-            //}
+            }
 
             int charPosY = yPos;
             int charPosX = xPos;
-            if(moveDown)
-                charPosY+=3;
-            else if(moveUp)
-                charPosY-=3;
-            if(moveRight)
-                charPosX+=3;
-            else if(moveLeft)
-                charPosX-=3;
+            if (moveDown)
+                charPosY += 3;
+            else if (moveUp)
+                charPosY -= 3;
+            if (moveRight)
+                charPosX += 3;
+            else if (moveLeft)
+                charPosX -= 3;
             boolean canMove = true;
             for (int i = 0; i < currentBorder.length; i++)
             {
@@ -481,81 +492,83 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
                     break;
                 }
             }
-            if(canMove)
+            if (canMove)
             {
-                if(moveDown)
-                    yPos+=3;
-                else if(moveUp)
-                    yPos-=3;
-                if(moveRight)
-                    xPos+=3;
-                else if(moveLeft)
-                    xPos-=3;
+                if (moveDown)
+                    yPos += 3;
+                else if (moveUp)
+                    yPos -= 3;
+                if (moveRight)
+                    xPos += 3;
+                else if (moveLeft)
+                    xPos -= 3;
             }
 
             Runner rn = new Runner();
-            player = rn.returnImage(im,movingLeft,moving);
+            player = rn.returnImage(im, movingLeft, moving);
             im++;
-            if(im >= 8)
+            if (im >= 8)
                 im = 0;
-            bl+=4;
-            ml+=4;
-            if(bl%300 == 0 && !bulletStop)
+            bl += 4;
+            ml += 4;
+            if (bl % 300 == 0 && !bulletStop)
             {
-                bulletPresent[bl/300-1] = true;
+                bulletPresent[bl / 300 - 1] = true;
             }
-            if(ml%300 == 0 && !medStop)
+            if (ml % 300 == 0 && !medStop)
             {
-                medPresent[ml/300-1] = true;
+                medPresent[ml / 300 - 1] = true;
             }
-            
-            if(greenSpawn)
+
+            if (greenSpawn)
             {
-                if(!countRestarted)
+                if (!countRestarted)
                 {
-                    barneyInt = 0; 
+                    barneyInt = 0;
                     countRestarted = true;
                 }
                 barneyInt += 4;
-                if(barneyInt >= 50)
+                if (barneyInt >= 50)
                 {
                     gArrX[4] = gArrX[3];
                     gArrX[3] = gArrX[2];
                     gArrX[2] = gArrX[1];
                     gArrX[1] = gArrX[0];
-                    gArrX[0] = (xPos+xPos+50)/2;
+                    gArrX[0] = (xPos + xPos + 50) / 2;
 
                     gArrY[4] = gArrY[3];
                     gArrY[3] = gArrY[2];
                     gArrY[2] = gArrY[1];
                     gArrY[1] = gArrY[0];
-                    gArrY[0] = (yPos+yPos+50)/2;
+                    gArrY[0] = (yPos + yPos + 50) / 2;
 
-                    if(gArrX[4] != 0)
-                        gGoTo[0] = (gArrX[4]+gArrX[0])/2;
-                    if(gArrY[4] != 0)
-                        gGoTo[1] = (gArrY[4]+gArrY[0])/2;
+                    if (gArrX[4] != 0)
+                        gGoTo[0] = (gArrX[4] + gArrX[0]) / 2;
+                    if (gArrY[4] != 0)
+                        gGoTo[1] = (gArrY[4] + gArrY[0]) / 2;
                     barneyInt = 0;
                 }
             }
             greenMover();
             barneySpriteMover();
             greenAttacker();
-            
+
             healthChecker();
             repaint();
             grabFocus();
         }
     }
+
+    //barney's attacks
     public void greenAttacker()
     {
-        if(!barAttackCool)
+        if (!barAttackCool)
         {
-            Point playerTopRight = new Point(xPos,yPos);
-            Point greenTopRight = new Point(greenX,greenY);
-            
-            Point playerBottomRight = new Point(xPos,yPos);
-            Point greenBottomRight = new Point(greenX,greenY);
+            Point playerTopRight = new Point(xPos, yPos);
+            Point greenTopRight = new Point(greenX, greenY);
+
+            Point playerBottomRight = new Point(xPos, yPos);
+            Point greenBottomRight = new Point(greenX, greenY);
             playerBottomRight.translate(50, 50);
             greenBottomRight.translate(GREEN_DIMS.width, GREEN_DIMS.height);
 
@@ -580,74 +593,80 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             }
         }
     }
+
+    //checks the health for game over
     public void healthChecker()
     {
-        if(greenHealth <= 0)
+        if (greenHealth <= 0)
         {
             playerTimer.stop();
             clip2.stop();
             manager.showReturn();
         }
-        else if(health <= 0)
+        else if (health <= 0)
         {
             playerTimer.stop();
             manager.showGameOver();
         }
     }
-    //moves barney's green friend
+
+    // moves barney's green friend
     public void greenMover()
     {
-        if(greenX > gGoTo[0])
+        if (greenX > gGoTo[0])
         {
             greenX -= BARNEY_X_SPEED;
             greenMovingLeft = true;
             greenMoving = true;
         }
-        else if(greenX < gGoTo[0])
+        else if (greenX < gGoTo[0])
         {
             greenX += BARNEY_X_SPEED;
             greenMovingLeft = false;
             greenMoving = true;
         }
-        if(greenY > gGoTo[1])
+        if (greenY > gGoTo[1])
         {
             greenY -= BARNEY_Y_SPEED;
             greenMoving = true;
         }
-        else if(greenY < gGoTo[1])
+        else if (greenY < gGoTo[1])
         {
             greenY += BARNEY_Y_SPEED;
             greenMoving = true;
         }
     }
-    //checks when you collected a bullet
+
+    // checks when you collected a bullet
     public boolean collectBullet(int xB, int yB, int bulletNum)
     {
-        if(xB >= xPos && xPos+50 >= xB && yB >= yPos && yPos+50 >= yB)
+        if (xB >= xPos && xPos + 50 >= xB && yB >= yPos && yPos + 50 >= yB)
             bulletPresent[bulletNum] = false;
-        if(bulletPresent[bulletNum] == false)
+        if (bulletPresent[bulletNum] == false)
         {
             numBullets++;
         }
-        return !(xB >= xPos && xPos+50 >= xB && yB >= yPos && yPos+50 >= yB);
+        return !(xB >= xPos && xPos + 50 >= xB && yB >= yPos && yPos + 50 >= yB);
     }
+
+    //collects medkits
     public boolean collectMed(int xM, int yM, int medNum)
     {
-        if(xM >= xPos && xPos+50 >= xM && yM >= yPos && yPos+50 >= yM)
+        if (xM >= xPos && xPos + 50 >= xM && yM >= yPos && yPos + 50 >= yM)
             medPresent[medNum] = false;
-        if(medPresent[medNum] == false)
+        if (medPresent[medNum] == false)
         {
             numMed++;
         }
-        return !(xM >= xPos && xPos+50 >= xM && yM >= yPos && yPos+50 >= yM);
+        return !(xM >= xPos && xPos + 50 >= xM && yM >= yPos && yPos + 50 >= yM);
     }
-    //gives the location of an object randomly
+
+    // gives the location of an object randomly
     public Point giveLocation()
     {
         Point loc = new Point(
-            (int)(Math.random()*770),
-            (int)(Math.random()*780)
-        );
+                (int) (Math.random() * 770),
+                (int) (Math.random() * 780));
 
         boolean bulletInBounds = true;
         for (int i = 0; i < currentBorder.length; i++)
@@ -664,11 +683,13 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         else
             return giveLocation();
     }
+
+    //changes barney's sprite
     public void barneySpriteMover()
     {
-        if(greenMoving)
+        if (greenMoving)
         {
-            if(greenMovingLeft)
+            if (greenMovingLeft)
             {
                 barGreen = new ImageIcon("images/BarneyLeft.gif").getImage();
             }
@@ -679,16 +700,18 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         }
         else
         {
-            if(movingLeft)
+            if (movingLeft)
                 barGreen = new ImageIcon("images/BarneyStandRight.png").getImage();
             else
                 barGreen = new ImageIcon("images/BarneyStandLeft.png").getImage();
         }
     }
+
+    //updates location of bullet
     public void updateBullet()
     {
-        double newBulletX = bulletX +  BULLET_SPEED * Math.cos(bulletAngle);
-        double newBulletY = bulletY +  BULLET_SPEED * Math.sin(bulletAngle);
+        double newBulletX = bulletX + BULLET_SPEED * Math.cos(bulletAngle);
+        double newBulletY = bulletY + BULLET_SPEED * Math.sin(bulletAngle);
 
         boolean hitTarget = false;
         Rectangle hitbox = new Rectangle(greenX, greenY, greenX + GREEN_DIMS.width, greenY + GREEN_DIMS.height);
@@ -704,7 +727,7 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             }
         }
 
-        if(hitTarget)
+        if (hitTarget)
         {
             bloodInt = 0;
             greenHealth -= 50;
@@ -720,14 +743,14 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
             bulletY = newBulletY;
         }
     }
-    //movement input
+
+    // movement input
     public void keyPressed(KeyEvent e)
     {
         if (e.getKeyChar() == 'd' || e.getKeyChar() == 'a' || e.getKeyChar() == 's' || e.getKeyChar() == 'w'
                 || e.getKeyCode() == KeyEvent.VK_SHIFT)
         {
             moving = true;
-            playerTimer.start();
         }
         else
         {
@@ -758,10 +781,13 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         repaint();
         grabFocus();
     }
-    //not going to be used
+
+    // not going to be used
     public void keyTyped(KeyEvent e)
-    {}
-    //resets the movement input
+    {
+    }
+
+    // resets the movement input
     public void keyReleased(KeyEvent e)
     {
         moveRight = false;
@@ -772,11 +798,12 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         repaint();
         grabFocus();
     }
+
     // for shooting bullets
     public void mousePressed(MouseEvent e)
     {
         // check if we are already shooting a bullet
-        if(numBullets >= 1 && !bulletShow && shootSelected)
+        if (numBullets >= 1 && !bulletShow && shootSelected)
         {
             double bulletOffsetX = e.getX() - xPos;
             double bulletOffsetY = e.getY() - yPos;
@@ -790,22 +817,34 @@ public class Level3p2 extends JPanel implements MouseListener, KeyListener, Mous
         repaint();
         grabFocus();
     }
-    //not going to be used
+
+    // not going to be used
     public void mouseClicked(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseReleased(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseEntered(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseExited(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseMoved(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseDragged(MouseEvent e)
-    {}
+    {
+    }
 }

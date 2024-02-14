@@ -49,7 +49,7 @@ class Manager extends JPanel
         runIt();
     }
 
-    //plays the scream audio file
+    // plays the scream audio file
     private void playScream()
     {
         screamClip.setFramePosition(0);
@@ -77,63 +77,71 @@ class Manager extends JPanel
         add(lvl3p2, LEVEL_3_P2_NAME);
         add(new LevelSelect(this), LEVEL_SELECT_NAME);
         add(new GameOver1(), GAME_OVER_NAME);
-        add(new Return(),RETURN_NAME);
+        add(new Return(), RETURN_NAME);
 
         setVisible(true);
     }
 
-    //returns to level select jpanel
+    // returns to level select jpanel
     public void showReturn()
     {
         layout.show(Manager.this, RETURN_NAME);
     }
-    //shows level 1
+
+    // shows level 1
     public void showLevelOne()
     {
         nextLevelName = LEVEL_1_NAME;
         lvl1.reset(this);
         playBloodTransition();
     }
-    //shows level 2
+
+    // shows level 2
     public void showLevelTwo()
     {
         nextLevelName = LEVEL_2_NAME;
         lvl2.reset(this);
         playBloodTransition();
     }
-    //shows level 3
+
+    // shows level 3
     public void showLevelThree()
     {
         nextLevelName = LEVEL_3_NAME;
         lvl3.reset(this);
         playBloodTransition();
     }
-    //shows the second part to level 3
+
+    // shows the second part to level 3
     public void showPartTwo()
     {
         nextLevelName = LEVEL_3_P2_NAME;
         lvl3p2.reset(this);
         playBloodTransition();
     }
-    //shows the level select screen
+
+    // shows the level select screen
     public void showLevelSelect()
     {
         layout.show(Manager.this, LEVEL_SELECT_NAME);
         playScream();
     }
-    //shows the game over screen
+
+    // shows the game over screen
     public void showGameOver()
     {
         layout.show(Manager.this, GAME_OVER_NAME);
     }
-    //shows the blood transition between panels
+
+    // shows the blood transition between panels
     public void playBloodTransition()
     {
         layout.show(Manager.this, BLOOD_PANEL_NAME);
         playScream();
         bloodTimer.start();
     }
-    //shows the chosen level
+
+    // shows the chosen level
     public void moveToSetLevel()
     {
         layout.show(Manager.this, nextLevelName);
@@ -187,67 +195,103 @@ class Manager extends JPanel
         }
     }
 
-    //the game over screen
+    // the game over screen
     class GameOver1 extends JPanel
     {
         Image barneyBloodEnd;
-        //declares layout, byttons, and images
+        private Font minecraft, minecraft2;
+
+        // declares layout, byttons, and images
         public GameOver1()
         {
+            try
+            {
+                minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(50f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(minecraft);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            } catch (FontFormatException e)
+            {
+                e.printStackTrace();
+            }
+            try
+            {
+                minecraft2 = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(18f);
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(minecraft);
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            } catch (FontFormatException e)
+            {
+                e.printStackTrace();
+            }
             setLayout(new BorderLayout());
             JButton menu = new JButton("Menu");
-            //button for menu's action listnener
+            // button for menu's action listnener
             menu.addActionListener(new ActionListener()
             {
-                //what happens every time the menu button is clicked
+                // what happens every time the menu button is clicked
                 public void actionPerformed(ActionEvent e)
                 {
                     layout.show(Manager.this, "start");
                 }
             });
+            menu.setBackground(Color.RED);
+            menu.setForeground(Color.WHITE);
+            menu.setOpaque(true);
+            menu.setBorderPainted(false);
+            menu.setFont(minecraft2);
             JPanel blank = new JPanel();
             blank.setOpaque(false);
-            menu.setPreferredSize(new Dimension(200,80));
+            menu.setPreferredSize(new Dimension(200, 80));
             blank.add(menu);
             add(blank, BorderLayout.CENTER);
-            blank.setSize(800,360);
+            blank.setSize(800, 360);
             add(blank, BorderLayout.NORTH);
             add(blank, BorderLayout.SOUTH);
             setBackground(Color.BLACK);
             barneyBloodEnd = new ImageIcon("images/BarneyEnd1.png").getImage();
         }
-        //paints the game over screen
+
+        // paints the game over screen
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);
             g.drawImage(barneyBloodEnd, 0, 0, 800, 800, null);
-            g.setFont(new Font("Minecraft", Font.BOLD, 50));
+            g.setFont(minecraft);
             g.setColor(Color.WHITE);
-            g.drawString("Game Over!", 100, 100);
+            g.drawString("Game Over!", 230, 100);
         }
     }
-    
-    //goes back to level screen and congratulates player
+
+    // goes back to level screen and congratulates player
     class Return extends JPanel
     {
         JButton goBack;
         Font minecraft;
-        Image character,night;
+        Image character, night;
+
         public Return()
         {
             minecraft = null;
-            try {
+            try
+            {
                 minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(25f);
                 GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
                 ge.registerFont(minecraft);
-            } catch (IOException e) {
+            } catch (IOException e)
+            {
                 e.printStackTrace();
-            } catch(FontFormatException e) {
+            } catch (FontFormatException e)
+            {
                 e.printStackTrace();
             }
             setLayout(new BorderLayout());
             JPanel blank = new JPanel();
-            blank.setSize(800,730);
+            blank.setSize(800, 730);
             add(blank, BorderLayout.CENTER);
             JPanel blank2 = new JPanel();
             blank.setOpaque(false);
@@ -260,7 +304,7 @@ class Manager extends JPanel
                     showLevelSelect();
                 }
             });
-            goBack.setPreferredSize(new Dimension(200,80));
+            goBack.setPreferredSize(new Dimension(200, 80));
             goBack.setBackground(Color.RED);
             goBack.setForeground(Color.WHITE);
             goBack.setOpaque(true);
@@ -268,18 +312,19 @@ class Manager extends JPanel
             goBack.setFont(minecraft);
             character = new ImageIcon("images/MainStand.png").getImage();
             night = new ImageIcon("images/Night.png").getImage();
-            add(blank2,BorderLayout.SOUTH);
+            add(blank2, BorderLayout.SOUTH);
             blank2.add(goBack);
             setBackground(Color.BLACK);
         }
+
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);
-            g.drawImage(night,0,0,800,800,null);
-            g.drawImage(character,290,350,200,200,null);
+            g.drawImage(night, 0, 0, 800, 800, null);
+            g.drawImage(character, 290, 350, 200, 200, null);
             g.setFont(minecraft);
-            g.setColor(new Color(255,255,255));
-            g.drawString("CONGRATULATIONS!",260,200);
+            g.setColor(new Color(255, 255, 255));
+            g.drawString("CONGRATULATIONS!", 260, 200);
         }
     }
 }

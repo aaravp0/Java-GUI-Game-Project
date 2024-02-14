@@ -5,9 +5,9 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
 //a class for the music
-public class FileUtils 
+public class FileUtils
 {
-    //returns the music clip
+    // returns the music clip
     public static Clip openClip(String fileName)
     {
         Clip clip = null;
@@ -19,7 +19,7 @@ public class FileUtils
         } catch (Exception e)
         {
             System.out.printf("Unable to open audio file %s\n", fileName);
-            e.printStackTrace(); 
+            e.printStackTrace();
             System.exit(1);
         }
 

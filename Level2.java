@@ -21,7 +21,6 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.awt.GraphicsEnvironment;
-import java.io.*;
 import java.awt.FontFormatException;
 
 //level2 class
@@ -31,8 +30,11 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private Image barGreen, back2, player, bulletMove, countdownImage;
     private Image bulletIcon;
     private Timer playerTimer;
-    private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, greenInt, numGreenImage, numMed, cooldownAttack, mag, ml,gunInt;
-    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown, greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop,barAttackCool,shootHover,healHover,songStarted;
+    private int greenX, greenY, im, xPos, yPos, bl, numBullets, barneyInt, greenHealth, health, greenInt, numGreenImage,
+            numMed, cooldownAttack, mag, ml, gunInt;
+    private boolean moveDown, moveUp, moveLeft, moveRight, movingLeft, moving, bulletStop, bulletShow, countdown,
+            greenSpawn, countRestarted, shootSelected, greenMoving, greenMovingLeft, medStop, barAttackCool, shootHover,
+            healHover, songStarted;
     private Image med;
     private JButton shoot, heal;
     private Rectangle2[] currentBorder;
@@ -52,39 +54,43 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
     private final static Dimension GREEN_DIMS = new Dimension(75, 125);
 
     private final static int NUM_GROUND_BULLETS = 10;
-    
+
     private final static Dimension BULLET_DIMS = new Dimension(20, 10);
-    
+
     private final static double BULLET_SPEED = 20;
     private final static int NUM_INTERMEDIATE = 10;
-    
+
     private final static int NUM_GROUND_MED = 5;
-    private final static Dimension MED_DIMS = new Dimension(30,30);
+    private final static Dimension MED_DIMS = new Dimension(30, 30);
 
     private String THEME_SONG = "sounds/barneyTheme.wav";
     private String SCREAM_SONG = "sounds/Scream2.wav";
 
+    // plays audio
     private void playClip()
     {
-        if(!songStarted)
+        if (!songStarted)
         {
             themeSong.start();
             themeSong.loop(Clip.LOOP_CONTINUOUSLY);
             songStarted = true;
         }
     }
-    //add listeners, components, and set values to variables
+
+    // add listeners, components, and set values to variables
     public void reset(Manager manager)
     {
         gunInt = 0;
-        try 
+        try
         {
             minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(18f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(minecraft);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
-        } catch(FontFormatException e) {
+        } catch (FontFormatException e)
+        {
             e.printStackTrace();
         }
         songStarted = false;
@@ -140,20 +146,20 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         cooldownAttack = 500;
         setLayout(new BorderLayout());
         JPanel blank = new JPanel();
-        blank.setSize(800,720);
+        blank.setSize(800, 720);
         blank.setOpaque(false);
         add(blank, BorderLayout.CENTER);
         JPanel blank2 = new JPanel();
         shootSelected = false;
         blank2.setSize(800, 80);
         shoot = new JButton("");
-        shoot.setPreferredSize(new Dimension(80,80));
+        shoot.setPreferredSize(new Dimension(80, 80));
         heal = new JButton("");
         shoot.setBorderPainted(false);
         heal.setBorderPainted(false);
         medLocations = new Point[5];
         medPresent = new boolean[5];
-        heal.setPreferredSize(new Dimension(80,80));
+        heal.setPreferredSize(new Dimension(80, 80));
         numBullets = 0;
         numMed = 0;
         health = 250;
@@ -198,7 +204,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         {
             public void actionPerformed(ActionEvent e)
             {
-                if(shootSelected)
+                if (shootSelected)
                 {
                     shootSelected = false;
                 }
@@ -212,18 +218,18 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         {
             public void actionPerformed(ActionEvent e)
             {
-                if(numMed >= 1)
+                if (numMed >= 1)
                 {
                     numMed--;
-                    health+=60;
-                    if(health >= 250)
+                    health += 60;
+                    if (health >= 250)
                         health = 250;
                     shootSelected = false;
                 }
             }
         });
         med = new ImageIcon("images/med.png").getImage();
-        //blank2.setLayout(new BorderLayout());
+        // blank2.setLayout(new BorderLayout());
         blank2.add(shoot);
         blank2.add(heal);
         blank2.setOpaque(false);
@@ -238,7 +244,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         blArr = new int[10];
         bl = 0;
         im = 0;
-        
+
         xPos = yPos = 400;
         barGreen = new ImageIcon("images/GreenStand.png").getImage();
         back2 = new ImageIcon("images/Background2.png").getImage();
@@ -254,80 +260,84 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         greenHealth = 500;
         currentBorder = new Rectangle2[]
         {
-            new Rectangle2(0,700,69,776),
-            new Rectangle2(43,590,69,776),
-            new Rectangle2(43,590,177,669),
-            new Rectangle2(147,537,230,610),
-            new Rectangle2(198,491,231,610),
-            new Rectangle2(198,491,285,558),
-            new Rectangle2(261,429,285,558),
-            new Rectangle2(261,429,339,501),
-            new Rectangle2(314,369,341,501),
-            new Rectangle2(314,369,395,448),
-            new Rectangle2(368,316,395,444),
-            new Rectangle2(368,316,447,391),
-            new Rectangle2(447,309,476,445),
-            new Rectangle2(473,361,507,445),
-            new Rectangle2(0,0,1,1215),
-            new Rectangle2(0,0,1215,1),
-            new Rectangle2(1214,0,1215,1215),
-            new Rectangle2(0,1214,1215,1215),
-            new Rectangle2(602,375,709,446),
-            new Rectangle2(631,320,679,375),
-            new Rectangle2(710,370,732,606),
-            new Rectangle2(732,531,763,606),
-            new Rectangle2(764,533,794,660),
-            new Rectangle2(794,588,957,660),
-            new Rectangle2(955,543,980,656),
-            new Rectangle2(980,540,1086,608),
-            new Rectangle2(1063,300,1088,611),
-            new Rectangle2(1037,299,1088,322),
-            new Rectangle2(1016,251,1037,322),
-            new Rectangle2(958,106,986,264),
-            new Rectangle2(906,155,958,264),
-            new Rectangle2(965,67,1037,168),
-            new Rectangle2(1014,0,1035,168),
-            new Rectangle2(320,720,160,80)
+                new Rectangle2(0, 700, 69, 776),
+                new Rectangle2(43, 590, 69, 776),
+                new Rectangle2(43, 590, 177, 669),
+                new Rectangle2(147, 537, 230, 610),
+                new Rectangle2(198, 491, 231, 610),
+                new Rectangle2(198, 491, 285, 558),
+                new Rectangle2(261, 429, 285, 558),
+                new Rectangle2(261, 429, 339, 501),
+                new Rectangle2(314, 369, 341, 501),
+                new Rectangle2(314, 369, 395, 448),
+                new Rectangle2(368, 316, 395, 444),
+                new Rectangle2(368, 316, 447, 391),
+                new Rectangle2(447, 309, 476, 445),
+                new Rectangle2(473, 361, 507, 445),
+                new Rectangle2(0, 0, 1, 1215),
+                new Rectangle2(0, 0, 1215, 1),
+                new Rectangle2(1214, 0, 1215, 1215),
+                new Rectangle2(0, 1214, 1215, 1215),
+                new Rectangle2(602, 375, 709, 446),
+                new Rectangle2(631, 320, 679, 375),
+                new Rectangle2(710, 370, 732, 606),
+                new Rectangle2(732, 531, 763, 606),
+                new Rectangle2(764, 533, 794, 660),
+                new Rectangle2(794, 588, 957, 660),
+                new Rectangle2(955, 543, 980, 656),
+                new Rectangle2(980, 540, 1086, 608),
+                new Rectangle2(1063, 300, 1088, 611),
+                new Rectangle2(1037, 299, 1088, 322),
+                new Rectangle2(1016, 251, 1037, 322),
+                new Rectangle2(958, 106, 986, 264),
+                new Rectangle2(906, 155, 958, 264),
+                new Rectangle2(965, 67, 1037, 168),
+                new Rectangle2(1014, 0, 1035, 168),
+                new Rectangle2(320, 720, 160, 80)
         };
 
         bulletIcon = new ImageIcon("images/Bullet.png").getImage();
         bulletPresent = new boolean[NUM_GROUND_BULLETS];
         bulletLocations = new Point[NUM_GROUND_BULLETS];
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             blArr[i] = 0;
         }
-        for(int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             mArr[i] = 0;
         }
 
         PlayerMover playerMover = new PlayerMover();
-        playerTimer = new Timer(40,playerMover);
+        playerTimer = new Timer(40, playerMover);
         bulletLocator();
         setBackground(Color.WHITE);
     }
+
+    // calls reset
     public Level2(Manager manager)
     {
         reset(manager);
     }
 
-    //paints the images in level 2
+    // paints the images in level 2
     public void paintComponent(Graphics g)
     {
-        if(!songStarted)
+        if (!songStarted)
         {
+            playerTimer.start();
             playClip();
         }
         super.paintComponent(g);
 
-        g.drawImage(back2,0,0,800,800,null);
+        g.drawImage(back2, 0, 0, 800, 800, null);
 
         for (int i = 0; i < NUM_GROUND_BULLETS; i++)
         {
             if (bulletPresent[i])
             {
-                g.drawImage(bulletIcon, bulletLocations[i].x, bulletLocations[i].y, BULLET_DIMS.width, BULLET_DIMS.height, null);
+                g.drawImage(bulletIcon, bulletLocations[i].x, bulletLocations[i].y, BULLET_DIMS.width,
+                        BULLET_DIMS.height, null);
                 if (i == NUM_GROUND_BULLETS - 1)
                 {
                     bulletStop = true;
@@ -346,7 +356,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             }
         }
 
-        if(bulletShow)
+        if (bulletShow)
         {
             Graphics2D g2d = (Graphics2D) g;
             AffineTransform old = g2d.getTransform();
@@ -354,88 +364,92 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             int roundedX = (int) Math.round(bulletX);
             int roundedY = (int) Math.round(bulletY);
             g2d.rotate(bulletAngle, roundedX + BULLET_DIMS.width / 2, roundedY + BULLET_DIMS.height / 2);
-            g2d.drawImage(bulletMove, roundedX, roundedY, BULLET_DIMS.width, BULLET_DIMS.height,null);
+            g2d.drawImage(bulletMove, roundedX, roundedY, BULLET_DIMS.width, BULLET_DIMS.height, null);
             g2d.setTransform(old);
             updateBullet();
         }
 
         g.drawImage(player, xPos, yPos, 50, 50, null);
         g.setColor(new Color(197, 167, 119));
-        g.fillRect(xPos-10,yPos-19,58,20);
+        g.fillRect(xPos - 10, yPos - 19, 58, 20);
         g.setColor(Color.GREEN);
-        g.fillRect(xPos-6,yPos-15,(int)(health/5),12);
-        if(countdown)
-            g.drawImage(countdownImage,350, 50, 100, 100, null);
-        if(greenSpawn)
+        g.fillRect(xPos - 6, yPos - 15, (int) (health / 5), 12);
+        if (countdown)
+            g.drawImage(countdownImage, 350, 50, 100, 100, null);
+        if (greenSpawn)
         {
-            /*g.setColor(Color.BLACK);
-            g.drawRect(greenX, greenY, GREEN_DIMS.width, GREEN_DIMS.height);*/
-            g.drawImage(barGreen,greenX, greenY,GREEN_DIMS.width,GREEN_DIMS.height,null);
+            /*
+             * g.setColor(Color.BLACK);
+             * g.drawRect(greenX, greenY, GREEN_DIMS.width, GREEN_DIMS.height);
+             */
+            g.drawImage(barGreen, greenX, greenY, GREEN_DIMS.width, GREEN_DIMS.height, null);
             g.setColor(new Color(197, 167, 119));
-            g.fillRect(greenX-15,greenY-15,108,20);
+            g.fillRect(greenX - 15, greenY - 15, 108, 20);
             g.setColor(Color.RED);
-            g.fillRect(greenX-11,greenY-11,(int)(greenHealth/5),12);
+            g.fillRect(greenX - 11, greenY - 11, (int) (greenHealth / 5), 12);
         }
-        
-        gunInt+=4;
-        if(gunInt <= 3000)
+
+        gunInt += 4;
+        if (gunInt <= 3000)
         {
             g.setColor(Color.WHITE);
             g.setFont(minecraft);
-            g.drawString("My gun is jammed: " + (30-(int)(gunInt/100)),300,300);
+            g.drawString("My gun is jammed: " + (30 - (int) (gunInt / 100)), 300, 300);
         }
-        
-        if(healHover)
-            g.setColor(new Color(133,0,0));
-        else
-            g.setColor(new Color(100,0,0));
-        g.fillRoundRect(403,685,80,80,20,20);
 
-        if(shootHover)
-            g.setColor(new Color(0,0,133));
+        if (healHover)
+            g.setColor(new Color(133, 0, 0));
         else
-            g.setColor(new Color(0,0,100));
-        g.fillRoundRect(317,685,80,80,20,20);
+            g.setColor(new Color(100, 0, 0));
+        g.fillRoundRect(403, 685, 80, 80, 20, 20);
 
-        if(shootHover)
+        if (shootHover)
+            g.setColor(new Color(0, 0, 133));
+        else
+            g.setColor(new Color(0, 0, 100));
+        g.fillRoundRect(317, 685, 80, 80, 20, 20);
+
+        if (shootHover)
             g.setColor(Color.BLUE);
         else
-            g.setColor(new Color(0,0,200));
-        g.fillRoundRect(322,690,70,70,20,20);
+            g.setColor(new Color(0, 0, 200));
+        g.fillRoundRect(322, 690, 70, 70, 20, 20);
 
-        if(healHover)
+        if (healHover)
             g.setColor(Color.RED);
         else
-            g.setColor(new Color(200,0,0));
-        g.fillRoundRect(408,690,70,70,20,20);
+            g.setColor(new Color(200, 0, 0));
+        g.fillRoundRect(408, 690, 70, 70, 20, 20);
 
         g.setFont(minecraft);
-        if(shootHover)
+        if (shootHover)
             g.setColor(Color.WHITE);
         else
             g.setColor(Color.LIGHT_GRAY);
-        g.drawString("SHOOT",326,733);
-        if(healHover)
+        g.drawString("SHOOT", 326, 733);
+        if (healHover)
             g.setColor(Color.WHITE);
         else
             g.setColor(Color.LIGHT_GRAY);
-        g.drawString("HEAL",422,733);
-        g.drawString("" + numBullets, 390,768);
-        g.drawString("" + numMed, 476,768);
+        g.drawString("HEAL", 422, 733);
+        g.drawString("" + numBullets, 390, 768);
+        g.drawString("" + numMed, 476, 768);
     }
-    //gives the random locations to the bullets for the first time
+
+    // gives the random locations to the bullets for the first time
     public void bulletLocator()
     {
         for (int i = 0; i < NUM_GROUND_BULLETS; i++)
         {
             bulletLocations[i] = giveLocation();
         }
-        for(int i = 0; i < NUM_GROUND_MED; i++)
+        for (int i = 0; i < NUM_GROUND_MED; i++)
         {
             medLocations[i] = giveLocation();
         }
     }
-    //has the countdown till the game starts
+
+    // has the countdown till the game starts
     private void showSpawnCountdown()
     {
         if (!greenSpawn)
@@ -470,13 +484,13 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         }
     }
 
-    //the timer class for level 2
+    // the timer class for level 2
     class PlayerMover implements ActionListener
     {
-        //what happens every time the timer calls the class
+        // what happens every time the timer calls the class
         public void actionPerformed(ActionEvent e)
         {
-            if(!greenSpawn)
+            if (!greenSpawn)
             {
                 showSpawnCountdown();
             }
@@ -490,7 +504,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
                     // if its now not present anymore
                     if (!bulletPresent[i])
                     {
-                        if(blArr[i] == 0)
+                        if (blArr[i] == 0)
                         {
                             mag++;
                         }
@@ -529,14 +543,14 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
 
             int charPosY = yPos;
             int charPosX = xPos;
-            if(moveDown)
-                charPosY+=5;
-            else if(moveUp)
-                charPosY-=5;
-            if(moveRight)
-                charPosX+=5;
-            else if(moveLeft)
-                charPosX-=5;
+            if (moveDown)
+                charPosY += 5;
+            else if (moveUp)
+                charPosY -= 5;
+            if (moveRight)
+                charPosX += 5;
+            else if (moveLeft)
+                charPosX -= 5;
             boolean canMove = true;
             for (int i = 0; i < currentBorder.length; i++)
             {
@@ -546,81 +560,83 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
                     break;
                 }
             }
-            if(canMove)
+            if (canMove)
             {
-                if(moveDown)
-                    yPos+=5;
-                else if(moveUp)
-                    yPos-=5;
-                if(moveRight)
-                    xPos+=5;
-                else if(moveLeft)
-                    xPos-=5;
+                if (moveDown)
+                    yPos += 5;
+                else if (moveUp)
+                    yPos -= 5;
+                if (moveRight)
+                    xPos += 5;
+                else if (moveLeft)
+                    xPos -= 5;
             }
 
             Runner rn = new Runner();
-            player = rn.returnImage(im,movingLeft,moving);
+            player = rn.returnImage(im, movingLeft, moving);
             im++;
-            if(im >= 8)
+            if (im >= 8)
                 im = 0;
-            bl+=4;
-            ml+=4;
-            if(bl%300 == 0 && !bulletStop)
+            bl += 4;
+            ml += 4;
+            if (bl % 300 == 0 && !bulletStop)
             {
-                bulletPresent[bl/300-1] = true;
+                bulletPresent[bl / 300 - 1] = true;
             }
-            if(ml%300 == 0 && !medStop)
+            if (ml % 300 == 0 && !medStop)
             {
-                medPresent[ml/300-1] = true;
+                medPresent[ml / 300 - 1] = true;
             }
-            
-            if(greenSpawn)
+
+            if (greenSpawn)
             {
-                if(!countRestarted)
+                if (!countRestarted)
                 {
-                    barneyInt = 0; 
+                    barneyInt = 0;
                     countRestarted = true;
                 }
                 barneyInt += 4;
-                if(barneyInt >= 50)
+                if (barneyInt >= 50)
                 {
                     gArrX[4] = gArrX[3];
                     gArrX[3] = gArrX[2];
                     gArrX[2] = gArrX[1];
                     gArrX[1] = gArrX[0];
-                    gArrX[0] = (xPos+xPos+50)/2;
+                    gArrX[0] = (xPos + xPos + 50) / 2;
 
                     gArrY[4] = gArrY[3];
                     gArrY[3] = gArrY[2];
                     gArrY[2] = gArrY[1];
                     gArrY[1] = gArrY[0];
-                    gArrY[0] = (yPos+yPos+50)/2;
+                    gArrY[0] = (yPos + yPos + 50) / 2;
 
-                    if(gArrX[4] != 0)
-                        gGoTo[0] = (gArrX[4]+gArrX[0])/2;
-                    if(gArrY[4] != 0)
-                        gGoTo[1] = (gArrY[4]+gArrY[0])/2;
+                    if (gArrX[4] != 0)
+                        gGoTo[0] = (gArrX[4] + gArrX[0]) / 2;
+                    if (gArrY[4] != 0)
+                        gGoTo[1] = (gArrY[4] + gArrY[0]) / 2;
                     barneyInt = 0;
                 }
             }
             greenMover();
             barneySpriteMover();
             greenAttacker();
-            
+
             healthChecker();
             repaint();
             grabFocus();
         }
     }
+
+    // checks if the green friend attacks
     public void greenAttacker()
     {
-        if(!barAttackCool)
+        if (!barAttackCool)
         {
-            Point playerTopRight = new Point(xPos,yPos);
-            Point greenTopRight = new Point(greenX,greenY);
-            
-            Point playerBottomRight = new Point(xPos,yPos);
-            Point greenBottomRight = new Point(greenX,greenY);
+            Point playerTopRight = new Point(xPos, yPos);
+            Point greenTopRight = new Point(greenX, greenY);
+
+            Point playerBottomRight = new Point(xPos, yPos);
+            Point greenBottomRight = new Point(greenX, greenY);
             playerBottomRight.translate(50, 50);
             greenBottomRight.translate(GREEN_DIMS.width, GREEN_DIMS.height);
 
@@ -645,15 +661,17 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             }
         }
     }
+
+    // checks health of both enemy and character you play as
     public void healthChecker()
     {
-        if(greenHealth <= 0)
+        if (greenHealth <= 0)
         {
             themeSong.stop();
             playerTimer.stop();
             manager.showReturn();
         }
-        else if(health <= 0)
+        else if (health <= 0)
         {
             themeSong.stop();
             playerTimer.stop();
@@ -661,60 +679,63 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             manager.showGameOver();
         }
     }
-    //moves barney's green friend
+
+    // moves barney's green friend
     public void greenMover()
     {
-        if(greenX > gGoTo[0])
+        if (greenX > gGoTo[0])
         {
             greenX -= BARNEY_X_SPEED;
             greenMovingLeft = true;
             greenMoving = true;
         }
-        else if(greenX < gGoTo[0])
+        else if (greenX < gGoTo[0])
         {
             greenX += BARNEY_X_SPEED;
             greenMovingLeft = false;
             greenMoving = true;
         }
-        if(greenY > gGoTo[1])
+        if (greenY > gGoTo[1])
         {
             greenY -= BARNEY_Y_SPEED;
             greenMoving = true;
         }
-        else if(greenY < gGoTo[1])
+        else if (greenY < gGoTo[1])
         {
             greenY += BARNEY_Y_SPEED;
             greenMoving = true;
         }
     }
-    //checks when you collected a bullet
+
+    // checks when you collected a bullet
     public boolean collectBullet(int xB, int yB, int bulletNum)
     {
-        if(xB >= xPos && xPos+50 >= xB && yB >= yPos && yPos+50 >= yB)
+        if (xB >= xPos && xPos + 50 >= xB && yB >= yPos && yPos + 50 >= yB)
             bulletPresent[bulletNum] = false;
-        if(bulletPresent[bulletNum] == false)
+        if (bulletPresent[bulletNum] == false)
         {
             numBullets++;
         }
-        return !(xB >= xPos && xPos+50 >= xB && yB >= yPos && yPos+50 >= yB);
+        return !(xB >= xPos && xPos + 50 >= xB && yB >= yPos && yPos + 50 >= yB);
     }
+
     public boolean collectMed(int xM, int yM, int medNum)
     {
-        if(xM >= xPos && xPos+50 >= xM && yM >= yPos && yPos+50 >= yM)
+        if (xM >= xPos && xPos + 50 >= xM && yM >= yPos && yPos + 50 >= yM)
             medPresent[medNum] = false;
-        if(medPresent[medNum] == false)
+        if (medPresent[medNum] == false)
         {
             numMed++;
         }
-        return !(xM >= xPos && xPos+50 >= xM && yM >= yPos && yPos+50 >= yM);
+        return !(xM >= xPos && xPos + 50 >= xM && yM >= yPos && yPos + 50 >= yM);
     }
-    //gives the location of an object randomly
+
+    // gives the location of an object randomly
     public Point giveLocation()
     {
         Point loc = new Point(
-            (int)(Math.random()*770),
-            (int)(Math.random()*780)
-        );
+                (int) (Math.random() * 770),
+                (int) (Math.random() * 780));
 
         boolean bulletInBounds = true;
         for (int i = 0; i < currentBorder.length; i++)
@@ -731,14 +752,16 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         else
             return giveLocation();
     }
+
+    // changes barney's sprite
     public void barneySpriteMover()
     {
-        greenInt+=25;
-        numGreenImage = (int)(greenInt/100);
-        if(greenMoving)
+        greenInt += 25;
+        numGreenImage = (int) (greenInt / 100);
+        if (greenMoving)
         {
             String greenImageString = "";
-            if(greenMovingLeft)
+            if (greenMovingLeft)
             {
                 greenImageString = "images/LeftGreen" + numGreenImage + ".png";
             }
@@ -750,18 +773,20 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         }
         else
         {
-            if(movingLeft)
+            if (movingLeft)
                 barGreen = new ImageIcon("images/GreenStand.png").getImage();
             else
                 barGreen = new ImageIcon("images/GreenStandLeft.png").getImage();
         }
-        if(greenInt >= 370)
+        if (greenInt >= 370)
             greenInt = 100;
     }
+
+    // updates bullet location
     public void updateBullet()
     {
-        double newBulletX = bulletX +  BULLET_SPEED * Math.cos(bulletAngle);
-        double newBulletY = bulletY +  BULLET_SPEED * Math.sin(bulletAngle);
+        double newBulletX = bulletX + BULLET_SPEED * Math.cos(bulletAngle);
+        double newBulletY = bulletY + BULLET_SPEED * Math.sin(bulletAngle);
 
         boolean hitTarget = false;
         Rectangle hitbox = new Rectangle(greenX, greenY, greenX + GREEN_DIMS.width, greenY + GREEN_DIMS.height);
@@ -777,7 +802,7 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
             }
         }
 
-        if(hitTarget)
+        if (hitTarget)
             greenHealth -= 50;
         // if we are out of bounds or we hit, then don't show the bullet
         if (newBulletX < 0 || newBulletY < 0 || newBulletX >= 800 || newBulletY >= 800 || hitTarget)
@@ -791,14 +816,13 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         }
     }
 
-    //movement input
+    // movement input
     public void keyPressed(KeyEvent e)
     {
         if (e.getKeyChar() == 'd' || e.getKeyChar() == 'a' || e.getKeyChar() == 's' || e.getKeyChar() == 'w'
                 || e.getKeyCode() == KeyEvent.VK_SHIFT)
         {
             moving = true;
-            playerTimer.start();
         }
         else
         {
@@ -829,10 +853,13 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         repaint();
         grabFocus();
     }
-    //not going to be used
+
+    // not going to be used
     public void keyTyped(KeyEvent e)
-    {}
-    //resets the movement input
+    {
+    }
+
+    // resets the movement input
     public void keyReleased(KeyEvent e)
     {
         moveRight = false;
@@ -843,11 +870,12 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         repaint();
         grabFocus();
     }
+
     // for shooting bullets
     public void mousePressed(MouseEvent e)
     {
         // check if we are already shooting a bullet
-        if(numBullets >= 1 && !bulletShow && shootSelected)
+        if (numBullets >= 1 && !bulletShow && shootSelected)
         {
             double bulletOffsetX = e.getX() - xPos;
             double bulletOffsetY = e.getY() - yPos;
@@ -861,22 +889,34 @@ public class Level2 extends JPanel implements MouseListener, KeyListener, MouseM
         repaint();
         grabFocus();
     }
-    //not going to be used
+
+    // not going to be used
     public void mouseClicked(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseReleased(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseEntered(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseExited(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseMoved(MouseEvent e)
-    {}
-    //not going to be used
+    {
+    }
+
+    // not going to be used
     public void mouseDragged(MouseEvent e)
-    {}
+    {
+    }
 }

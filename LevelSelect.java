@@ -48,7 +48,7 @@ class LevelSelect extends JPanel
         }
 
         levelOneButton = new JButton("");
-        //mouse adapter for button that takes you to level 1
+        // mouse adapter for button that takes you to level 1
         levelOneButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             // when mouse is over the button
@@ -66,7 +66,7 @@ class LevelSelect extends JPanel
             }
         });
         levelTwoButton = new JButton("");
-        //mouse adapter for button that takes you to level 2
+        // mouse adapter for button that takes you to level 2
         levelTwoButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             // when mouse is over the button
@@ -84,7 +84,7 @@ class LevelSelect extends JPanel
             }
         });
         levelThreeButton = new JButton("");
-        //mouse adapter for button that takes you to level 3
+        // mouse adapter for button that takes you to level 3
         levelThreeButton.addMouseListener(new java.awt.event.MouseAdapter()
         {
             // when mouse is over the button
@@ -116,32 +116,32 @@ class LevelSelect extends JPanel
         levelOneButton.addActionListener(e -> manager.showLevelOne());
 
         // the second level
-        levelTwoButton.addActionListener(e ->manager.showLevelTwo());
+        levelTwoButton.addActionListener(e -> manager.showLevelTwo());
 
         // the third level
         levelThreeButton.addActionListener(e -> manager.showLevelThree());
         setBackground(Color.WHITE);
     }
 
-    //paints the level select screen
+    // paints the level select screen
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
         g.drawImage(night, 0, 0, NightOfBarney.FRAME_DIMS.width, NightOfBarney.FRAME_DIMS.height, null);
-        g.drawImage(button,200,116,400,80,null);
-        g.drawImage(button,200,335,400,80,null);
-        g.drawImage(button,200,555,400,80,null);
-        if(level1Hover)
-            g.drawImage(level1,330,133,140,45,null);
+        g.drawImage(button, 200, 116, 400, 80, null);
+        g.drawImage(button, 200, 335, 400, 80, null);
+        g.drawImage(button, 200, 555, 400, 80, null);
+        if (level1Hover)
+            g.drawImage(level1, 330, 133, 140, 45, null);
         else
-            g.drawImage(level1S,330,133,140,45,null);
-        if(level2Hover)
-            g.drawImage(level2,330,352,140,45,null);
+            g.drawImage(level1S, 330, 133, 140, 45, null);
+        if (level2Hover)
+            g.drawImage(level2, 330, 352, 140, 45, null);
         else
-            g.drawImage(level2S,330,352,140,45,null);
-        if(level3Hover)
-            g.drawImage(level3,330,572,140,45,null);
+            g.drawImage(level2S, 330, 352, 140, 45, null);
+        if (level3Hover)
+            g.drawImage(level3, 330, 572, 140, 45, null);
         else
-            g.drawImage(level3S,330,572,140,45,null);
+            g.drawImage(level3S, 330, 572, 140, 45, null);
     }
 }

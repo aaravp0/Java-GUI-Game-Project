@@ -65,7 +65,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
             noMoveTime, noMoveTime2, barCooldown;
     private boolean moving, movingLeft, moveLeft, moveRight, moveUp, moveDown, barneySpawn, shiftSprint, started,
             selected1, selected2, selected3, selected4, selected5, bulletCooldown, stun, cookiesActivated,
-            songStarted, playerDamageOnMove, barAttackCool, damage, barLeft, barMove1,barMove2,barMove;
+            songStarted, playerDamageOnMove, barAttackCool, damage, barLeft, barMove1, barMove2, barMove;
     private PlayerMover playerTime;
     private JButton inv1, inv2, inv3, inv4, inv5;
     private String beginSentence, showingSentence, showingSentence2, showingSentence3,
@@ -82,15 +82,19 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
     private Point topLeft;
 
+    //resets the variables
     public void reset(Manager manager)
     {
-        try {
+        try
+        {
             minecraft = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/minecraft.ttf")).deriveFont(16f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(minecraft);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             e.printStackTrace();
-        } catch(FontFormatException e) {
+        } catch (FontFormatException e)
+        {
             e.printStackTrace();
         }
         this.manager = manager;
@@ -300,6 +304,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
         previousPlayerPosition = new ArrayDeque<Point>();
     }
+
     // declares all of the variables and timers
     public Level1(Manager manager)
     {
@@ -384,8 +389,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         super.paintComponent(g);
 
         // draw background
-        g.drawImage(back, 0, 0, NightOfBarney.FRAME_DIMS.width, NightOfBarney.FRAME_DIMS.height, 
-            topLeft.x, topLeft.y, topLeft.x + SCREEN_DIMS.width, topLeft.y + SCREEN_DIMS.height, null, null);
+        g.drawImage(back, 0, 0, NightOfBarney.FRAME_DIMS.width, NightOfBarney.FRAME_DIMS.height,
+                topLeft.x, topLeft.y, topLeft.x + SCREEN_DIMS.width, topLeft.y + SCREEN_DIMS.height, null, null);
 
         if (!songStarted)
         {
@@ -411,7 +416,8 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
         if (playerDamageOnMove)
         {
             // g.setColor(Color.RED);
-            // g.fillRect(0, 0, NightOfBarney.FRAME_DIMS.width, NightOfBarney.FRAME_DIMS.height);
+            // g.fillRect(0, 0, NightOfBarney.FRAME_DIMS.width,
+            // NightOfBarney.FRAME_DIMS.height);
             g.drawImage(bloodHead, 200, 200, 400, 400, null);
         }
 
@@ -801,7 +807,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
                     barMove2 = true;
                 }
 
-                if(!barMove1 && !barMove2)
+                if (!barMove1 && !barMove2)
                     barMove = false;
                 else
                     barMove = true;
@@ -811,24 +817,26 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
 
         }
     }
-    //updates barney's sprite
+
+    // updates barney's sprite
     private void updateBarneySprite()
     {
-        if(barMove)
+        if (barMove)
         {
-            if(barLeft)
+            if (barLeft)
                 barneyBlood = new ImageIcon("images/BarneyLeft.gif").getImage();
             else
                 barneyBlood = new ImageIcon("images/BarneyRun.gif").getImage();
         }
         else
         {
-            if(barLeft)
+            if (barLeft)
                 barneyBlood = new ImageIcon("images/BarneyStandLeft.png").getImage();
             else
                 barneyBlood = new ImageIcon("images/BarneyStandRight.png").getImage();
         }
     }
+
     // updates the player sprite, for running and standing still
     private void updatePlayerSprite()
     {
@@ -872,7 +880,7 @@ public class Level1 extends JPanel implements KeyListener, MouseListener
                 clip2.stop();
                 manager.showReturn();
             }
-            if(health <= 0)
+            if (health <= 0)
             {
                 playerTimer.stop();
                 clip2.stop();
